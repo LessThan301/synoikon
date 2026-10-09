@@ -1,6 +1,6 @@
 # Crawlers only read robots.txt at the host root (lessthan301.github.io/robots.txt);
 # this copy documents intent and lists the sitemap for tools that look here.
 User-agent: *
-Allow: /contexter/
-Disallow: /contexter/offline.html
-Sitemap: https://lessthan301.github.io/contexter/sitemap.xml
+Allow: /synoikon/
+Disallow: /synoikon/offline.html
+Sitemap: https://lessthan301.github.io/synoikon/sitemap.xml

@@ -1,14 +1,14 @@
 // Phase 1 end-to-end checks: PWA installability + service worker + offline, word of the day,
 // precomputed words, Share map, static word pages, analytics gating.
-// Serve first: node tools/serve.mjs 8765   (mounts the repo at /contexter/ like GitHub Pages)
-// usage: node tests/phase1.e2e.mjs [base=http://localhost:8765/contexter/] [width=1400] [height=900]
+// Serve first: node tools/serve.mjs 8765   (mounts the repo at /synoikon/ like GitHub Pages)
+// usage: node tests/phase1.e2e.mjs [base=http://localhost:8765/synoikon/] [width=1400] [height=900]
 import { chromium } from 'playwright';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { wordOfDay, POPULAR } from '../js/words.js';
 
-const [base = 'http://localhost:8765/contexter/', width = '1400', height = '900'] = process.argv.slice(2);
+const [base = 'http://localhost:8765/synoikon/', width = '1400', height = '900'] = process.argv.slice(2);
 const mobile = +width < 600;
 const live = !base.includes('localhost');
 const userDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-pwa-'));
@@ -26,7 +26,7 @@ watch(page);
 let fails = 0;
 const ok = (c, m) => { console.log(`${c ? 'PASS' : 'FAIL'} ${m}`); if (!c) fails++; };
 const G = (fn, arg) => page.evaluate(fn, arg);
-const appState = () => G(() => window.__contexterApp.state());
+const appState = () => G(() => window.__synoikonApp.state());
 
 // Analytics stub (installed first, so test runs never send real beacons — also on the live site).
 const cfReqs = [];
@@ -46,9 +46,9 @@ await page.goto(base, { waitUntil: 'networkidle' });
 const cdp = await context.newCDPSession(page);
 const man = await cdp.send('Page.getAppManifest');
 const manifest = JSON.parse(man.data || '{}');
-ok(man.errors.length === 0 && manifest.name === 'Contexter', `manifest parses (${man.url}) errors=${JSON.stringify(man.errors)}`);
+ok(man.errors.length === 0 && manifest.name === 'Synoikon', `manifest parses (${man.url}) errors=${JSON.stringify(man.errors)}`);
 const scopeUrl = new URL(manifest.scope, man.url).href, startUrl = new URL(manifest.start_url, man.url).href;
-ok(scopeUrl === base && startUrl.startsWith(base), `start_url ${startUrl} and scope ${scopeUrl} are inside the /contexter/ subpath`);
+ok(scopeUrl === base && startUrl.startsWith(base), `start_url ${startUrl} and scope ${scopeUrl} are inside the /synoikon/ subpath`);
 const purposes = manifest.icons.map((i) => `${i.sizes}:${i.purpose}`);
 ok(purposes.includes('192x192:any') && purposes.includes('512x512:any') && purposes.includes('512x512:maskable'), `icons 192/512 + maskable: ${purposes.join(', ')}`);
 for (const icon of manifest.icons.filter((i) => i.type === 'image/png')) {
@@ -63,7 +63,7 @@ let inst = await cdp.send('Page.getInstallabilityErrors');
 for (let i = 0; i < 10 && inst.installabilityErrors.length; i++) { await page.waitForTimeout(500); inst = await cdp.send('Page.getInstallabilityErrors'); }
 ok(inst.installabilityErrors.length === 0, `Chromium installability check: ${inst.installabilityErrors.length ? JSON.stringify(inst.installabilityErrors) : 'installable'}`);
 const caches = await G(async () => { const out = {}; for (const k of await caches.keys()) out[k] = (await (await caches.open(k)).keys()).length; return out; });
-ok(Object.keys(caches).some((k) => k.startsWith('contexter-shell-')), `versioned shell cache: ${JSON.stringify(caches)}`);
+ok(Object.keys(caches).some((k) => k.startsWith('synoikon-shell-')), `versioned shell cache: ${JSON.stringify(caches)}`);
 ok(await page.locator('#install').count() === 1, 'install button present (shown when the browser fires beforeinstallprompt)');
 
 // ---- 2. word of the day ---------------------------------------------------------------
@@ -71,7 +71,7 @@ const today = wordOfDay('en');
 ok((await page.locator('#wotdWord').innerText()).trim() === today.word, `start screen shows today's word "${today.word}" (${today.date} UTC)`);
 let t0 = Date.now();
 await page.click('#wotdWord');
-await page.waitForFunction(() => window.__contexter.count().nodes > 1);
+await page.waitForFunction(() => window.__synoikon.count().nodes > 1);
 const wotdMs = Date.now() - t0;
 let st = await appState();
 ok(st.precomputed && st.term === today.word, `today's word opens from precomputed data in ${wotdMs} ms`);
@@ -79,36 +79,36 @@ ok(wotdMs < 2500, 'precomputed word appears quickly (< 2.5 s incl. layout)');
 ok(/Precomputed on/.test(await page.locator('#stats').textContent()), 'stats panel says "Precomputed on …" with a refresh button');
 const de = wordOfDay('de');
 await page.goto(base + '#wotd&lang=de', { waitUntil: 'networkidle' });
-await page.waitForFunction((w) => window.__contexterApp.state().term === w && window.__contexter.count().nodes > 1, de.word);
+await page.waitForFunction((w) => window.__synoikonApp.state().term === w && window.__synoikon.count().nodes > 1, de.word);
 ok((await G(() => document.getElementById('lang').value)) === 'de', `#wotd&lang=de opens "${de.word}" in German`);
 
 // ---- 3. precomputed interactivity ----------------------------------------------------------
 const pop = today.word; // always among the first words precomputed
 await page.goto(base + `#q=${pop}&lang=en`, { waitUntil: 'networkidle' });
-await page.waitForFunction(() => window.__contexter.count().nodes > 1);
+await page.waitForFunction(() => window.__synoikon.count().nodes > 1);
 st = await appState();
 ok(st.precomputed, `popular word "${pop}" loads precomputed`);
-const distinct = await G(() => window.__contexter.labels().join());
+const distinct = await G(() => window.__synoikon.labels().join());
 if (mobile) { await page.click('#menuBtn'); await page.waitForTimeout(350); } // settings drawer
 await page.click('.seg label:has(input[value=frequency])');
 await page.waitForTimeout(300);
-ok((await G(() => window.__contexter.labels().join())) !== distinct && (await appState()).precomputed, 'rank toggle works on precomputed data (no fetch)');
+ok((await G(() => window.__synoikon.labels().join())) !== distinct && (await appState()).precomputed, 'rank toggle works on precomputed data (no fetch)');
 await page.click('.seg label:has(input[value=distinctive])');
 if (mobile) { await page.keyboard.press('Escape'); await page.waitForTimeout(350); }
 await page.locator('#topN').evaluate((el) => { el.value = 50; el.dispatchEvent(new Event('input')); });
-await page.waitForFunction(() => window.__contexter.count().nodes === 51);
+await page.waitForFunction(() => window.__synoikon.count().nodes === 51);
 ok((await appState()).precomputed, 'neighbours slider (≤80) stays on precomputed data');
 await page.locator('#topN').evaluate((el) => { el.value = 30; el.dispatchEvent(new Event('input')); });
 if (!live) {
   await page.locator('#window').evaluate((el) => { el.value = 7; el.dispatchEvent(new Event('input')); });
-  await page.waitForFunction(() => window.__contexterApp.state().live, null, { timeout: 45000 });
+  await page.waitForFunction(() => window.__synoikonApp.state().live, null, { timeout: 45000 });
   ok(true, 'changing the context window switches to live data automatically');
   await page.locator('#window').evaluate((el) => { el.value = 5; el.dispatchEvent(new Event('input')); });
 }
 
 // ---- 4. share map ---------------------------------------------------------------------------
 await page.goto(base + `?stubshare=${mobile ? 1 : 0}#q=${pop}&lang=en`, { waitUntil: 'networkidle' });
-await page.waitForFunction(() => window.__contexter.count().nodes > 1);
+await page.waitForFunction(() => window.__synoikon.count().nodes > 1);
 await page.click('#share');
 await page.waitForFunction(() => document.getElementById('cardPreview').naturalWidth > 0);
 const dimsOf = () => G(() => { const i = document.getElementById('cardPreview'); return `${i.naturalWidth}x${i.naturalHeight}`; });
@@ -119,7 +119,7 @@ await page.screenshot({ path: `./phase1-share-${width}.png` });
 await page.click('.share-dlg .seg label:has(input[value=square])');
 await page.waitForFunction(() => document.getElementById('cardPreview').naturalWidth === 1080);
 ok((await dimsOf()) === '1080x1080', 'square variant is 1080×1080');
-const card = await G(async () => { const b = await window.__contexterApp.card('og'); const bm = await createImageBitmap(b); const c = new OffscreenCanvas(bm.width, bm.height); const x = c.getContext('2d'); x.drawImage(bm, 0, 0);
+const card = await G(async () => { const b = await window.__synoikonApp.card('og'); const bm = await createImageBitmap(b); const c = new OffscreenCanvas(bm.width, bm.height); const x = c.getContext('2d'); x.drawImage(bm, 0, 0);
   const d = x.getImageData(0, 0, bm.width, bm.height).data; let colored = 0; for (let i = 0; i < d.length; i += 4 * 97) if (Math.abs(d[i] - d[i + 2]) > 60) colored++; return { type: b.type, size: b.size, colored }; });
 ok(card.type === 'image/png' && card.size > 20000 && card.colored > 50, `card PNG has the network drawn (${(card.size / 1024).toFixed(0)} KB, ${card.colored} coloured samples)`);
 if (mobile) {
@@ -144,7 +144,7 @@ await page.keyboard.press('Escape');
 {
   await context.setOffline(true);
   await page.goto(base + `#q=${pop}&lang=en`, { waitUntil: 'domcontentloaded' });
-  await page.waitForFunction(() => window.__contexter?.count().nodes > 1, null, { timeout: 15000 });
+  await page.waitForFunction(() => window.__synoikon?.count().nodes > 1, null, { timeout: 15000 });
   ok((await appState()).precomputed, 'offline: app shell + a precomputed word load from the service worker');
   await page.fill('#term', 'zzqxnotcached'); await page.click('#go');
   await page.waitForFunction(() => !document.getElementById('error').classList.contains('hidden'), null, { timeout: 30000 });
@@ -164,7 +164,7 @@ watch(wp);
 await wp.goto(`${base}w/en/${encodeURIComponent(pop)}/`, { waitUntil: 'networkidle' });
 const metaOf = (sel) => wp.locator(sel).getAttribute('content');
 ok((await wp.title()).includes(pop) && (await metaOf('meta[name=description]')).length > 80, `word page title/description: "${await wp.title()}"`);
-ok((await wp.locator('link[rel=canonical]').getAttribute('href')) === `https://lessthan301.github.io/contexter/w/en/${encodeURIComponent(pop)}/`, 'canonical URL');
+ok((await wp.locator('link[rel=canonical]').getAttribute('href')) === `https://lessthan301.github.io/synoikon/w/en/${encodeURIComponent(pop)}/`, 'canonical URL');
 const ogImg = await metaOf('meta[property="og:image"]');
 ok(/\/w\/en\/.+\/og\.png$/.test(ogImg), `og:image is the pre-rendered PNG: ${ogImg}`);
 ok((await wp.locator('a.btn').first().getAttribute('href')).includes(`#q=${pop}&lang=en`), 'links into the app');

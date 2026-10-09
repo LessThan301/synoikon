@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "hi" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "hi" list + Synoikon wiki-boilerplate additions, normalised
 अंग्रेज़ी
 अंग्रेजी
 अंदर

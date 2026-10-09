@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "el" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "el" list + Synoikon wiki-boilerplate additions, normalised
 α
 αγγλικα
 αι

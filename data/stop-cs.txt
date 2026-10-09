@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "cs" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "cs" list + Synoikon wiki-boilerplate additions, normalised
 a
 aby
 ahoj

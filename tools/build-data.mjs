@@ -51,7 +51,7 @@ for (const lang of LANGS) {
     for (const t of tokenize(w, lang)) words.add(t.low);
   }
   fs.writeFileSync(new URL(`stop-${lang.code}.txt`, out),
-    `# stopwords-iso (MIT) "${lang.code}" list${lang.code === 'de' ? ' + Contexter German list' : ''} + Contexter wiki-boilerplate additions, normalised\n${[...words].sort().join('\n')}\n`);
+    `# stopwords-iso (MIT) "${lang.code}" list${lang.code === 'de' ? ' + Synoikon German list' : ''} + Synoikon wiki-boilerplate additions, normalised\n${[...words].sort().join('\n')}\n`);
   console.log('stop', lang.code, words.size);
 }
 
@@ -62,7 +62,7 @@ function write(lang, counts, total, source) {
   const top = [...counts.entries()].filter(([w, c]) => c >= 2 && WORDLIKE.test(w)).sort((a, b) => b[1] - a[1]).slice(0, K);
   const sig = (c) => { const s = String(c); return s.length > 3 ? +(s.slice(0, 3) + '0'.repeat(s.length - 3)) : c; };
   fs.writeFileSync(new URL(`freq-${lang.code}.txt`, out),
-    `# ${source}; top ${top.length} words, normalised with Contexter's tokenizer\n#total ${total}\n${top.map(([w, c]) => `${w} ${sig(c)}`).join('\n')}\n`);
+    `# ${source}; top ${top.length} words, normalised with Synoikon's tokenizer\n#total ${total}\n${top.map(([w, c]) => `${w} ${sig(c)}`).join('\n')}\n`);
   console.log('freq', lang.code, 'total', total, 'words', top.length, 'last', top[top.length - 1]);
 }
 
@@ -90,6 +90,6 @@ for (const lang of LANGS) {
       const tab = line.indexOf('\t');
       for (const t of tokenize(line.slice(tab + 1), lang)) { total++; counts.set(t.low, (counts.get(t.low) || 0) + 1); }
     }
-    write(lang, counts, total, `Leipzig Corpora Collection ${path.basename(dir)} (CC BY), counted with Contexter's tokenizer`);
+    write(lang, counts, total, `Leipzig Corpora Collection ${path.basename(dir)} (CC BY), counted with Synoikon's tokenizer`);
   }
 }

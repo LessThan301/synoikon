@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Static server that mounts the repo at /contexter/ (like GitHub Pages) for tests and builds.
+// Static server that mounts the repo at /synoikon/ (like GitHub Pages) for tests and builds.
 // usage: node tools/serve.mjs [port]
 import http from 'http';
 import fs from 'fs';
@@ -8,7 +8,7 @@ import { fileURLToPath } from 'url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
   '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.md': 'text/markdown; charset=utf-8' };
-export function serve(port = 8765, base = '/contexter/') {
+export function serve(port = 8765, base = '/synoikon/') {
   const server = http.createServer((req, res) => {
     let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
     if (p === '/' || p === base.slice(0, -1)) { res.writeHead(301, { Location: base }); res.end(); return; }
@@ -27,5 +27,5 @@ export function serve(port = 8765, base = '/contexter/') {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = +(process.argv[2] || 8765);
   await serve(port);
-  console.log(`serving ${ROOT} at http://localhost:${port}/contexter/`);
+  console.log(`serving ${ROOT} at http://localhost:${port}/synoikon/`);
 }

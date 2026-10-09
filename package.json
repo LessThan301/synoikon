@@ -1,5 +1,5 @@
 {
-  "name": "contexter",
+  "name": "synoikon",
   "private": true,
   "type": "module",
   "description": "Static site: semantic networks of co-occurring words. No build step; these scripts are for data, tests and OG images.",

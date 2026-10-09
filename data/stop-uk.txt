@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "uk" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "uk" list + Synoikon wiki-boilerplate additions, normalised
 авжеж
 адже
 але

@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "pl" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "pl" list + Synoikon wiki-boilerplate additions, normalised
 a
 aby
 ach

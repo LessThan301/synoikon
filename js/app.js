@@ -21,7 +21,7 @@ const els = {
   tableBox: $('tableBox'), tableBody: $('tableBody'), examples: $('examples'), examplesLabel: $('examplesLabel'),
   errorTitle: $('errorTitle'), offlineWords: $('offlineWords'),
 };
-const SITE = new URL('./', location.href).href.replace(/[?#].*$/, ''); // e.g. https://lessthan301.github.io/contexter/
+const SITE = new URL('./', location.href).href.replace(/[?#].*$/, ''); // e.g. https://lessthan301.github.io/synoikon/
 const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode */ } } };
 const sidebar = setupSidebar({ store });
 
@@ -133,7 +133,7 @@ function onLangChange() {
   ensureFont(lang);
   renderExamples(lang.code);
   renderWotd(lang.code);
-  store.set('contexter.lang', lang.code);
+  store.set('synoikon.lang', lang.code);
 }
 const params = () => ({
   topN: +els.topN.value, window: +els.window.value, minCooc: +els.minCooc.value, maxLinksPerNode: +els.maxLinks.value,
@@ -182,7 +182,7 @@ async function search(term, { live = false } = {}) {
   if (!enabled.length) { show('error', 'Select at least one source in Settings.'); return; }
   const key = [term.toLowerCase(), lang, size, enabled.join(',')].join('|');
   updateHash(term, lang);
-  document.title = `${term} · Contexter`;
+  document.title = `${term} · Synoikon`;
 
   const id = ++state.requestId;
   // 1) precomputed popular words load instantly (and work offline)
@@ -420,7 +420,7 @@ function downloadSvg() {
   if (!svg) return;
   const blob = new Blob([svg], { type: 'image/svg+xml' });
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob); a.download = `contexter-${state.term}.svg`; a.click();
+  a.href = URL.createObjectURL(blob); a.download = `synoikon-${state.term}.svg`; a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
@@ -453,7 +453,7 @@ async function openShare() {
   share.url = await shareUrl();
   $('shareUrl').value = share.url;
   $('shareStatus').textContent = '';
-  const file = () => new File([share.blob], `contexter-${slug(state.term)}-${state.lang}-${share.format}.png`, { type: 'image/png' });
+  const file = () => new File([share.blob], `synoikon-${slug(state.term)}-${state.lang}-${share.format}.png`, { type: 'image/png' });
   const canShareFiles = () => !!navigator.canShare && navigator.canShare({ files: [file()] });
   async function refresh() {
     share.format = document.querySelector('input[name=cardFormat]:checked').value;
@@ -468,7 +468,7 @@ async function openShare() {
   for (const r of document.querySelectorAll('input[name=cardFormat]')) r.onchange = refresh;
   $('shareImage').onclick = async () => {
     try {
-      await navigator.share({ files: [file()], title: `${state.term} · Contexter`, text: `The company “${state.term}” keeps`, url: share.url });
+      await navigator.share({ files: [file()], title: `${state.term} · Synoikon`, text: `The company “${state.term}” keeps`, url: share.url });
       $('shareStatus').textContent = 'Shared.';
     } catch (err) { if (err.name !== 'AbortError') { $('shareStatus').textContent = `Sharing failed (${err.message}); downloading instead.`; download(); } }
   };
@@ -493,7 +493,7 @@ $('sbShare').onclick = openShare;
 function route() {
   const h = new URLSearchParams(location.hash.slice(1));
   if (h.get('rank') === 'frequency') document.querySelector('input[name=rank][value=frequency]').checked = true;
-  const code = h.get('lang') || store.get('contexter.lang');
+  const code = h.get('lang') || store.get('synoikon.lang');
   if (code && LANGS.some((l) => l.code === code)) els.lang.value = code;
   onLangChange();
   if (h.has('wotd')) search(wordOfDay(els.lang.value).word);
@@ -506,7 +506,7 @@ function home() {
   state.graph?.clear();
   for (const b of [els.statsBox, els.samplesBox, els.tableBox]) b.classList.add('hidden');
   $('resultsEmpty').hidden = false;
-  document.title = 'Contexter · the company a word keeps';
+  document.title = 'Synoikon · the company a word keeps';
   show('empty');
 }
 for (const a of document.querySelectorAll('.home-link')) a.addEventListener('click', (e) => {
@@ -531,13 +531,13 @@ if (typeof d3 === 'undefined') {
     onSelect: (word) => search(word),
     onFocus: (d) => renderSamples(d),
   });
-  window.__contexter = state.graph.debug; // read-only hooks for automated tests
-  window.__contexterApp = { // test/build hooks (OG image rendering)
+  window.__synoikon = state.graph.debug; // read-only hooks for automated tests
+  window.__synoikonApp = { // test/build hooks (OG image rendering)
     sidebar: () => ({ collapsed: sidebar.isCollapsed(), open: sidebar.isOpen(), mobile: sidebar.isMobile() }),
     state: () => ({ term: state.term, lang: state.lang, precomputed: !!state.pre, live: !!state.corpus, rank: state.net?.stats.rank }),
     search: (w, opts) => search(w, opts),
     card: async (format = 'og', url) => { share.url = url || await shareUrl(); return makeCard(format); },
-    cardDataURL: async (format = 'og', url) => { const b = await window.__contexterApp.card(format, url); return new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); },
+    cardDataURL: async (format = 'og', url) => { const b = await window.__synoikonApp.card(format, url); return new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); },
   };
   route();
 }

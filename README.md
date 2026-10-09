@@ -1,11 +1,11 @@
-# Contexter
+# Synoikon
 
 **The company a word keeps, drawn from real text on the web.**
 
-Live: **https://lessthan301.github.io/contexter/** · installable as an app · works offline for popular words ·
-[today’s word](https://lessthan301.github.io/contexter/#wotd) · [all precomputed words](https://lessthan301.github.io/contexter/w/) · [about & attribution](https://lessthan301.github.io/contexter/about.html)
+Live: **https://lessthan301.github.io/synoikon/** · installable as an app · works offline for popular words ·
+[today’s word](https://lessthan301.github.io/synoikon/#wotd) · [all precomputed words](https://lessthan301.github.io/synoikon/w/) · [about & attribution](https://lessthan301.github.io/synoikon/about.html)
 
-Type a word. Contexter gathers hundreds of real sentences that contain it, looks at
+Type a word. Synoikon gathers hundreds of real sentences that contain it, looks at
 the words that appear around it, and draws them as an interactive semantic network.
 
 - **Circle area** = how often a neighbor word appears near your word (radius ∝ √frequency).
@@ -40,7 +40,7 @@ interactive semantic network … Size of circles shows frequency of neighbors.�
 ## Where the text comes from
 
 All requests go straight from the browser to free, key-less, CORS-enabled APIs (Wikimedia requests carry
-`Api-User-Agent: LessThan301 contexter (github.com/LessThan301/contexter)`, which Wikimedia’s CORS policy allows).
+`Api-User-Agent: LessThan301 synoikon (github.com/LessThan301/synoikon)`, which Wikimedia’s CORS policy allows).
 The only stored text is the precomputed popular words (below).
 
 | Source | What is used |
@@ -55,7 +55,7 @@ The only stored text is the precomputed popular words (below).
 
 | Language | Code | Text sources | Stopwords | Background list (Distinctive) | Tokenization / matching notes |
 | --- | --- | --- | --- | --- | --- |
-| English | en | Wikipedia, Wikiquote, Wiktionary, Hacker News | Contexter's own list | Wikipedia (IlyaSemenov) | suffix rules (river/rivers) |
+| English | en | Wikipedia, Wikiquote, Wiktionary, Hacker News | Synoikon's own list | Wikipedia (IlyaSemenov) | suffix rules (river/rivers) |
 | 中文 Chinese (Mandarin) | zh | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `cmn_wikipedia_2021_300K` | `Intl.Segmenter` words; search word matched as a substring; bigram fallback |
 | हिन्दी Hindi | hi | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `hin_wikipedia_2021_300K` | stem prefix (नदी → नदियों) |
 | Español | es | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix, plurals merged |
@@ -66,7 +66,7 @@ The only stored text is the precomputed popular words (below).
 | Русский Russian | ru | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix (река → реки/реке/рекой) |
 | Bahasa Indonesia | id | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `ind_wikipedia_2021_300K` | word + up to 3 letters (sungainya) |
 | اردو Urdu | ur | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `urd_wikipedia_2021_300K` | diacritics removed; word + ≤ 2 letters (دریائے) |
-| Deutsch | de | Wikipedia, Wikiquote, Wiktionary | Contexter list + stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | suffix rules |
+| Deutsch | de | Wikipedia, Wikiquote, Wiktionary | Synoikon list + stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | suffix rules |
 | Italiano | it | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix (fiume → fiumi) |
 | Polski | pl | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix |
 | Українська | uk | Wikipedia, Wikiquote, Wiktionary | stopwords-iso (only 73 words) + wiki terms | Wikipedia (IlyaSemenov) | stem prefix |
@@ -140,16 +140,16 @@ Measured in headless Chromium with 4× CPU throttling, 80 neighbors, ±15 window
 ### Installable, offline-capable (PWA)
 
 - `manifest.webmanifest`: name, 192/512 icons + maskable icons, theme colours, `start_url`/`scope` relative to the manifest so
-  they resolve to `/contexter/` on GitHub Pages, and a *Word of the day* shortcut.
-- `sw.js` (scope `/contexter/`). Cache names carry content hashes written by `node tools/stamp-sw.mjs`; old caches are deleted on activate.
+  they resolve to `/synoikon/` on GitHub Pages, and a *Word of the day* shortcut.
+- `sw.js` (scope `/synoikon/`). Cache names carry content hashes written by `node tools/stamp-sw.mjs`; old caches are deleted on activate.
 
   | Cache | What | Strategy |
   | --- | --- | --- |
-  | `contexter-shell-<hash>` | HTML, CSS, JS modules, icons, D3 | precached on install, cache-first |
-  | `contexter-data-<hash>` | stopword + background lists, per language as used | cache-first |
-  | `contexter-precomputed` | precomputed networks (≤250) | stale-while-revalidate |
-  | `contexter-api` | recent search results from Wikimedia/HN (≤160 responses ≈ the last 30–40 searches) | stale-while-revalidate |
-  | `contexter-pages` / `contexter-fonts` | visited word pages (≤60) / script fonts (≤60) | network-first / cache-first |
+  | `synoikon-shell-<hash>` | HTML, CSS, JS modules, icons, D3 | precached on install, cache-first |
+  | `synoikon-data-<hash>` | stopword + background lists, per language as used | cache-first |
+  | `synoikon-precomputed` | precomputed networks (≤250) | stale-while-revalidate |
+  | `synoikon-api` | recent search results from Wikimedia/HN (≤160 responses ≈ the last 30–40 searches) | stale-while-revalidate |
+  | `synoikon-pages` / `synoikon-fonts` | visited word pages (≤60) / script fonts (≤60) | network-first / cache-first |
 
   Offline, the app opens, precomputed words and recent searches work, and other words show an offline message listing what is available.
   Unknown pages fall back to `offline.html`. Requests to Cloudflare’s analytics are never intercepted (and POSTs are never touched).
@@ -194,12 +194,12 @@ Cloudflare Web Analytics (cookieless) is configured in `js/analytics.js` (`CF_AN
 ## Run locally
 
 It’s plain static files (ES modules), so it needs a local web server rather than `file://`.
-`tools/serve.mjs` mounts the repo at `/contexter/` like GitHub Pages (the offline page and service worker expect that path):
+`tools/serve.mjs` mounts the repo at `/synoikon/` like GitHub Pages (the offline page and service worker expect that path):
 
 ```bash
-cd contexter
+cd synoikon
 node tools/serve.mjs 8765
-# open http://localhost:8765/contexter/
+# open http://localhost:8765/synoikon/
 ```
 
 D3 v7 and the script web fonts are loaded from the jsDelivr CDN.
@@ -208,8 +208,8 @@ D3 v7 and the script web fonts are loaded from the jsDelivr CDN.
 
 - **Background word frequencies** (`data/freq-*.txt`, top 40k words, frequencies rounded to 3 significant digits):
   - en, de, fr, es, it, nl, pt, ru, pl, uk, sv, ar: whole-Wikipedia counts from [IlyaSemenov/wikipedia-word-frequency](https://github.com/IlyaSemenov/wikipedia-word-frequency) (MIT).
-  - zh, hi, bn, ur, id, ro, el, hu, cs: not in that set (its Chinese list isn't word-segmented). For these, Contexter counted words itself, with its own tokenizer, in the 300K-sentence Wikipedia corpora of the [Leipzig Corpora Collection](https://wortschatz.uni-leipzig.de/en/download) (downloads licensed CC BY, per their [terms](https://wortschatz.uni-leipzig.de/en/usage)). Citation: D. Goldhahn, T. Eckart, U. Quasthoff, *Building Large Monolingual Dictionaries at the Leipzig Corpora Collection: From 100 to 200 Languages*, LREC 2012.
-- **Stopwords:** [stopwords-iso](https://github.com/stopwords-iso/stopwords-iso) (MIT), normalised with Contexter's tokenizer. Contexter adds a few wiki-boilerplate words per language (disambiguation phrases, "see also", "(in English: …)"). English uses Contexter's own list.
+  - zh, hi, bn, ur, id, ro, el, hu, cs: not in that set (its Chinese list isn't word-segmented). For these, Synoikon counted words itself, with its own tokenizer, in the 300K-sentence Wikipedia corpora of the [Leipzig Corpora Collection](https://wortschatz.uni-leipzig.de/en/download) (downloads licensed CC BY, per their [terms](https://wortschatz.uni-leipzig.de/en/usage)). Citation: D. Goldhahn, T. Eckart, U. Quasthoff, *Building Large Monolingual Dictionaries at the Leipzig Corpora Collection: From 100 to 200 Languages*, LREC 2012.
+- **Stopwords:** [stopwords-iso](https://github.com/stopwords-iso/stopwords-iso) (MIT), normalised with Synoikon's tokenizer. Synoikon adds a few wiki-boilerplate words per language (disambiguation phrases, "see also", "(in English: …)"). English uses Synoikon's own list.
 - **Fonts:** Google Noto via Fontsource (SIL Open Font License).
 - **Rebuilding the data:** `node tools/build-data.mjs <stopwords-iso.json> <ilya-dir> <leipzig-dir>` (inputs are downloaded separately; see the header of the script).
 
@@ -229,14 +229,14 @@ node tests/ranking.test.mjs río es             # Frequency vs Distinctive for a
 node tests/words.test.mjs                      # word-of-the-day lists (≥60 × 21, single tokens, UTC day logic)
 node tests/precomputed.test.mjs                # precomputed record decodes to exactly the live network (482 checks)
 node tools/stamp-sw.mjs --check                # sw.js cache version matches the current files
-node tools/serve.mjs 8765 &                    # Phase 1 browser test needs the /contexter/ mount:
-node tests/phase1.e2e.mjs http://localhost:8765/contexter/            # PWA installability (CDP), SW, offline, WOTD, precomputed, share, pages, analytics
-node tests/phase1.e2e.mjs http://localhost:8765/contexter/ 390 844    # same on a phone (Web Share with files is stubbed)
-node tests/sidebar.e2e.mjs http://localhost:8765/contexter/            # sidebar: rail collapse, canvas refit, persistence, keyboard, RTL
-node tests/sidebar.e2e.mjs http://localhost:8765/contexter/ 390 844    # drawer: open/close, backdrop, Esc, focus trap
+node tools/serve.mjs 8765 &                    # Phase 1 browser test needs the /synoikon/ mount:
+node tests/phase1.e2e.mjs http://localhost:8765/synoikon/            # PWA installability (CDP), SW, offline, WOTD, precomputed, share, pages, analytics
+node tests/phase1.e2e.mjs http://localhost:8765/synoikon/ 390 844    # same on a phone (Web Share with files is stubbed)
+node tests/sidebar.e2e.mjs http://localhost:8765/synoikon/            # sidebar: rail collapse, canvas refit, persistence, keyboard, RTL
+node tests/sidebar.e2e.mjs http://localhost:8765/synoikon/ 390 844    # drawer: open/close, backdrop, Esc, focus trap
 ```
 
-The e2e/perf/language tests take the base URL as an argument (`http://localhost:8765/contexter/`).
+The e2e/perf/language tests take the base URL as an argument (`http://localhost:8765/synoikon/`).
 
 ## Hosting
 

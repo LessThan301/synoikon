@@ -22,18 +22,18 @@ await page.selectOption('#lang', lang);
 await page.fill('#term', word);
 const t0 = Date.now();
 await page.click('#go');
-await page.waitForFunction(() => window.__contexter?.count().nodes > 1, null, { timeout: 45000 });
-console.log('graph after', Date.now() - t0, 'ms', JSON.stringify(await G(() => window.__contexter.count())));
-ok((await G(() => window.__contexter.count().nodes)) === 31, 'river-type search draws 30 neighbors + target');
+await page.waitForFunction(() => window.__synoikon?.count().nodes > 1, null, { timeout: 45000 });
+console.log('graph after', Date.now() - t0, 'ms', JSON.stringify(await G(() => window.__synoikon.count())));
+ok((await G(() => window.__synoikon.count().nodes)) === 31, 'river-type search draws 30 neighbors + target');
 ok(await G(() => { const c = document.getElementById('graph'); return c.width > 0 && c.height > 0 && c.width === Math.round(c.getBoundingClientRect().width * Math.min(2, devicePixelRatio)); }), 'canvas backing store matches size × devicePixelRatio (capped at 2)');
 await page.screenshot({ path: `./shot-${word}-${width}.png` });
 
 // ranking modes
-const distinct = await G(() => window.__contexter.labels());
+const distinct = await G(() => window.__synoikon.labels());
 await openSettings();
 await page.click('.seg label:has(input[value=frequency])');
 await page.waitForTimeout(600);
-const freq = await G(() => window.__contexter.labels());
+const freq = await G(() => window.__synoikon.labels());
 console.log('DISTINCTIVE:', distinct.join(' '));
 console.log('FREQUENCY:  ', freq.join(' '));
 ok(freq.join() !== distinct.join(), 'ranking toggle changes the neighbor set');
@@ -43,12 +43,12 @@ await closeSettings();
 console.log('table first rows:', (await page.locator('#tableBody tr').evaluateAll((rs) => rs.slice(0, 3).map((r) => [...r.cells].map((c) => c.textContent).join(' ')))).join(' | '));
 
 // wait for the layout to settle (simulation stops itself)
-await page.waitForFunction(() => window.__contexter.settled(), null, { timeout: 15000 });
+await page.waitForFunction(() => window.__synoikon.settled(), null, { timeout: 15000 });
 ok(true, 'simulation settles and stops');
 
 // hover (desktop only: touch has no hover)
 if (!mobile) {
-  const p = await G(() => window.__contexter.screenPos(1));
+  const p = await G(() => window.__synoikon.screenPos(1));
   await page.mouse.move(p.x, p.y);
   await page.waitForTimeout(200);
   const tip = await page.locator('.tooltip').innerText();
@@ -59,9 +59,9 @@ if (!mobile) {
 }
 
 // zoom (wheel on desktop, buttons everywhere)
-const before = await G(() => window.__contexter.screenPos(1));
+const before = await G(() => window.__synoikon.screenPos(1));
 await page.click('#zoomIn'); await page.waitForTimeout(400);
-const after = await G(() => window.__contexter.screenPos(1));
+const after = await G(() => window.__synoikon.screenPos(1));
 ok(before.x !== after.x || before.y !== after.y, 'zoom button changes the view');
 await page.click('#zoomFit'); await page.waitForTimeout(700);
 
@@ -70,14 +70,14 @@ if (mobile) {
   const cdp = await context.newCDPSession(page);
   const box = await page.locator('#graph').boundingBox();
   const cx = box.x + box.width / 2, cy = box.y + box.height - 80;
-  const a = await G(() => [window.__contexter.screenPos(0), window.__contexter.screenPos(1)]);
+  const a = await G(() => [window.__synoikon.screenPos(0), window.__synoikon.screenPos(1)]);
   const d0 = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
   const pts = (s) => [{ x: cx - s, y: cy, id: 0 }, { x: cx + s, y: cy, id: 1 }];
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pts(20) });
   for (let i = 1; i <= 10; i++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pts(20 + i * 8) });
   await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await page.waitForTimeout(100);
-  const b = await G(() => [window.__contexter.screenPos(0), window.__contexter.screenPos(1)]);
+  const b = await G(() => [window.__synoikon.screenPos(0), window.__synoikon.screenPos(1)]);
   const d1 = Math.hypot(b[0].x - b[1].x, b[0].y - b[1].y);
   ok(d1 > d0 * 1.5, `pinch zooms in (node spacing ${Math.round(d0)} → ${Math.round(d1)} px)`);
   await page.click('#zoomFit'); await page.waitForTimeout(700);
@@ -85,7 +85,7 @@ if (mobile) {
 
 // drag a node
 {
-  const p = await G(() => window.__contexter.screenPos(2));
+  const p = await G(() => window.__synoikon.screenPos(2));
   if (mobile) {
     // touch drag via CDP touch events
     const cdp = await context.newCDPSession(page);
@@ -99,7 +99,7 @@ if (mobile) {
     await page.mouse.up();
   }
   await page.waitForTimeout(100);
-  const q = await G(() => window.__contexter.screenPos(2));
+  const q = await G(() => window.__synoikon.screenPos(2));
   ok(Math.hypot(q.x - p.x, q.y - p.y) > 20 && q.label === p.label, `drag moves "${p.label}" (${Math.round(Math.hypot(q.x - p.x, q.y - p.y))}px)`);
 }
 
@@ -108,7 +108,7 @@ await openSettings();
 await page.locator('#topN').fill('15');
 await closeSettings();
 await page.waitForTimeout(500);
-ok((await G(() => window.__contexter.count().nodes)) === 16, 'neighbors slider redraws (15 + target)');
+ok((await G(() => window.__synoikon.count().nodes)) === 16, 'neighbors slider redraws (15 + target)');
 
 // SVG download
 const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#download')]);
@@ -117,9 +117,9 @@ ok(svg.startsWith('<svg') && (svg.match(/<circle/g) || []).length === 17 && svg.
 
 // click / tap a node to re-center
 await page.waitForTimeout(800);
-const c = await G(() => window.__contexter.screenPos(1));
+const c = await G(() => window.__synoikon.screenPos(1));
 if (mobile) await page.touchscreen.tap(c.x, c.y); else await page.mouse.click(c.x, c.y);
-await page.waitForFunction((l) => window.__contexter.targetLabel() === l && window.__contexter.count().nodes > 1, c.label, { timeout: 45000 });
+await page.waitForFunction((l) => window.__synoikon.targetLabel() === l && window.__synoikon.count().nodes > 1, c.label, { timeout: 45000 });
 ok(true, `${mobile ? 'tap' : 'click'} on "${c.label}" re-centres the map on it`);
 ok(await G(() => document.documentElement.scrollWidth <= innerWidth), 'no horizontal overflow');
 await page.waitForTimeout(1500);

@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "es" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "es" list + Synoikon wiki-boilerplate additions, normalised
 0
 1
 2

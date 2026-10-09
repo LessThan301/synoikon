@@ -17,9 +17,9 @@ for (const lang of LANGS.filter((l) => !codes.length || codes.includes(l.code)))
   await page.goto(`${base}#q=${encodeURIComponent(lang.sample)}&lang=${lang.code}`);
   let nodes = 0, labels = [], font = null, extra = {};
   try {
-    await page.waitForFunction(() => window.__contexter?.count().nodes > 1 || !document.getElementById('error').classList.contains('hidden'), null, { timeout: 60000 });
-    nodes = await page.evaluate(() => window.__contexter.count().nodes);
-    labels = await page.evaluate(() => window.__contexter.labels().slice(0, 8));
+    await page.waitForFunction(() => window.__synoikon?.count().nodes > 1 || !document.getElementById('error').classList.contains('hidden'), null, { timeout: 60000 });
+    nodes = await page.evaluate(() => window.__synoikon.count().nodes);
+    labels = await page.evaluate(() => window.__synoikon.labels().slice(0, 8));
     if (lang.font) {
       await page.waitForTimeout(1500);
       font = await page.evaluate((f) => [...document.fonts].some((ff) => ff.family.replace(/"/g, '') === f && ff.status === 'loaded'), lang.font.family);

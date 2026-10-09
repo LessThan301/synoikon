@@ -1,4 +1,4 @@
-// Canvas renderer for the Contexter network (D3 force layout + d3-zoom/drag).
+// Canvas renderer for the Synoikon network (D3 force layout + d3-zoom/drag).
 //
 // Why canvas: with 80 neighbors and several hundred lines, the SVG version
 // updated ~1000 DOM attributes per simulation tick and restyled every element

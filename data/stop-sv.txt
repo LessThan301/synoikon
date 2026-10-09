@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "sv" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "sv" list + Synoikon wiki-boilerplate additions, normalised
 aderton
 adertonde
 adjö

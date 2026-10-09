@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "zh" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "zh" list + Synoikon wiki-boilerplate additions, normalised
 一
 一个
 一些

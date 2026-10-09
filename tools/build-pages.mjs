@@ -11,7 +11,7 @@ import { decode } from '../js/precomputed.js';
 import { ATTRIBUTION } from '../js/card.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = 'https://lessthan301.github.io/contexter/';
+const SITE = 'https://lessthan301.github.io/synoikon/';
 const PRE = path.join(ROOT, 'data/precomputed');
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const enc = (s) => encodeURIComponent(slug(s));
@@ -51,7 +51,7 @@ const head = ({ title, desc, canonical, og, lang = 'en', dir = 'ltr', rel, alter
   <meta name="description" content="${esc(desc)}">
   <link rel="canonical" href="${canonical}">
 ${alternates}  <meta property="og:type" content="article">
-  <meta property="og:site_name" content="Contexter">
+  <meta property="og:site_name" content="Synoikon">
   <meta property="og:title" content="${esc(title)}">
   <meta property="og:description" content="${esc(desc)}">
   <meta property="og:url" content="${canonical}">
@@ -67,12 +67,12 @@ ${alternates}  <meta property="og:type" content="article">
 ${extra}</head>
 <body>
   <header class="top" dir="ltr">
-    <a class="brand" href="${rel}"><img src="${rel}icons/favicon.svg" alt="" width="30" height="30">Contexter</a>
+    <a class="brand" href="${rel}"><img src="${rel}icons/favicon.svg" alt="" width="30" height="30">Synoikon</a>
     <nav><a href="${rel}w/">All words</a><a href="${rel}about.html">About</a></nav>
   </header>
 `;
 const foot = (rel) => `  <footer class="foot" dir="ltr">${esc(ATTRIBUTION)} 4.0 (excerpts, with links to the source pages); Hacker News comments © their authors.
-    Made with <a href="${rel}">Contexter</a> · <a href="${rel}about.html">About &amp; attribution</a> · <a href="https://github.com/LessThan301/contexter">Source on GitHub</a></footer>
+    Made with <a href="${rel}">Synoikon</a> · <a href="${rel}about.html">About &amp; attribution</a> · <a href="https://github.com/LessThan301/synoikon">Source on GitHub</a></footer>
   <script type="module">
     import { loadAnalytics } from '${rel}js/analytics.js';
     loadAnalytics();
@@ -96,7 +96,7 @@ for (const [code, m] of recs) {
     const freq = decode(rec, { rank: 'frequency', topN: 20 }).nodes.slice(1);
     const top5 = dist.slice(0, 6).map((n) => n.label).join(', ');
     const gloss = code !== 'en' && info ? ` (“${info.gloss}”)` : '';
-    const title = `${rec.word}${gloss}: the words that keep it company in ${lang.english} · Contexter`;
+    const title = `${rec.word}${gloss}: the words that keep it company in ${lang.english} · Synoikon`;
     const desc = `Which words appear around “${rec.word}” in ${lang.english} Wikipedia? Most distinctive: ${top5}. An interactive network drawn from ${rec.stats.occurrences} real instances in ${rec.stats.docsWithHits} texts.`;
     const ogFile = path.join(dir, 'og.png');
     const og = fs.existsSync(ogFile) ? `${pageUrl(code, rec.word)}og.png` : `${SITE}og.png`;
@@ -110,7 +110,7 @@ for (const [code, m] of recs) {
     const li = (n, score) => `<li><bdi>${esc(n.label)}</bdi> <small dir="ltr">${score(n)}</small></li>`;
     const mark = (text) => esc(text);
     const jsonld = { '@context': 'https://schema.org', '@type': 'WebPage', name: title, description: desc, inLanguage: code, url: pageUrl(code, rec.word),
-      dateModified: rec.generated, isPartOf: { '@type': 'WebSite', name: 'Contexter', url: SITE },
+      dateModified: rec.generated, isPartOf: { '@type': 'WebSite', name: 'Synoikon', url: SITE },
       about: { '@type': 'DefinedTerm', name: rec.word, inDefinedTermSet: `${lang.english} Wikipedia` } };
     const others = [...m.values()].filter((r) => r !== rec).map((r) => `<li><a href="../${enc(r.word)}/" dir="auto">${esc(r.word)}</a></li>`).join('');
     const html = head({ title, desc, canonical: pageUrl(code, rec.word), og, lang: code, dir: lang.dir, rel, alternates,
@@ -144,7 +144,7 @@ for (const [code, m] of recs) {
   const lang = getLang(code);
   const rel = '../../';
   const list = [...m.values()].sort((a, b) => a.word.localeCompare(b.word, code));
-  const html = head({ title: `${lang.english} words · Contexter`, desc: `Word networks for ${list.length} ${lang.english} words, drawn from real Wikipedia text: ${list.slice(0, 12).map((r) => r.word).join(', ')}…`,
+  const html = head({ title: `${lang.english} words · Synoikon`, desc: `Word networks for ${list.length} ${lang.english} words, drawn from real Wikipedia text: ${list.slice(0, 12).map((r) => r.word).join(', ')}…`,
     canonical: `${SITE}w/${code}/`, og: `${SITE}og.png`, lang: code, dir: lang.dir, rel })
     + `  <main class="page"><h1 dir="auto">${esc(lang.native)}</h1><p class="sub" dir="ltr">${list.length} precomputed ${esc(lang.english)} words. Any other word works live in the <a href="${rel}#lang=${code}">app</a>.</p>
     <ul class="chips">${list.map((r) => `<li><a href="${enc(r.word)}/" dir="auto">${esc(r.word)}</a></li>`).join('')}</ul></main>
@@ -154,7 +154,7 @@ for (const [code, m] of recs) {
 }
 {
   const rel = '../';
-  const html = head({ title: 'All words · Contexter', desc: `Precomputed word networks in ${recs.size} languages, drawn from real Wikipedia text.`, canonical: `${SITE}w/`, og: `${SITE}og.png`, rel })
+  const html = head({ title: 'All words · Synoikon', desc: `Precomputed word networks in ${recs.size} languages, drawn from real Wikipedia text.`, canonical: `${SITE}w/`, og: `${SITE}og.png`, rel })
     + `  <main class="page"><h1>All words</h1><p class="sub">Precomputed networks for popular words and upcoming words of the day. Any other word works live in the <a href="${rel}">app</a>.</p>
     <ul class="langs">${[...recs.keys()].map((c) => `<li><a href="${c}/"><b dir="auto">${esc(getLang(c).native)}</b><br><span class="muted">${esc(getLang(c).english)} · ${recs.get(c).size} words</span></a></li>`).join('')}</ul></main>
 ` + foot(rel);
@@ -175,8 +175,8 @@ fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), xml);
 fs.writeFileSync(path.join(ROOT, 'robots.txt'), `# Crawlers only read robots.txt at the host root (lessthan301.github.io/robots.txt);
 # this copy documents intent and lists the sitemap for tools that look here.
 User-agent: *
-Allow: /contexter/
-Disallow: /contexter/offline.html
+Allow: /synoikon/
+Disallow: /synoikon/offline.html
 Sitemap: ${SITE}sitemap.xml
 `);
 console.log(`built ${written.length} word pages in ${recs.size} languages, ${sitemap.length + 3} sitemap URLs`);

@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "ro" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "ro" list + Synoikon wiki-boilerplate additions, normalised
 a
 abia
 acea

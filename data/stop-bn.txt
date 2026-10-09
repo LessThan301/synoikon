@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "bn" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "bn" list + Synoikon wiki-boilerplate additions, normalised
 অতএব
 অথচ
 অথবা

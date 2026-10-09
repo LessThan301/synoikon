@@ -1,4 +1,4 @@
-# Wikipedia (arwiki-2022-08-29) word frequencies; github.com/IlyaSemenov/wikipedia-word-frequency (MIT); top 40000 words, normalised with Contexter's tokenizer
+# Wikipedia (arwiki-2022-08-29) word frequencies; github.com/IlyaSemenov/wikipedia-word-frequency (MIT); top 40000 words, normalised with Synoikon's tokenizer
 #total 217694493
 في 9860000
 من 6220000

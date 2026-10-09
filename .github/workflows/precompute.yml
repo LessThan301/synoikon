@@ -68,7 +68,7 @@ jobs:
         if: ${{ !cancelled() && steps.sanity.outcome == 'success' }}
         timeout-minutes: 5
         run: |
-          git config user.name "contexter-bot"
+          git config user.name "synoikon-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/precomputed w sitemap.xml robots.txt og.png
           if git diff --cached --quiet; then echo "Nothing changed"; exit 0; fi

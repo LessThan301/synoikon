@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "ar" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "ar" list + Synoikon wiki-boilerplate additions, normalised
 
 ا
 اب

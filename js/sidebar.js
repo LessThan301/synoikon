@@ -3,7 +3,7 @@
 // The search form is a single DOM node that moves between the sidebar and the top bar, so
 // it is always visible: in the sidebar when that is expanded, otherwise in the top bar.
 
-const KEY = 'contexter.sidebar';
+const KEY = 'synoikon.sidebar';
 const FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), summary, [tabindex]:not([tabindex="-1"])';
 
 export function setupSidebar({ store }) {

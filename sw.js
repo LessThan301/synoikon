@@ -1,14 +1,14 @@
-// Contexter service worker.
+// Synoikon service worker.
 // VERSION / DATA_VERSION are content hashes written by tools/stamp-sw.mjs; when any app-shell
 // file (or data list) changes, the cache name changes and old caches are deleted on activate.
-const VERSION = '7d8c9a84a371';
-const DATA_VERSION = '2852294be9d9';
-const SHELL = `contexter-shell-${VERSION}`;
-const DATA = `contexter-data-${DATA_VERSION}`;       // stopword + background frequency lists (per language, on demand)
-const PRE = 'contexter-precomputed';                   // precomputed networks: stale-while-revalidate
-const API = 'contexter-api';                           // recent search results (Wikimedia/HN): stale-while-revalidate
-const PAGES = 'contexter-pages';                       // visited static word pages
-const FONTS = 'contexter-fonts';                       // Fontsource CSS + woff2 from jsDelivr
+const VERSION = '5af4dced7a6f';
+const DATA_VERSION = 'f737ac5bcc52';
+const SHELL = `synoikon-shell-${VERSION}`;
+const DATA = `synoikon-data-${DATA_VERSION}`;       // stopword + background frequency lists (per language, on demand)
+const PRE = 'synoikon-precomputed';                   // precomputed networks: stale-while-revalidate
+const API = 'synoikon-api';                           // recent search results (Wikimedia/HN): stale-while-revalidate
+const PAGES = 'synoikon-pages';                       // visited static word pages
+const FONTS = 'synoikon-fonts';                       // Fontsource CSS + woff2 from jsDelivr
 const LIMITS = { [PRE]: 250, [API]: 160, [PAGES]: 60, [FONTS]: 60 };
 const D3 = 'https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js';
 const SHELL_FILES = [
@@ -28,7 +28,7 @@ self.addEventListener('install', (e) => {
 self.addEventListener('activate', (e) => {
   e.waitUntil((async () => {
     for (const k of await caches.keys()) {
-      if ((k.startsWith('contexter-shell-') && k !== SHELL) || (k.startsWith('contexter-data-') && k !== DATA)) await caches.delete(k);
+      if ((k.startsWith('synoikon-shell-') && k !== SHELL) || (k.startsWith('synoikon-data-') && k !== DATA) || k.startsWith('contexter-')) await caches.delete(k); // contexter-*: caches of the app's former name/path
     }
     await self.clients.claim();
   })());

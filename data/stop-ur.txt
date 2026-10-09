@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "ur" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "ur" list + Synoikon wiki-boilerplate additions, normalised
 آئی
 آئے
 آب

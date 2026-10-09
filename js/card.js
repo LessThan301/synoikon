@@ -53,7 +53,7 @@ export function renderCard(graph, info, format = 'og') {
   if (format === 'og') {
     const L = 56, colW = 380;
     logo(c, L, 48, 44);
-    text(c, 'Contexter', L + 58, 80, { size: 28, weight: 700, stack });
+    text(c, 'Synoikon', L + 58, 80, { size: 28, weight: 700, stack });
     const size = fitFont(c, info.word, 800, 96, 34, colW, stack);
     text(c, info.word, L, 150 + size * 0.75, { size, weight: 800, stack, color: '#ffffff' });
     let y = 150 + size * 0.75 + 46;
@@ -68,7 +68,7 @@ export function renderCard(graph, info, format = 'og') {
   } else {
     const L = 64;
     logo(c, L, 52, 48);
-    text(c, 'Contexter', L + 64, 88, { size: 30, weight: 700, stack });
+    text(c, 'Synoikon', L + 64, 88, { size: 30, weight: 700, stack });
     text(c, info.langLine, w - L, 88, { size: 26, color: MUTED, stack, align: 'right', maxWidth: 520 });
     const size = fitFont(c, info.word, 800, 110, 40, w - 2 * L, stack);
     text(c, info.word, L, 150 + size * 0.8, { size, weight: 800, stack, color: '#ffffff' });

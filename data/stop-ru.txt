@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "ru" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "ru" list + Synoikon wiki-boilerplate additions, normalised
 c
 а
 алло

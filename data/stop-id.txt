@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "id" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "id" list + Synoikon wiki-boilerplate additions, normalised
 ada
 adalah
 adanya

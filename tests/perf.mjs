@@ -45,7 +45,7 @@ for (let i = 0; i < 40; i++) { await page.mouse.move(box.x + 30 + i * 5, box.y +
 await page.mouse.up(); await page.waitForTimeout(300);
 res.pan = await stopRec();
 // find a non-target node position (works for svg or canvas via exposed hook)
-const pos = await page.evaluate(() => window.__contexter ? window.__contexter.screenPos(1) : (() => { const c = document.querySelectorAll('#graph g.node:not(.target) circle.body')[0].getBoundingClientRect(); return { x: c.x + c.width / 2, y: c.y + c.height / 2 }; })());
+const pos = await page.evaluate(() => window.__synoikon ? window.__synoikon.screenPos(1) : (() => { const c = document.querySelectorAll('#graph g.node:not(.target) circle.body')[0].getBoundingClientRect(); return { x: c.x + c.width / 2, y: c.y + c.height / 2 }; })());
 // 4. drag a node
 await startRec();
 await page.mouse.move(pos.x, pos.y); await page.mouse.down();

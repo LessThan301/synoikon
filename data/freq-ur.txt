@@ -1,4 +1,4 @@
-# Leipzig Corpora Collection urd_wikipedia_2021_300K (CC BY), counted with Contexter's tokenizer; top 40000 words, normalised with Contexter's tokenizer
+# Leipzig Corpora Collection urd_wikipedia_2021_300K (CC BY), counted with Synoikon's tokenizer; top 40000 words, normalised with Synoikon's tokenizer
 #total 5272272
 کے 211000
 کی 175000

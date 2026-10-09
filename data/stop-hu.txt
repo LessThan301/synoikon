@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "hu" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "hu" list + Synoikon wiki-boilerplate additions, normalised
 a
 abba
 abban

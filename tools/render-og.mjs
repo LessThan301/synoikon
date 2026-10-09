@@ -12,7 +12,7 @@ import { serve } from './serve.mjs';
 import { slug } from '../js/words.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = 'https://lessthan301.github.io/contexter/';
+const SITE = 'https://lessthan301.github.io/synoikon/';
 const FORCE = process.argv.includes('--force');
 const i = process.argv.indexOf('--langs');
 const ONLY = i > 0 ? process.argv[i + 1].split(',') : null;
@@ -22,14 +22,14 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 800 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
-await page.goto(`http://localhost:${port}/contexter/?og=1`, { waitUntil: 'networkidle' });
-await page.waitForFunction(() => window.__contexterApp);
+await page.goto(`http://localhost:${port}/synoikon/?og=1`, { waitUntil: 'networkidle' });
+await page.waitForFunction(() => window.__synoikonApp);
 
 async function render(code, word, url, file) {
   await page.evaluate(([c]) => { const s = document.getElementById('lang'); s.value = c; s.dispatchEvent(new Event('change')); }, [code]);
-  await page.evaluate(([w]) => window.__contexterApp.search(w), [word]);
-  await page.waitForFunction(([w]) => { const s = window.__contexterApp.state(); return s.precomputed && s.term === w && window.__contexter.count().nodes > 1; }, [word], { timeout: 20000 });
-  const data = await page.evaluate(([u]) => window.__contexterApp.cardDataURL('og', u), [url]);
+  await page.evaluate(([w]) => window.__synoikonApp.search(w), [word]);
+  await page.waitForFunction(([w]) => { const s = window.__synoikonApp.state(); return s.precomputed && s.term === w && window.__synoikon.count().nodes > 1; }, [word], { timeout: 20000 });
+  const data = await page.evaluate(([u]) => window.__synoikonApp.cardDataURL('og', u), [url]);
   fs.mkdirSync(path.dirname(file), { recursive: true });
   fs.writeFileSync(file, Buffer.from(data.split(',')[1], 'base64'));
 }

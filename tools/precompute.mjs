@@ -8,7 +8,7 @@
 //        [--cache DIR]  also save raw corpora there;  [--offline]  re-encode from DIR only (no network)
 //
 // Politeness towards Wikimedia: identifies itself with Api-User-Agent/User-Agent
-// ("LessThan301 contexter (github.com/LessThan301/contexter)"), at most 3 requests in
+// ("LessThan301 synoikon (github.com/LessThan301/synoikon)"), at most 3 requests in
 // flight at any time, honours Retry-After on 429/503 and backs off exponentially.
 import fs from 'fs';
 import path from 'path';

@@ -1,4 +1,4 @@
-# Wikipedia (ukwiki-2022-08-30) word frequencies; github.com/IlyaSemenov/wikipedia-word-frequency (MIT); top 40000 words, normalised with Contexter's tokenizer
+# Wikipedia (ukwiki-2022-08-30) word frequencies; github.com/IlyaSemenov/wikipedia-word-frequency (MIT); top 40000 words, normalised with Synoikon's tokenizer
 #total 255792138
 у 6270000
 в 5880000

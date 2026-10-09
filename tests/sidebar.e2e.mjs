@@ -2,7 +2,7 @@
 // keyboard access, RTL content, no console errors. Serve the repo first: node tools/serve.mjs 8765
 // usage: node tests/sidebar.e2e.mjs [baseUrl] [width] [height]
 import { chromium } from 'playwright';
-const [base = 'http://localhost:8765/contexter/', width = '1400', height = '900'] = process.argv.slice(2);
+const [base = 'http://localhost:8765/synoikon/', width = '1400', height = '900'] = process.argv.slice(2);
 const mobile = +width < 768;
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: +width, height: +height }, isMobile: +width < 600, hasTouch: +width < 600, deviceScaleFactor: 1, serviceWorkers: 'block' });
@@ -17,11 +17,11 @@ const G = (fn, arg) => page.evaluate(fn, arg);
 const rect = (sel) => G((s) => { const r = document.querySelector(s).getBoundingClientRect(); return { x: r.x, y: r.y, w: r.width, h: r.height, right: r.right }; }, sel);
 const attr = (sel, a) => page.locator(sel).getAttribute(a);
 const inSidebar = () => G(() => document.getElementById('sidebar').contains(document.activeElement));
-const nodesInside = () => G(() => { const c = document.getElementById('graph').getBoundingClientRect(); const n = window.__contexter.count().nodes; let inside = 0;
-  for (let i = 0; i < n; i++) { const p = window.__contexter.screenPos(i); if (p && p.x >= c.left && p.x <= c.right && p.y >= c.top && p.y <= c.bottom) inside++; } return [inside, n]; });
+const nodesInside = () => G(() => { const c = document.getElementById('graph').getBoundingClientRect(); const n = window.__synoikon.count().nodes; let inside = 0;
+  for (let i = 0; i < n; i++) { const p = window.__synoikon.screenPos(i); if (p && p.x >= c.left && p.x <= c.right && p.y >= c.top && p.y <= c.bottom) inside++; } return [inside, n]; });
 
 await page.goto(base + '#q=gold&lang=en', { waitUntil: 'networkidle' });
-await page.waitForFunction(() => window.__contexter?.count().nodes > 1 && window.__contexterApp.state().term === 'gold');
+await page.waitForFunction(() => window.__synoikon?.count().nodes > 1 && window.__synoikonApp.state().term === 'gold');
 await page.waitForTimeout(1500);
 
 // grouped sections, in order, readable type
@@ -58,12 +58,12 @@ if (!mobile) {
   ok(p90 < 50, `collapse animation stays smooth (p90 frame ${p90.toFixed(1)} ms, median ${sorted[15].toFixed(1)} ms)`);
   ok(await attr('#sbToggle', 'aria-expanded') === 'false' && await attr('#sbToggle', 'aria-label') === 'Expand settings', 'toggle now says aria-expanded="false" / "Expand settings"');
   ok(await page.locator('#term').isVisible() && await G(() => document.getElementById('searchSlotTop').contains(document.getElementById('search'))), 'search stays visible (moved to the top bar)');
-  ok(await G(() => localStorage.getItem('contexter.sidebar')) === 'collapsed', 'collapsed state saved in localStorage');
+  ok(await G(() => localStorage.getItem('synoikon.sidebar')) === 'collapsed', 'collapsed state saved in localStorage');
 
   // ---- persistence (applied before first paint) ----
   await page.reload({ waitUntil: 'domcontentloaded' });
   ok(await G(() => document.documentElement.classList.contains('sb-collapsed')), 'collapsed state restored on reload (no flash: set in <head>)');
-  await page.waitForFunction(() => window.__contexter?.count().nodes > 1);
+  await page.waitForFunction(() => window.__synoikon?.count().nodes > 1);
   ok((await rect('#sidebar')).w <= 64, 'sidebar still collapsed after reload');
 
   // ---- rail icon jumps to a section; keyboard toggle ----
@@ -73,7 +73,7 @@ if (!mobile) {
   await page.focus('#sbToggle'); await page.keyboard.press('Enter'); await page.waitForTimeout(400);
   ok((await rect('#sidebar')).w <= 64, 'toggle works from the keyboard (Enter)');
   await page.keyboard.press('Space'); await page.waitForTimeout(400);
-  ok((await rect('#sidebar')).w >= 340 && await G(() => localStorage.getItem('contexter.sidebar')) === 'expanded', 'and back (Space); "expanded" saved');
+  ok((await rect('#sidebar')).w >= 340 && await G(() => localStorage.getItem('synoikon.sidebar')) === 'expanded', 'and back (Space); "expanded" saved');
 } else {
   // ---- mobile: off-canvas drawer ----
   const sb = await rect('#sidebar');
@@ -92,9 +92,9 @@ if (!mobile) {
   for (let i = 0; i < 40; i++) await page.keyboard.press('Tab');
   ok(await inSidebar(), 'Tab keeps focus inside the open drawer');
   // use a setting inside the drawer
-  const before = await G(() => window.__contexter.labels().join());
+  const before = await G(() => window.__synoikon.labels().join());
   await page.click('.seg label:has(input[value=frequency])'); await page.waitForTimeout(400);
-  ok(await G(() => window.__contexter.labels().join()) !== before, 'ranking can be changed in the drawer');
+  ok(await G(() => window.__synoikon.labels().join()) !== before, 'ranking can be changed in the drawer');
   await page.keyboard.press('Escape'); await page.waitForTimeout(400);
   ok(!(await page.locator('#sidebar').isVisible()) && await G(() => document.activeElement?.id) === 'menuBtn', 'Esc closes the drawer and returns focus to the menu button');
   await page.click('#menuBtn'); await page.waitForTimeout(400);
@@ -108,9 +108,18 @@ if (!mobile) {
   ok(!(await page.locator('#sidebar').isVisible()), 'drawer starts closed after reload');
 }
 
+// ---- settings saved under the former name (Contexter) are migrated ----
+await G(() => { localStorage.removeItem('synoikon.sidebar'); localStorage.removeItem('synoikon.lang'); localStorage.setItem('contexter.sidebar', 'collapsed'); localStorage.setItem('contexter.lang', 'de'); });
+await page.goto(base, { waitUntil: 'networkidle' });
+const mig = await G(() => ({ sb: localStorage.getItem('synoikon.sidebar'), lang: localStorage.getItem('synoikon.lang'), oldSb: localStorage.getItem('contexter.sidebar'), oldLang: localStorage.getItem('contexter.lang'),
+  sel: document.getElementById('lang').value, collapsed: document.documentElement.classList.contains('sb-collapsed') }));
+ok(mig.sb === 'collapsed' && mig.oldSb === null && mig.oldLang === null && mig.sel === 'de' && (mobile || mig.collapsed) && mig.lang === 'de',
+  `old contexter.* settings migrated to synoikon.* and applied (${JSON.stringify(mig)})`);
+if (!mobile) { await page.click('#sbToggle'); await page.waitForTimeout(400); }
+
 // ---- RTL content inside the (LTR) sidebar ----
 await page.goto(base + '#q=' + encodeURIComponent('ذهب') + '&lang=ar', { waitUntil: 'networkidle' });
-await page.waitForFunction(() => window.__contexter.count().nodes > 1 && window.__contexterApp.state().lang === 'ar');
+await page.waitForFunction(() => window.__synoikon.count().nodes > 1 && window.__synoikonApp.state().lang === 'ar');
 if (mobile) { await page.click('#menuBtn'); await page.waitForTimeout(400); }
 await page.click('#samplesBox summary');
 await page.evaluate(() => document.getElementById('samplesBox').scrollIntoView());

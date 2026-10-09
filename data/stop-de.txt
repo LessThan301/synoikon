@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "de" list + Contexter German list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "de" list + Synoikon German list + Synoikon wiki-boilerplate additions, normalised
 a
 ab
 aber

@@ -8,7 +8,7 @@ const ALL = LANGS.map((l) => l.code);
 const TIMEOUT_MS = 15000;
 // Wikimedia's API etiquette: identify the tool and a contact. Browsers may not override
 // User-Agent, but Wikimedia's CORS policy explicitly allows the Api-User-Agent header.
-export const API_USER_AGENT = 'LessThan301 contexter (github.com/LessThan301/contexter)';
+export const API_USER_AGENT = 'LessThan301 synoikon (github.com/LessThan301/synoikon)';
 const IS_NODE = typeof window === 'undefined';
 const isWikimedia = (url) => /^https:\/\/[a-z-]+\.(wikipedia|wikiquote|wiktionary)\.org\//.test(url);
 

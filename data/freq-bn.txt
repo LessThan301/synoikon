@@ -1,4 +1,4 @@
-# Leipzig Corpora Collection ben_wikipedia_2021_300K (CC BY), counted with Contexter's tokenizer; top 40000 words, normalised with Contexter's tokenizer
+# Leipzig Corpora Collection ben_wikipedia_2021_300K (CC BY), counted with Synoikon's tokenizer; top 40000 words, normalised with Synoikon's tokenizer
 #total 3772715
 এবং 64800
 হয় 48400

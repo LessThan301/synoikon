@@ -1,4 +1,4 @@
-# stopwords-iso (MIT) "pt" list + Contexter wiki-boilerplate additions, normalised
+# stopwords-iso (MIT) "pt" list + Synoikon wiki-boilerplate additions, normalised
 a
 acerca
 adeus
