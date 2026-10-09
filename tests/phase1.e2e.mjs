@@ -76,7 +76,7 @@ const wotdMs = Date.now() - t0;
 let st = await appState();
 ok(st.precomputed && st.term === today.word, `today's word opens from precomputed data in ${wotdMs} ms`);
 ok(wotdMs < 2500, 'precomputed word appears quickly (< 2.5 s incl. layout)');
-ok(/Precomputed on/.test(await page.locator('#stats').innerText()), 'stats panel says "Precomputed on …" with a refresh button');
+ok(/Precomputed on/.test(await page.locator('#stats').textContent()), 'stats panel says "Precomputed on …" with a refresh button');
 const de = wordOfDay('de');
 await page.goto(base + '#wotd&lang=de', { waitUntil: 'networkidle' });
 await page.waitForFunction((w) => window.__contexterApp.state().term === w && window.__contexter.count().nodes > 1, de.word);
@@ -89,10 +89,12 @@ await page.waitForFunction(() => window.__contexter.count().nodes > 1);
 st = await appState();
 ok(st.precomputed, `popular word "${pop}" loads precomputed`);
 const distinct = await G(() => window.__contexter.labels().join());
+if (mobile) { await page.click('#menuBtn'); await page.waitForTimeout(350); } // settings drawer
 await page.click('.seg label:has(input[value=frequency])');
 await page.waitForTimeout(300);
 ok((await G(() => window.__contexter.labels().join())) !== distinct && (await appState()).precomputed, 'rank toggle works on precomputed data (no fetch)');
 await page.click('.seg label:has(input[value=distinctive])');
+if (mobile) { await page.keyboard.press('Escape'); await page.waitForTimeout(350); }
 await page.locator('#topN').evaluate((el) => { el.value = 50; el.dispatchEvent(new Event('input')); });
 await page.waitForFunction(() => window.__contexter.count().nodes === 51);
 ok((await appState()).precomputed, 'neighbours slider (≤80) stays on precomputed data');

@@ -1,7 +1,7 @@
 // Contexter service worker.
 // VERSION / DATA_VERSION are content hashes written by tools/stamp-sw.mjs; when any app-shell
 // file (or data list) changes, the cache name changes and old caches are deleted on activate.
-const VERSION = 'b887d2aa9403';
+const VERSION = '7d8c9a84a371';
 const DATA_VERSION = '2852294be9d9';
 const SHELL = `contexter-shell-${VERSION}`;
 const DATA = `contexter-data-${DATA_VERSION}`;       // stopword + background frequency lists (per language, on demand)
@@ -15,7 +15,7 @@ const SHELL_FILES = [
   './', 'index.html', 'about.html', 'offline.html', 'manifest.webmanifest',
   'css/style.css', 'css/page.css',
   'js/app.js', 'js/analysis.js', 'js/graph.js', 'js/languages.js', 'js/reference.js', 'js/sources.js', 'js/stopwords.js',
-  'js/words.js', 'js/precomputed.js', 'js/card.js', 'js/pwa.js', 'js/analytics.js',
+  'js/words.js', 'js/precomputed.js', 'js/card.js', 'js/pwa.js', 'js/analytics.js', 'js/sidebar.js',
   'icons/favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
   D3,
 ];

@@ -8,6 +8,7 @@ import { POPULAR, wordOfDay, slug } from './words.js';
 import { decode, covers, precomputedPath, DEFAULTS } from './precomputed.js';
 import { renderCard, cardBlob, FORMATS } from './card.js';
 import { setupPWA } from './pwa.js';
+import { setupSidebar } from './sidebar.js';
 import { loadAnalytics } from './analytics.js';
 
 const $ = (id) => document.getElementById(id);
@@ -22,6 +23,7 @@ const els = {
 };
 const SITE = new URL('./', location.href).href.replace(/[?#].*$/, ''); // e.g. https://lessthan301.github.io/contexter/
 const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode */ } } };
+const sidebar = setupSidebar({ store });
 
 const state = { corpus: null, corpusKey: '', pre: null, term: '', lang: 'en', graph: null, net: null, requestId: 0, analyseId: 0, refError: '' };
 const rankMode = () => document.querySelector('input[name=rank]:checked').value;
@@ -143,7 +145,7 @@ function show(which, text) {
   els.error.classList.toggle('hidden', which !== 'error');
   if (which === 'loading') els.loadingText.textContent = text || 'Collecting text…';
   if (which === 'error') { els.errorText.textContent = text; els.errorTitle.textContent = 'Hmm.'; els.offlineWords.classList.add('hidden'); }
-  $('share').disabled = which !== 'none';
+  for (const id of ['share', 'sbShare', 'sbSvg', 'sbFit']) $(id).disabled = which !== 'none';
 }
 
 // ---- main flow -----------------------------------------------------------
@@ -297,6 +299,7 @@ async function analyse() {
 // ---- side panel ----------------------------------------------------------
 function renderStats(net) {
   els.statsBox.classList.remove('hidden');
+  $('resultsEmpty').hidden = true;
   const report = state.pre ? state.pre.report : state.corpus.report;
   const preNote = state.pre
     ? `<p class="pre-note">⚡ Precomputed on ${esc(state.pre.generated.slice(0, 10))} with default settings. <button type="button" id="refreshLive">Refresh with live data</button></p>` : '';
@@ -385,7 +388,7 @@ function renderTable(net) {
   els.tableBody.innerHTML = net.nodes.filter((n) => !n.target)
     .map((n) => `<tr data-w="${esc(n.label)}"><td dir="auto">${esc(n.label)}</td><td>${n.freq}</td><td>${n.cooc}</td><td>${n.lr == null ? '–' : n.lr.toFixed(1)}</td></tr>`).join('');
 }
-els.tableBody.addEventListener('click', (e) => { const tr = e.target.closest('tr'); if (tr) search(tr.dataset.w); });
+els.tableBody.addEventListener('click', (e) => { const tr = e.target.closest('tr'); if (tr) { sidebar.closeDrawer({ restoreFocus: false }); search(tr.dataset.w); } });
 
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
 const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -409,6 +412,8 @@ $('zoomIn').onclick = () => state.graph?.zoomBy(1.3);
 $('zoomOut').onclick = () => state.graph?.zoomBy(1 / 1.3);
 $('zoomFit').onclick = () => state.graph?.fit();
 $('download').onclick = downloadSvg;
+$('sbFit').onclick = () => { sidebar.closeDrawer(); state.graph?.fit(); };
+$('sbSvg').onclick = downloadSvg;
 
 function downloadSvg() {
   const svg = state.net && state.graph?.toSVG();
@@ -482,6 +487,7 @@ async function openShare() {
   await refresh();
 }
 $('share').onclick = openShare;
+$('sbShare').onclick = openShare;
 
 // ---- routing: #q=river&lang=en[&rank=frequency] · #wotd[&lang=de] · start page -----
 function route() {
@@ -499,12 +505,14 @@ function home() {
   state.term = ''; state.net = null; state.drawnTerm = '';
   state.graph?.clear();
   for (const b of [els.statsBox, els.samplesBox, els.tableBox]) b.classList.add('hidden');
+  $('resultsEmpty').hidden = false;
   document.title = 'Contexter · the company a word keeps';
   show('empty');
 }
-$('home').addEventListener('click', (e) => {
+for (const a of document.querySelectorAll('.home-link')) a.addEventListener('click', (e) => {
   if (e.metaKey || e.ctrlKey || e.shiftKey) return;
   e.preventDefault();
+  sidebar.closeDrawer({ restoreFocus: false });
   history.pushState(null, '', location.pathname + location.search);
   home();
 });
@@ -525,6 +533,7 @@ if (typeof d3 === 'undefined') {
   });
   window.__contexter = state.graph.debug; // read-only hooks for automated tests
   window.__contexterApp = { // test/build hooks (OG image rendering)
+    sidebar: () => ({ collapsed: sidebar.isCollapsed(), open: sidebar.isOpen(), mobile: sidebar.isMobile() }),
     state: () => ({ term: state.term, lang: state.lang, precomputed: !!state.pre, live: !!state.corpus, rank: state.net?.stats.rank }),
     search: (w, opts) => search(w, opts),
     card: async (format = 'og', url) => { share.url = url || await shareUrl(); return makeCard(format); },

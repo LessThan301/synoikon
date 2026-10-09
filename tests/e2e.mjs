@@ -13,6 +13,9 @@ page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 page.on('requestfailed', (r) => errors.push('requestfailed: ' + r.url() + ' ' + r.failure()?.errorText));
 const ok = (cond, msg) => { console.log(`${cond ? 'PASS' : 'FAIL'} ${msg}`); if (!cond) process.exitCode = 1; };
 const G = (fn, arg) => page.evaluate(fn, arg);
+// settings live in a sidebar; on phones it is an off-canvas drawer that has to be opened first
+const openSettings = async () => { if (mobile) { await page.click('#menuBtn'); await page.waitForTimeout(350); } };
+const closeSettings = async () => { if (mobile) { await page.keyboard.press('Escape'); await page.waitForTimeout(350); } };
 
 await page.goto(base, { waitUntil: 'networkidle' });
 await page.selectOption('#lang', lang);
@@ -27,6 +30,7 @@ await page.screenshot({ path: `./shot-${word}-${width}.png` });
 
 // ranking modes
 const distinct = await G(() => window.__contexter.labels());
+await openSettings();
 await page.click('.seg label:has(input[value=frequency])');
 await page.waitForTimeout(600);
 const freq = await G(() => window.__contexter.labels());
@@ -35,6 +39,7 @@ console.log('FREQUENCY:  ', freq.join(' '));
 ok(freq.join() !== distinct.join(), 'ranking toggle changes the neighbor set');
 await page.click('.seg label:has(input[value=distinctive])');
 await page.waitForTimeout(600);
+await closeSettings();
 console.log('table first rows:', (await page.locator('#tableBody tr').evaluateAll((rs) => rs.slice(0, 3).map((r) => [...r.cells].map((c) => c.textContent).join(' ')))).join(' | '));
 
 // wait for the layout to settle (simulation stops itself)
@@ -99,7 +104,9 @@ if (mobile) {
 }
 
 // slider redraw
+await openSettings();
 await page.locator('#topN').fill('15');
+await closeSettings();
 await page.waitForTimeout(500);
 ok((await G(() => window.__contexter.count().nodes)) === 16, 'neighbors slider redraws (15 + target)');
 

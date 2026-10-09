@@ -1,0 +1,149 @@
+[
+ {
+  "code": "en",
+  "word": "river",
+  "nodes": 31,
+  "hits": 2473,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:250 hackerNews:250"
+ },
+ {
+  "code": "zh",
+  "word": "河流",
+  "nodes": 31,
+  "hits": 1422,
+  "src": "wikiSnippets:500 wikiIntros:59 wikiquote:27"
+ },
+ {
+  "code": "hi",
+  "word": "नदी",
+  "nodes": 31,
+  "hits": 2331,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:113"
+ },
+ {
+  "code": "es",
+  "word": "río",
+  "nodes": 31,
+  "hits": 2015,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:250"
+ },
+ {
+  "code": "ar",
+  "word": "نهر",
+  "nodes": 31,
+  "hits": 1695,
+  "src": "wikiSnippets:500 wikiIntros:59 wikiquote:134"
+ },
+ {
+  "code": "fr",
+  "word": "fleuve",
+  "nodes": 31,
+  "hits": 1255,
+  "src": "wikiSnippets:500 wikiIntros:59 wikiquote:222"
+ },
+ {
+  "code": "bn",
+  "word": "নদী",
+  "nodes": 31,
+  "hits": 2705,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:237"
+ },
+ {
+  "code": "pt",
+  "word": "rio",
+  "nodes": 31,
+  "hits": 1667,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:250"
+ },
+ {
+  "code": "ru",
+  "word": "река",
+  "nodes": 31,
+  "hits": 1812,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:250"
+ },
+ {
+  "code": "id",
+  "word": "sungai",
+  "nodes": 31,
+  "hits": 2149,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:92"
+ },
+ {
+  "code": "ur",
+  "word": "دریا",
+  "nodes": 31,
+  "hits": 821,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:13"
+ },
+ {
+  "code": "de",
+  "word": "Fluss",
+  "nodes": 31,
+  "hits": 767,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:78"
+ },
+ {
+  "code": "it",
+  "word": "fiume",
+  "nodes": 31,
+  "hits": 1269,
+  "src": "wikiSnippets:500 wikiIntros:58 wikiquote:250"
+ },
+ {
+  "code": "pl",
+  "word": "rzeka",
+  "nodes": 31,
+  "hits": 1363,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:241"
+ },
+ {
+  "code": "uk",
+  "word": "річка",
+  "nodes": 31,
+  "hits": 1202,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:250"
+ },
+ {
+  "code": "nl",
+  "word": "rivier",
+  "nodes": 31,
+  "hits": 992,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:17"
+ },
+ {
+  "code": "ro",
+  "word": "râu",
+  "nodes": 31,
+  "hits": 1102,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:5"
+ },
+ {
+  "code": "el",
+  "word": "ποταμός",
+  "nodes": 31,
+  "hits": 1146,
+  "src": "wikiSnippets:500 wikiIntros:20 wikiquote:51"
+ },
+ {
+  "code": "hu",
+  "word": "folyó",
+  "nodes": 31,
+  "hits": 1078,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:97"
+ },
+ {
+  "code": "cs",
+  "word": "řeka",
+  "nodes": 31,
+  "hits": 1195,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:206"
+ },
+ {
+  "code": "sv",
+  "word": "flod",
+  "nodes": 31,
+  "hits": 988,
+  "src": "wikiSnippets:500 wikiIntros:60 wikiquote:13"
+ }
+]
