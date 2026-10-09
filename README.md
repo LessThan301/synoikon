@@ -60,6 +60,30 @@ All requests go straight from the browser to free, key-less, CORS-enabled APIs. 
 6. Neighbor–neighbor lines need at least the minimum co-occurrence, and each word keeps only its strongest few lines to avoid a hairball.
 7. **Layout** (D3 force simulation). Each line’s strength is `s = √(count / max count)` on one scale for all lines. Its preferred length (the gap between circle edges) is `gap = gapMin + (gapMax − gapMin)·(1 − s)`, so frequent pairs sit close together. Strong lines also pull harder, plus mild repulsion and collision so circles don’t overlap. The search word is pinned at the centre. Its circle uses the same area scale but is capped so it doesn’t fill the screen (the tooltip says when the cap applies).
 
+## Rendering & performance
+
+The network is drawn on a single `<canvas>` (sharp on high-DPI screens; device pixel ratio capped at 2), not as SVG elements:
+
+- **One draw per frame.** Simulation ticks, zoom, drag and hover only mark the canvas dirty, and a `requestAnimationFrame` callback repaints it once. Pointer moves are coalesced to one hit test per frame.
+- **The layout stops when settled.** New nodes start near their target distance, so the simulation converges in about 2 s with no big synchronous pre-computation, then stops (`alphaMin`). Hover never restarts it. Dragging warms it gently (`alphaTarget 0.12`). On slider changes, existing words keep their positions.
+- **Cheap hit testing:** a linear distance scan over at most 81 circles, with no DOM listeners per node.
+- **Level of detail:** labels smaller than 7 px on screen are skipped, except the search word and the hovered word's neighbors. Off-screen circles, labels and lines are culled.
+- **Lines are stroked individually** with styles bucketed (width/opacity quantised). On software-rasterised canvases this is several times faster than one giant path.
+- **Analysis is cached:** tokenisation is done once per corpus, and windows/counts/scores once per window size and stopword setting. "Neighbors shown", "min. co-occurrence" and "max. lines" redraw in a few ms.
+- **SVG download** is generated on demand from the current layout.
+
+Measured in headless Chromium with 4× CPU throttling, 80 neighbors, ±15 window and ~350 lines (`tests/perf.mjs`):
+
+| Interaction | before (SVG) | after (canvas) |
+| --- | --- | --- |
+| drag a node, GPU raster | 2.8 fps | 60 fps |
+| wheel zoom, GPU raster | 1.5 fps | 60 fps |
+| hover sweep, GPU raster | 7 fps | 60 fps (one run had a single 1 s first-hover stall in SwiftShader) |
+| hover sweep, software raster | 34 fps (p95 83 ms) | 54–60 fps |
+| drag a node, software raster | 31 fps (p95 67 ms) | 51–54 fps |
+| wheel zoom, software raster | 60 fps | 44 fps (zoomed-in thick strokes are rasterised on the main thread) |
+| slider change → new layout (longest frame) | 567 ms | 150 ms |
+
 ## Run locally
 
 It’s plain static files (ES modules), so it needs a local web server rather than `file://`:
@@ -79,7 +103,9 @@ node tests/analysis.test.mjs                   # analysis on a tiny corpus
 node tests/ranking.test.mjs river en           # Frequency vs Distinctive top-30 on a live corpus
 npm i playwright && npx playwright install chromium
 python3 -m http.server 8765 &                  # from the repo root
-node tests/e2e.mjs river en                    # headless end-to-end check, saves screenshots
+node tests/e2e.mjs river en                    # end-to-end: search, ranking toggle, hover, zoom, drag, slider, SVG, click
+node tests/e2e.mjs river en 390 844            # same on a 390 px touch phone (pinch, touch drag, tap)
+node tests/perf.mjs http://localhost:8765/     # FPS / frame-time profile under 4x CPU throttling
 ```
 
 ## Hosting

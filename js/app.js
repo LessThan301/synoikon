@@ -1,12 +1,12 @@
 import { collectCorpus, SOURCES } from './sources.js';
 import { buildNetwork, targetForms } from './analysis.js';
-import { renderGraph } from './graph.js';
+import { createGraph } from './graph.js';
 import { STOP_EN, STOP_DE } from './stopwords.js';
 import { loadReference } from './reference.js';
 
 const $ = (id) => document.getElementById(id);
 const els = {
-  form: $('search'), term: $('term'), lang: $('lang'), go: $('go'), svg: $('graph'),
+  form: $('search'), term: $('term'), lang: $('lang'), go: $('go'), canvas: $('graph'),
   empty: $('empty'), loading: $('loading'), loadingText: $('loadingText'), error: $('error'), errorText: $('errorText'),
   topN: $('topN'), window: $('window'), minCooc: $('minCooc'), maxLinks: $('maxLinks'), size: $('size'),
   stopEn: $('stopEn'), stopDe: $('stopDe'), sourceBoxes: $('sourceBoxes'),
@@ -32,11 +32,16 @@ for (const w of ['river', 'trust', 'light', 'Wald', 'bridge', 'freedom']) {
 }
 
 const enabledSources = () => [...els.sourceBoxes.querySelectorAll('input:checked')].map((i) => i.value);
+const stopCache = new Map(); // same Set object per toggle combination => analysis cache hits
 const stopwords = () => {
-  const s = new Set();
-  if (els.stopEn.checked) STOP_EN.forEach((w) => s.add(w));
-  if (els.stopDe.checked) STOP_DE.forEach((w) => s.add(w));
-  return s;
+  const key = `${els.stopEn.checked}|${els.stopDe.checked}`;
+  if (!stopCache.has(key)) {
+    const s = new Set();
+    if (els.stopEn.checked) STOP_EN.forEach((w) => s.add(w));
+    if (els.stopDe.checked) STOP_DE.forEach((w) => s.add(w));
+    stopCache.set(key, s);
+  }
+  return stopCache.get(key);
 };
 const params = () => ({
   topN: +els.topN.value, window: +els.window.value, minCooc: +els.minCooc.value, maxLinksPerNode: +els.maxLinks.value,
@@ -106,6 +111,7 @@ async function analyse() {
     show('error', errs.length === corpus.report.length
       ? `All sources failed: ${errs.map((e) => `${e.label}: ${e.error}`).join('; ')}`
       : `No text found for “${term}”. Check the spelling or try another language.`);
+    state.graph?.clear(); state.drawnTerm = '';
     renderStats(null);
     return;
   }
@@ -114,15 +120,12 @@ async function analyse() {
   renderStats(net);
   if (net.nodes.length < 2) {
     show('error', `Found ${net.stats.occurrences} occurrence(s) of “${term}”, but not enough recurring neighbors to draw a network. Try a larger corpus, a wider window, or another word.`);
-    state.graph?.stop(); els.svg.innerHTML = '';
+    state.graph?.clear(); state.drawnTerm = '';
     return;
   }
   show('none');
-  state.graph?.stop();
-  state.graph = renderGraph(els.svg, net, {
-    onSelect: (word) => search(word),
-    onFocus: (d) => renderSamples(d),
-  });
+  state.graph.setData(net, { resetView: state.drawnTerm !== `${term}|${state.lang}` });
+  state.drawnTerm = `${term}|${state.lang}`;
   renderSamples(null);
   renderTable(net);
 }
@@ -213,21 +216,11 @@ $('zoomIn').onclick = () => state.graph?.zoomBy(1.3);
 $('zoomOut').onclick = () => state.graph?.zoomBy(1 / 1.3);
 $('zoomFit').onclick = () => state.graph?.fit();
 $('download').onclick = downloadSvg;
-let resizeT;
-window.addEventListener('resize', () => { clearTimeout(resizeT); resizeT = setTimeout(() => state.net && analyse(), 300); });
 
 function downloadSvg() {
-  if (!state.net) return;
-  const clone = els.svg.cloneNode(true);
-  clone.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-  const style = document.createElementNS('http://www.w3.org/2000/svg', 'style');
-  style.textContent = 'text{font-family:system-ui,sans-serif;fill:#e9ecf7;paint-order:stroke;stroke:rgba(15,18,32,.85);stroke-width:3px}.target text{font-weight:700}';
-  clone.prepend(style);
-  const vb = clone.getAttribute('viewBox').split(/[ ,]+/);
-  const bg = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
-  bg.setAttribute('x', vb[0]); bg.setAttribute('y', vb[1]); bg.setAttribute('width', vb[2]); bg.setAttribute('height', vb[3]); bg.setAttribute('fill', '#0f1220');
-  clone.insertBefore(bg, style.nextSibling);
-  const blob = new Blob([new XMLSerializer().serializeToString(clone)], { type: 'image/svg+xml' });
+  const svg = state.net && state.graph?.toSVG();
+  if (!svg) return;
+  const blob = new Blob([svg], { type: 'image/svg+xml' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob); a.download = `contexter-${state.term}.svg`; a.click();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
@@ -237,6 +230,11 @@ function downloadSvg() {
 if (typeof d3 === 'undefined') {
   show('error', 'The graph library (D3) could not be loaded. Check your connection or ad-blocker and reload.');
 } else {
+  state.graph = createGraph(els.canvas, document.getElementById('tooltip'), {
+    onSelect: (word) => search(word),
+    onFocus: (d) => renderSamples(d),
+  });
+  window.__contexter = state.graph.debug; // read-only hooks for automated tests
   const h = new URLSearchParams(location.hash.slice(1));
   if (h.get('rank') === 'frequency') document.querySelector('input[name=rank][value=frequency]').checked = true;
   if (h.get('lang') && [...els.lang.options].some((o) => o.value === h.get('lang'))) els.lang.value = h.get('lang');

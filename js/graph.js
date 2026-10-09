@@ -1,168 +1,373 @@
-// D3 force-directed rendering of the network built in analysis.js.
+// Canvas renderer for the Contexter network (D3 force layout + d3-zoom/drag).
+//
+// Why canvas: with 80 neighbors and several hundred lines, the SVG version
+// updated ~1000 DOM attributes per simulation tick and restyled every element
+// on hover. Here one draw call paints everything, draws are coalesced with
+// requestAnimationFrame, and nothing is drawn while the layout is at rest.
 /* global d3 */
 
 const TARGET_ID = '__target__';
+const TARGET_COLOR = '#ff6b4a';
+const MAX_DPR = 2;          // sharper than this costs fill-rate without visible gain
+const LABEL_MIN_PX = 7;     // labels smaller than this on screen are skipped (level of detail)
 
-export function renderGraph(svgEl, net, { onSelect, onFocus } = {}) {
-  const svg = d3.select(svgEl);
-  svg.selectAll('*').remove();
-  const { width, height } = svgEl.getBoundingClientRect();
-  const W = Math.max(width, 320);
-  const H = Math.max(height, 320);
-  svg.attr('viewBox', [-W / 2, -H / 2, W, H]);
+export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
+  const ctx = canvas.getContext('2d');
+  const sel = d3.select(canvas);
+  let W = 0, H = 0, dpr = 1;
+  let nodes = [], links = [], byId = new Map(), adj = new Map(), target = null;
+  let buckets = [];          // links grouped by identical stroke style
+  let labelOrder = [];       // nodes grouped by font size
+  let gapMax = 200, rMax = 30;
+  let t = d3.zoomIdentity;   // world -> screen
+  let hovered = null, dragging = null;
+  let userMoved = false;     // the user zoomed/panned: don't auto-fit any more
+  let frame = 0;
+  let pointer = null, pointerFrame = 0;
 
-  const nodes = net.nodes.map((d) => ({ ...d }));
-  const links = net.links.map((d) => ({ ...d }));
-  const neighbors = nodes.filter((d) => !d.target);
-  const target = nodes.find((d) => d.target);
-
-  // ---- scales -------------------------------------------------------------
-  // Node AREA is proportional to frequency  =>  radius = sqrt scale.
-  const n = Math.max(neighbors.length, 1);
-  const rMax = Math.max(16, Math.min(56, Math.min(W, H) / (4 + Math.sqrt(n) * 1.6)));
-  const maxF = d3.max(neighbors, (d) => d.freq) || 1;
-  const r = d3.scaleSqrt().domain([0, maxF]).range([0, rMax]);
-  for (const d of neighbors) d.r = Math.max(2.5, r(d.freq));
-  // The search word is (by construction) more frequent than any neighbor; same
-  // scale, but capped so it doesn't swallow the screen.
-  target.r = Math.min(r(target.freq), rMax * 1.3);
-  target.capped = r(target.freq) > rMax * 1.3;
-
-  // Link strength: co-occurrence count normalised to [0, 1] on ONE scale for
-  // all lines (sqrt keeps weak links distinguishable from each other).
-  const maxW = d3.max(links, (l) => l.weight) || 1;
-  const s = (w) => Math.sqrt(w / maxW);
-  for (const l of links) l.s = s(l.weight);
-  // More co-occurrence => SHORTER line. Distance is the visible gap between
-  // circle edges, so circle size does not distort it.
-  const gapMin = 4;
-  const gapMax = Math.min(W, H) * 0.42;
-  const byId = new Map(nodes.map((d) => [d.id, d]));
-  const dist = (l) => {
-    const a = byId.get(typeof l.source === 'object' ? l.source.id : l.source);
-    const b = byId.get(typeof l.target === 'object' ? l.target.id : l.target);
-    return a.r + b.r + gapMin + (gapMax - gapMin) * (1 - l.s);
-  };
-
-  const tColor = d3.scaleSequential(d3.interpolateRgbBasis(['#7f8fd6', '#5b8def', '#38c6a8', '#9be15d']))
-    .domain([0, 1]);
-  const targetShare = new Map(links.filter((l) => l.kind === 'target').map((l) => [l.target, l.s]));
-  const fill = (d) => (d.target ? '#ff6b4a' : tColor(targetShare.get(d.id) ?? 0));
-
-  // adjacency for hover
-  const adj = new Map(nodes.map((d) => [d.id, new Map()]));
-  for (const l of links) {
-    adj.get(l.source).set(l.target, l.weight);
-    adj.get(l.target).set(l.source, l.weight);
-  }
-
-  // ---- layers -------------------------------------------------------------
-  const root = svg.append('g');
-  const gLinks = root.append('g').attr('class', 'links');
-  const gNodes = root.append('g').attr('class', 'nodes');
-
-  const link = gLinks.selectAll('line').data(links).join('line')
-    .attr('class', 'link')
-    .attr('stroke', (l) => (l.kind === 'target' ? '#ff9a80' : '#8fa3e0'))
-    .attr('stroke-opacity', (l) => 0.12 + 0.6 * l.s)
-    .attr('stroke-width', (l) => 0.5 + 5 * l.s ** 1.6)
-    .attr('stroke-linecap', 'round');
-
-  const node = gNodes.selectAll('g').data(nodes, (d) => d.id).join('g')
-    .attr('class', (d) => `node${d.target ? ' target' : ''}`)
-    .style('cursor', (d) => (d.target ? 'grab' : 'pointer'));
-
-  // Target gets a soft halo so it is visually distinct (still no border).
-  node.filter((d) => d.target).append('circle')
-    .attr('r', (d) => d.r + 10).attr('fill', '#ff6b4a').attr('opacity', 0.16);
-  node.append('circle')
-    .attr('class', 'body')
-    .attr('r', (d) => d.r)
-    .attr('fill', fill)
-    .attr('fill-opacity', (d) => (d.target ? 1 : 0.88));
-
-  const fontSize = (d) => (d.target ? Math.max(14, Math.min(22, d.r * 0.42)) : Math.max(10, Math.min(17, d.r * 0.42)));
-  node.append('text')
-    .text((d) => d.label)
-    .attr('text-anchor', 'middle')
-    .attr('font-size', fontSize)
-    .attr('dy', (d) => (d.r >= 18 || d.target ? '0.35em' : d.r + fontSize(d) + 1));
-
-  // ---- simulation ---------------------------------------------------------
-  target.fx = 0; target.fy = 0; // the search word sits in the centre
-  const sim = d3.forceSimulation(nodes)
-    .force('link', d3.forceLink(links).id((d) => d.id).distance(dist)
-      .strength((l) => (l.kind === 'target' ? 0.7 : 0.03 + 0.3 * l.s)))
-    .force('charge', d3.forceManyBody().strength((d) => -10 - d.r * 1.5).distanceMax(gapMax))
-    .force('collide', d3.forceCollide((d) => d.r + 3).iterations(2))
-    .force('x', d3.forceX(0).strength(0.01))
-    .force('y', d3.forceY(0).strength(0.015))
+  const sim = d3.forceSimulation()
+    .alphaMin(0.004)
+    .alphaDecay(0.03)
+    .velocityDecay(0.45)
+    .on('tick', requestDraw)
+    .on('end', () => { if (!userMoved) fit(true); })
     .stop();
-  for (let i = 0; i < 300; i++) sim.tick();
 
-  function ticked() {
-    link.attr('x1', (l) => l.source.x).attr('y1', (l) => l.source.y)
-      .attr('x2', (l) => l.target.x).attr('y2', (l) => l.target.y);
-    node.attr('transform', (d) => `translate(${d.x},${d.y})`);
+  // ---- sizing -------------------------------------------------------------
+  function resize() {
+    const r = canvas.getBoundingClientRect();
+    const nw = Math.max(1, Math.round(r.width)), nh = Math.max(1, Math.round(r.height));
+    const nd = Math.min(MAX_DPR, window.devicePixelRatio || 1);
+    if (nw === W && nh === H && nd === dpr) return false;
+    const first = W === 0;
+    // keep the same world point in the centre
+    if (!first) t = d3.zoomIdentity.translate(t.x + (nw - W) / 2, t.y + (nh - H) / 2).scale(t.k);
+    W = nw; H = nh; dpr = nd;
+    canvas.width = Math.round(W * dpr); canvas.height = Math.round(H * dpr);
+    sel.property('__zoom', t);
+    requestDraw();
+    return true;
   }
-  ticked();
-  sim.on('tick', ticked).alpha(0.05).restart();
+  new ResizeObserver(() => { if (resize() && nodes.length && !userMoved) fit(false); }).observe(canvas);
 
-  // ---- zoom / pan ---------------------------------------------------------
-  const zoom = d3.zoom().scaleExtent([0.2, 6]).on('zoom', (e) => root.attr('transform', e.transform));
-  svg.call(zoom).on('dblclick.zoom', null);
+  // ---- data -------------------------------------------------------------
+  function setData(net, { resetView = false } = {}) {
+    resize();
+    if (resetView) { nodes = []; hovered = null; }
+    const old = new Map(nodes.map((d) => [d.id, d]));
+    const keepView = nodes.length > 0 && userMoved;
+    nodes = net.nodes.map((d) => {
+      const o = old.get(d.id);
+      return o ? { ...d, x: o.x, y: o.y, vx: 0, vy: 0 } : { ...d };
+    });
+    links = net.links.map((l) => ({ ...l }));
+    byId = new Map(nodes.map((d) => [d.id, d]));
+    target = byId.get(TARGET_ID);
+    const neighbors = nodes.filter((d) => !d.target);
+
+    // Node AREA ∝ frequency (sqrt radius scale).
+    const n = Math.max(neighbors.length, 1);
+    const S = Math.max(320, Math.min(W, H));
+    rMax = Math.max(16, Math.min(56, S / (4 + Math.sqrt(n) * 1.6)));
+    const maxF = d3.max(neighbors, (d) => d.freq) || 1;
+    const r = d3.scaleSqrt().domain([0, maxF]).range([0, rMax]);
+    for (const d of neighbors) d.r = Math.max(2.5, r(d.freq));
+    target.r = Math.min(r(target.freq), rMax * 1.3);
+    target.capped = r(target.freq) > rMax * 1.3;
+
+    // One strength scale for all lines; more co-occurrence => shorter line.
+    const maxW = d3.max(links, (l) => l.weight) || 1;
+    for (const l of links) l.s = Math.sqrt(l.weight / maxW);
+    const gapMin = 4;
+    gapMax = S * 0.42;
+    const dist = (l) => {
+      const a = typeof l.source === 'object' ? l.source : byId.get(l.source);
+      const b = typeof l.target === 'object' ? l.target : byId.get(l.target);
+      return a.r + b.r + gapMin + (gapMax - gapMin) * (1 - l.s);
+    };
+
+    const tColor = d3.scaleSequential(d3.interpolateRgbBasis(['#7f8fd6', '#5b8def', '#38c6a8', '#9be15d'])).domain([0, 1]);
+    const share = new Map(links.filter((l) => l.kind === 'target').map((l) => [l.target, l]));
+    for (const d of nodes) {
+      d.color = d.target ? TARGET_COLOR : tColor(share.get(d.id)?.s ?? 0);
+      d.font = d.target ? Math.round(Math.max(14, Math.min(22, d.r * 0.42))) : Math.round(Math.max(10, Math.min(17, d.r * 0.42)));
+      d.inside = d.target || d.r >= 18;
+    }
+
+    adj = new Map(nodes.map((d) => [d.id, new Map()]));
+    for (const l of links) { adj.get(l.source).set(l.target, l.weight); adj.get(l.target).set(l.source, l.weight); }
+
+    // Seed new nodes near where their line to the centre wants them, so the
+    // layout settles fast and smoothly instead of exploding from one point.
+    target.fx = 0; target.fy = 0; target.x = 0; target.y = 0;
+    let i = 0;
+    for (const d of neighbors) {
+      i++;
+      if (old.has(d.id)) continue;
+      const l = share.get(d.id);
+      const a = i * 2.39996; // golden angle
+      const rad = l ? dist(l) : gapMax;
+      d.x = Math.cos(a) * rad; d.y = Math.sin(a) * rad;
+    }
+
+    // stroke buckets: quantise width/alpha so links are drawn in a few paths
+    const bmap = new Map();
+    for (const l of links) {
+      const q = Math.round(l.s * 12);
+      const key = `${l.kind}|${q}`;
+      if (!bmap.has(key)) {
+        const s = q / 12;
+        bmap.set(key, { color: l.kind === 'target' ? '255,154,128' : '143,163,224', width: 0.5 + 5 * s ** 1.6, alpha: 0.12 + 0.6 * s, links: [] });
+      }
+      bmap.get(key).links.push(l);
+    }
+    buckets = [...bmap.values()].sort((a, b) => a.width - b.width);
+    labelOrder = [...nodes].sort((a, b) => a.font - b.font);
+    hovered = hovered && byId.get(hovered.id) ? byId.get(hovered.id) : null;
+    if (!hovered) hideTip();
+
+    sim.nodes(nodes)
+      .force('link', d3.forceLink(links).id((d) => d.id).distance(dist)
+        .strength((l) => (l.kind === 'target' ? 0.7 : 0.03 + 0.3 * l.s)))
+      .force('charge', d3.forceManyBody().strength((d) => -10 - d.r * 1.5).distanceMax(gapMax).theta(0.9))
+      .force('collide', d3.forceCollide((d) => d.r + 3).iterations(2))
+      .force('x', d3.forceX(0).strength(0.01))
+      .force('y', d3.forceY(0).strength(0.015));
+
+    const fresh = nodes.filter((d) => !old.has(d.id)).length / nodes.length;
+    sim.alpha(fresh > 0.5 ? 0.6 : 0.3).restart();
+    if (!keepView) { userMoved = false; fit(old.size > 0); }
+    canvas.setAttribute('aria-label', `Semantic network of “${target.label}”: ${neighbors.slice(0, 12).map((d) => d.label).join(', ')}…`);
+    requestDraw();
+  }
+
+  // ---- drawing --------------------------------------------------------------
+  function requestDraw() {
+    if (!frame) frame = requestAnimationFrame(draw);
+  }
+
+  function draw() {
+    frame = 0;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+    if (!nodes.length) return;
+    ctx.setTransform(dpr * t.k, 0, 0, dpr * t.k, dpr * t.x, dpr * t.y);
+    const nb = hovered ? adj.get(hovered.id) : null;
+    const incident = (l) => l.source === hovered || l.target === hovered;
+    const k = t.k;
+    // visible world rectangle (for culling)
+    const x0 = -t.x / k, y0 = -t.y / k, x1 = (W - t.x) / k, y1 = (H - t.y) / k;
+
+    // links. Stroked one by one: in software-rasterised canvases one huge
+    // multi-segment path builds a full-screen coverage mask and is several
+    // times slower than many short strokes. Off-screen lines are culled.
+    ctx.lineCap = 'round';
+    const off = (l, pad) => {
+      const ax = l.source.x, ay = l.source.y, bx = l.target.x, by = l.target.y;
+      return (ax < x0 - pad && bx < x0 - pad) || (ax > x1 + pad && bx > x1 + pad)
+        || (ay < y0 - pad && by < y0 - pad) || (ay > y1 + pad && by > y1 + pad);
+    };
+    for (let pass = 0; pass < (hovered ? 2 : 1); pass++) {
+      for (const b of buckets) {
+        ctx.lineWidth = b.width;
+        ctx.strokeStyle = `rgba(${b.color},${!hovered ? b.alpha : pass === 0 ? b.alpha * 0.15 : Math.min(1, b.alpha + 0.25)})`;
+        for (const l of b.links) {
+          if (hovered && incident(l) !== (pass === 1)) continue;
+          if (off(l, b.width)) continue;
+          ctx.beginPath(); ctx.moveTo(l.source.x, l.source.y); ctx.lineTo(l.target.x, l.target.y); ctx.stroke();
+        }
+      }
+    }
+
+    // nodes (borderless discs)
+    const visible = (d, pad = 0) => d.x + d.r + pad > x0 && d.x - d.r - pad < x1 && d.y + d.r + pad > y0 && d.y - d.r - pad < y1;
+    ctx.globalAlpha = 0.16;
+    ctx.fillStyle = TARGET_COLOR;
+    ctx.beginPath(); ctx.arc(target.x, target.y, target.r + 10, 0, 2 * Math.PI); ctx.fill();
+    for (const d of nodes) {
+      if (!visible(d)) continue;
+      const dim = hovered && d !== hovered && !nb.has(d.id);
+      ctx.globalAlpha = (dim ? 0.12 : 1) * (d.target ? 1 : 0.88);
+      ctx.fillStyle = d.color;
+      ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 2 * Math.PI); ctx.fill();
+    }
+
+    // labels, with level of detail: skip tiny ones unless they matter right now
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.lineJoin = 'round';
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = 'rgba(15,18,32,0.85)';
+    ctx.fillStyle = '#e9ecf7';
+    let font = 0;
+    for (const d of labelOrder) {
+      const focus = d.target || d === hovered || (nb && nb.has(d.id));
+      if (!focus && d.font * k < LABEL_MIN_PX) continue;
+      if (!visible(d, 60)) continue;
+      const dim = hovered && !focus;
+      if (d.font !== font || d.target) {
+        font = d.font;
+        ctx.font = `${d.target ? 700 : 400} ${font}px Inter, ui-sans-serif, system-ui, sans-serif`;
+      }
+      ctx.globalAlpha = dim ? 0.12 : 1;
+      const y = d.inside ? d.y : d.y + d.r + font * 0.75 + 1;
+      ctx.strokeText(d.label, d.x, y);
+      ctx.fillText(d.label, d.x, y);
+      if (d.target) font = 0; // force font reset after the bold one
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---- zoom / pan / pinch ------------------------------------------------
+  const zoom = d3.zoom().scaleExtent([0.2, 6])
+    .on('zoom', (e) => { t = e.transform; if (e.sourceEvent) userMoved = true; requestDraw(); moveTip(); });
 
   function fit(animate = true) {
+    if (!nodes.length || !W) return;
     const pad = 30;
-    const x0 = d3.min(nodes, (d) => d.x - d.r - 40), x1 = d3.max(nodes, (d) => d.x + d.r + 40);
-    const y0 = d3.min(nodes, (d) => d.y - d.r - 10), y1 = d3.max(nodes, (d) => d.y + d.r + 24);
-    const k = Math.min(2, 0.95 * Math.min((W - pad) / (x1 - x0), (H - pad) / (y1 - y0)));
-    const t = d3.zoomIdentity.scale(k).translate(-(x0 + x1) / 2, -(y0 + y1) / 2);
-    (animate ? svg.transition().duration(600) : svg).call(zoom.transform, t);
+    let xa = Infinity, xb = -Infinity, ya = Infinity, yb = -Infinity;
+    for (const d of nodes) {
+      xa = Math.min(xa, d.x - d.r - 40); xb = Math.max(xb, d.x + d.r + 40);
+      ya = Math.min(ya, d.y - d.r - 10); yb = Math.max(yb, d.y + d.r + 24);
+    }
+    const k = Math.min(2, 0.95 * Math.min((W - pad) / (xb - xa), (H - pad) / (yb - ya)));
+    const nt = d3.zoomIdentity.translate(W / 2, H / 2).scale(k).translate(-(xa + xb) / 2, -(ya + yb) / 2);
+    if (animate) sel.transition().duration(600).call(zoom.transform, nt);
+    else sel.call(zoom.transform, nt);
   }
-  fit(false);
 
-  // ---- drag ---------------------------------------------------------------
-  node.call(d3.drag()
-    .on('start', (e, d) => { if (!e.active) sim.alphaTarget(0.25).restart(); d.fx = d.x; d.fy = d.y; })
-    .on('drag', (e, d) => { d.fx = e.x; d.fy = e.y; })
-    .on('end', (e, d) => { if (!e.active) sim.alphaTarget(0); if (!d.target) { d.fx = null; d.fy = null; } }));
-
-  // ---- hover highlight + tooltip -------------------------------------------
-  const tip = d3.select(svgEl.parentNode).select('.tooltip');
-  function highlight(d) {
-    const nb = adj.get(d.id);
-    node.classed('dim', (o) => o.id !== d.id && !nb.has(o.id));
-    link.classed('dim', (l) => l.source.id !== d.id && l.target.id !== d.id);
+  // ---- hit testing ------------------------------------------------------
+  // ≤ 81 nodes: a linear scan is a few microseconds, cheaper than maintaining
+  // a quadtree that would have to be rebuilt on every tick.
+  function hit(px, py) {
+    const [x, y] = t.invert([px, py]);
+    const slop = 4 / t.k;
+    let best = null, bestD = Infinity;
+    for (let i = nodes.length - 1; i >= 0; i--) {
+      const d = nodes[i];
+      const dx = x - d.x, dy = y - d.y;
+      const dd = Math.sqrt(dx * dx + dy * dy) - d.r;
+      if (dd <= slop && dd < bestD) { best = d; bestD = dd; }
+    }
+    return best;
   }
-  function clear() { node.classed('dim', false); link.classed('dim', false); tip.classed('hidden', true); }
-  function showTip(event, d) {
+  const local = (e) => { const r = canvas.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+
+  // ---- drag (only when the gesture starts on a node; otherwise zoom pans) ----
+  sel.call(d3.drag()
+    .container(canvas)
+    .subject((e) => { const d = hit(e.x, e.y); return d ? { node: d, x: e.x, y: e.y } : null; })
+    .on('start', (e) => {
+      dragging = e.subject.node;
+      userMoved = true;
+      if (!e.active) sim.alphaTarget(0.12).restart();
+      dragging.fx = dragging.x; dragging.fy = dragging.y;
+    })
+    .on('drag', (e) => {
+      const [x, y] = t.invert([e.x, e.y]);
+      dragging.fx = x; dragging.fy = y;
+      requestDraw();
+    })
+    .on('end', (e) => {
+      if (!e.active) sim.alphaTarget(0);
+      if (!dragging.target) { dragging.fx = null; dragging.fy = null; }
+      dragging = null;
+    }));
+  // zoom must be registered after drag so drag can claim node gestures first
+  sel.call(zoom).on('dblclick.zoom', null);
+
+  // ---- hover (coalesced to one update per frame) ---------------------------
+  canvas.addEventListener('pointermove', (e) => {
+    pointer = local(e);
+    if (!pointerFrame) pointerFrame = requestAnimationFrame(processPointer);
+  });
+  canvas.addEventListener('pointerleave', () => { pointer = null; if (!dragging) setHover(null); });
+  function processPointer() {
+    pointerFrame = 0;
+    if (!pointer) return;
+    const d = dragging || hit(pointer[0], pointer[1]);
+    setHover(d);
+    moveTip();
+  }
+  function setHover(d) {
+    if (d === hovered) return;
+    hovered = d;
+    canvas.style.cursor = d ? (d.target ? 'grab' : 'pointer') : '';
+    if (d) { showTip(d); onFocus?.(d); } else hideTip();
+    requestDraw();
+  }
+  canvas.addEventListener('click', (e) => {
+    if (e.defaultPrevented) return;
+    const [x, y] = local(e);
+    const d = hit(x, y);
+    if (d && !d.target) onSelect?.(d.label);
+  });
+
+  // ---- tooltip -----------------------------------------------------------
+  function showTip(d) {
     const nb = [...adj.get(d.id).entries()].filter(([id]) => id !== TARGET_ID)
       .sort((a, b) => b[1] - a[1]).slice(0, 6)
-      .map(([id, w]) => `${byId.get(id).label} <span class="muted">×${w}</span>`).join(', ');
-    const html = d.target
+      .map(([id, w]) => `${esc(byId.get(id).label)} <span class="muted">×${w}</span>`).join(', ');
+    tooltip.innerHTML = d.target
       ? `<b>${esc(d.label)}</b><br><span class="muted">${d.freq} occurrences found · ${d.cooc} context windows${d.capped ? ' · circle capped for display' : ''}</span>`
       : `<b>${esc(d.label)}</b> <span class="muted">#${d.rank}</span><br>${d.freq}× near <i>${esc(target.label)}</i> <span class="muted">(in ${d.cooc} of ${target.cooc} windows)</span>`
         + (d.lr != null ? `<br>Distinctiveness <b>${d.lr.toFixed(1)}</b> <span class="muted">(≈${fmtX(d.lr)} more often than in general text; LL ${Math.round(d.g2)})</span>` : '')
         + (nb ? `<br><span class="muted">Often with:</span> ${nb}` : '')
         + `<br><span class="muted">Click to map “${esc(d.label)}”</span>`;
-    const [x, y] = d3.pointer(event, svgEl.parentNode);
-    const box = svgEl.parentNode.getBoundingClientRect();
-    tip.html(html).classed('hidden', false)
-      .style('left', `${Math.min(x + 14, box.width - 270)}px`)
-      .style('top', `${Math.min(y + 14, box.height - 120)}px`);
+    tooltip.classList.remove('hidden');
+    tooltip._w = tooltip.offsetWidth; tooltip._h = tooltip.offsetHeight; // measure once per node
   }
-  node.on('pointerenter', (e, d) => { highlight(d); showTip(e, d); onFocus?.(d); })
-    .on('pointermove', showTip)
-    .on('pointerleave', clear)
-    .on('click', (e, d) => { if (!d.target && !e.defaultPrevented) onSelect?.(d.label); });
+  function moveTip() {
+    if (!hovered || !pointer) return;
+    const x = Math.max(4, Math.min(pointer[0] + 14, W - (tooltip._w || 260) - 4));
+    const y = Math.max(4, Math.min(pointer[1] + 14, H - (tooltip._h || 120) - 4));
+    tooltip.style.transform = `translate(${x}px, ${y}px)`;
+  }
+  function hideTip() { tooltip.classList.add('hidden'); }
+
+  // ---- SVG export (built on demand from current positions) -----------------
+  function toSVG() {
+    if (!nodes.length) return null;
+    let xa = Infinity, xb = -Infinity, ya = Infinity, yb = -Infinity;
+    for (const d of nodes) {
+      xa = Math.min(xa, d.x - d.r - 50); xb = Math.max(xb, d.x + d.r + 50);
+      ya = Math.min(ya, d.y - d.r - 20); yb = Math.max(yb, d.y + d.r + 30);
+    }
+    const f = (v) => Math.round(v * 10) / 10;
+    const out = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${f(xa)} ${f(ya)} ${f(xb - xa)} ${f(yb - ya)}" width="${Math.round(xb - xa)}" height="${Math.round(yb - ya)}">`,
+      '<style>text{font-family:Inter,system-ui,sans-serif;fill:#e9ecf7;paint-order:stroke;stroke:rgba(15,18,32,.85);stroke-width:3px;stroke-linejoin:round;text-anchor:middle}</style>',
+      `<rect x="${f(xa)}" y="${f(ya)}" width="${f(xb - xa)}" height="${f(yb - ya)}" fill="#0f1220"/>`, '<g stroke-linecap="round">'];
+    for (const b of buckets) {
+      for (const l of b.links) out.push(`<line x1="${f(l.source.x)}" y1="${f(l.source.y)}" x2="${f(l.target.x)}" y2="${f(l.target.y)}" stroke="rgb(${b.color})" stroke-opacity="${f(b.alpha * 100) / 100}" stroke-width="${f(b.width)}"/>`);
+    }
+    out.push('</g>', `<circle cx="${f(target.x)}" cy="${f(target.y)}" r="${f(target.r + 10)}" fill="${TARGET_COLOR}" opacity="0.16"/>`);
+    for (const d of nodes) out.push(`<circle cx="${f(d.x)}" cy="${f(d.y)}" r="${f(d.r)}" fill="${d.color}"${d.target ? '' : ' fill-opacity="0.88"'}/>`);
+    for (const d of nodes) {
+      const y = d.inside ? d.y : d.y + d.r + d.font * 0.75 + 1;
+      out.push(`<text x="${f(d.x)}" y="${f(y)}" dy="0.35em" font-size="${d.font}"${d.target ? ' font-weight="700"' : ''}>${esc(d.label)}</text>`);
+    }
+    out.push('</svg>');
+    return out.join('\n');
+  }
+
+  function clear() {
+    sim.stop(); nodes = []; links = []; buckets = []; labelOrder = []; hovered = null; hideTip(); requestDraw();
+  }
 
   return {
-    fit,
-    zoomBy: (f) => svg.transition().duration(250).call(zoom.scaleBy, f),
-    stop: () => sim.stop(),
-    focus: (id) => { const d = byId.get(id); if (d) highlight(d); },
-    clear,
+    setData, fit, clear, toSVG,
+    zoomBy: (f) => { userMoved = true; sel.transition().duration(250).call(zoom.scaleBy, f); },
+    // small read-only hooks used by the automated tests
+    debug: {
+      count: () => ({ nodes: nodes.length, links: links.length, buckets: buckets.length }),
+      labels: () => nodes.filter((d) => !d.target).map((d) => d.label),
+      targetLabel: () => target?.label,
+      screenPos: (i) => { const d = nodes[i]; if (!d) return null; const r = canvas.getBoundingClientRect(); const [x, y] = t.apply([d.x, d.y]); return { x: r.left + x, y: r.top + y, label: d.label }; },
+      hovered: () => hovered?.label ?? null,
+      settled: () => sim.alpha() < sim.alphaMin(),
+      benchDraw: (n = 20) => { const t0 = performance.now(); for (let i = 0; i < n; i++) draw(); return (performance.now() - t0) / n; },
+      zoomTo: (k) => sel.call(zoom.scaleTo, k),
+    },
   };
 }
 

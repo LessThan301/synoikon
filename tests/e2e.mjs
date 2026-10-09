@@ -1,60 +1,120 @@
+// Headless end-to-end check. Serve the repo root first: python3 -m http.server 8765
+// usage: node tests/e2e.mjs [word] [lang] [width] [height] [baseUrl]
 import { chromium } from 'playwright';
-const word = process.argv[2] || 'river';
-const lang = process.argv[3] || 'en';
-const width = +(process.argv[4] || 1400), height = +(process.argv[5] || 900);
+import fs from 'fs';
+const [word = 'river', lang = 'en', width = '1400', height = '900', base = 'http://localhost:8765/'] = process.argv.slice(2);
+const mobile = +width < 600;
 const browser = await chromium.launch();
-const page = await browser.newPage({ viewport: { width, height } });
+const context = await browser.newContext({ viewport: { width: +width, height: +height }, hasTouch: mobile, isMobile: mobile, deviceScaleFactor: mobile ? 3 : 1, acceptDownloads: true });
+const page = await context.newPage();
 const errors = [];
 page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') errors.push(`${m.type()}: ${m.text()}`); });
 page.on('pageerror', (e) => errors.push('pageerror: ' + e.message));
 page.on('requestfailed', (r) => errors.push('requestfailed: ' + r.url() + ' ' + r.failure()?.errorText));
-await page.goto('http://localhost:8765/', { waitUntil: 'networkidle' });
+const ok = (cond, msg) => { console.log(`${cond ? 'PASS' : 'FAIL'} ${msg}`); if (!cond) process.exitCode = 1; };
+const G = (fn, arg) => page.evaluate(fn, arg);
+
+await page.goto(base, { waitUntil: 'networkidle' });
 await page.selectOption('#lang', lang);
 await page.fill('#term', word);
 const t0 = Date.now();
 await page.click('#go');
-await page.waitForSelector('#graph g.node', { timeout: 45000 });
-await page.waitForTimeout(1500);
-const info = await page.evaluate(() => ({
-  nodes: document.querySelectorAll('#graph g.node').length,
-  links: document.querySelectorAll('#graph line.link').length,
-  labels: [...document.querySelectorAll('#graph g.node text')].slice(0, 25).map((t) => t.textContent),
-  stats: document.getElementById('stats').innerText,
-  samples: document.querySelectorAll('#samples li').length,
-  hash: location.hash,
-}));
-console.log('time ms', Date.now() - t0, JSON.stringify(info, null, 1));
+await page.waitForFunction(() => window.__contexter?.count().nodes > 1, null, { timeout: 45000 });
+console.log('graph after', Date.now() - t0, 'ms', JSON.stringify(await G(() => window.__contexter.count())));
+ok((await G(() => window.__contexter.count().nodes)) === 31, 'river-type search draws 30 neighbors + target');
+ok(await G(() => { const c = document.getElementById('graph'); return c.width > 0 && c.height > 0 && c.width === Math.round(c.getBoundingClientRect().width * Math.min(2, devicePixelRatio)); }), 'canvas backing store matches size × devicePixelRatio (capped at 2)');
 await page.screenshot({ path: `./shot-${word}-${width}.png` });
-// ranking modes: default Distinctive, then Frequency, then back
-const labelsNow = () => page.evaluate(() => [...document.querySelectorAll('#graph g.node:not(.target) text')].map((t) => t.textContent));
-console.log('mode default:', await page.locator('input[name=rank]:checked').getAttribute('value'));
-const distinct = await labelsNow();
+
+// ranking modes
+const distinct = await G(() => window.__contexter.labels());
 await page.click('.seg label:has(input[value=frequency])');
-await page.waitForTimeout(800);
-const freq = await labelsNow();
+await page.waitForTimeout(600);
+const freq = await G(() => window.__contexter.labels());
 console.log('DISTINCTIVE:', distinct.join(' '));
 console.log('FREQUENCY:  ', freq.join(' '));
-console.log('only in frequency:', freq.filter((w) => !distinct.includes(w)).join(' '));
-console.log('hash:', await page.evaluate(() => location.hash));
+ok(freq.join() !== distinct.join(), 'ranking toggle changes the neighbor set');
 await page.click('.seg label:has(input[value=distinctive])');
-await page.waitForTimeout(800);
+await page.waitForTimeout(600);
 console.log('table first rows:', (await page.locator('#tableBody tr').evaluateAll((rs) => rs.slice(0, 3).map((r) => [...r.cells].map((c) => c.textContent).join(' ')))).join(' | '));
-// hover a neighbor, check tooltip + dimming
-const nodes = page.locator('#graph g.node:not(.target) circle.body');
-await nodes.nth(0).hover({ force: true });
-await page.waitForTimeout(300);
-console.log('tooltip:', await page.locator('.tooltip').innerText(), '| dimmed:', await page.locator('#graph .dim').count());
-await page.screenshot({ path: `./shot-${word}-hover.png` });
-// slider change
+
+// wait for the layout to settle (simulation stops itself)
+await page.waitForFunction(() => window.__contexter.settled(), null, { timeout: 15000 });
+ok(true, 'simulation settles and stops');
+
+// hover (desktop only: touch has no hover)
+if (!mobile) {
+  const p = await G(() => window.__contexter.screenPos(1));
+  await page.mouse.move(p.x, p.y);
+  await page.waitForTimeout(200);
+  const tip = await page.locator('.tooltip').innerText();
+  ok(!(await page.locator('.tooltip').evaluate((e) => e.classList.contains('hidden'))) && tip.startsWith(p.label), `hover shows tooltip for "${p.label}"`);
+  console.log('tooltip:', tip.replace(/\n/g, ' / '));
+  await page.screenshot({ path: `./shot-${word}-hover.png` });
+  await page.mouse.move(5, 5);
+}
+
+// zoom (wheel on desktop, buttons everywhere)
+const before = await G(() => window.__contexter.screenPos(1));
+await page.click('#zoomIn'); await page.waitForTimeout(400);
+const after = await G(() => window.__contexter.screenPos(1));
+ok(before.x !== after.x || before.y !== after.y, 'zoom button changes the view');
+await page.click('#zoomFit'); await page.waitForTimeout(700);
+
+// pinch zoom (touch only)
+if (mobile) {
+  const cdp = await context.newCDPSession(page);
+  const box = await page.locator('#graph').boundingBox();
+  const cx = box.x + box.width / 2, cy = box.y + box.height - 80;
+  const a = await G(() => [window.__contexter.screenPos(0), window.__contexter.screenPos(1)]);
+  const d0 = Math.hypot(a[0].x - a[1].x, a[0].y - a[1].y);
+  const pts = (s) => [{ x: cx - s, y: cy, id: 0 }, { x: cx + s, y: cy, id: 1 }];
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: pts(20) });
+  for (let i = 1; i <= 10; i++) await cdp.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: pts(20 + i * 8) });
+  await cdp.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await page.waitForTimeout(100);
+  const b = await G(() => [window.__contexter.screenPos(0), window.__contexter.screenPos(1)]);
+  const d1 = Math.hypot(b[0].x - b[1].x, b[0].y - b[1].y);
+  ok(d1 > d0 * 1.5, `pinch zooms in (node spacing ${Math.round(d0)} → ${Math.round(d1)} px)`);
+  await page.click('#zoomFit'); await page.waitForTimeout(700);
+}
+
+// drag a node
+{
+  const p = await G(() => window.__contexter.screenPos(2));
+  if (mobile) {
+    // touch drag via CDP touch events
+    const cdp = await context.newCDPSession(page);
+    const tp = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    await tp('touchStart', p.x, p.y);
+    for (let i = 1; i <= 10; i++) await tp('touchMove', p.x + i * 6, p.y + i * 4);
+    await tp('touchEnd');
+  } else {
+    await page.mouse.move(p.x, p.y); await page.mouse.down();
+    for (let i = 1; i <= 10; i++) await page.mouse.move(p.x + i * 6, p.y + i * 4);
+    await page.mouse.up();
+  }
+  await page.waitForTimeout(100);
+  const q = await G(() => window.__contexter.screenPos(2));
+  ok(Math.hypot(q.x - p.x, q.y - p.y) > 20 && q.label === p.label, `drag moves "${p.label}" (${Math.round(Math.hypot(q.x - p.x, q.y - p.y))}px)`);
+}
+
+// slider redraw
 await page.locator('#topN').fill('15');
+await page.waitForTimeout(500);
+ok((await G(() => window.__contexter.count().nodes)) === 16, 'neighbors slider redraws (15 + target)');
+
+// SVG download
+const [dl] = await Promise.all([page.waitForEvent('download'), page.click('#download')]);
+const svg = fs.readFileSync(await dl.path(), 'utf8');
+ok(svg.startsWith('<svg') && (svg.match(/<circle/g) || []).length === 17 && svg.includes('</svg>'), `SVG export (${svg.length} bytes, ${(svg.match(/<line/g) || []).length} lines)`);
+
+// click / tap a node to re-center
 await page.waitForTimeout(800);
-console.log('nodes after topN=15:', await page.locator('#graph g.node').count());
-// click node -> new search
-const lbl = await page.locator('#graph g.node:not(.target) text').nth(0).textContent();
-await page.locator('#graph g.node:not(.target) circle.body').nth(0).click({ force: true });
-await page.waitForFunction((l) => document.querySelector('#term').value === l, lbl, { timeout: 10000 });
-await page.waitForFunction((l) => document.querySelector('#graph g.node.target text')?.textContent === l, lbl, { timeout: 45000 });
+const c = await G(() => window.__contexter.screenPos(1));
+if (mobile) await page.touchscreen.tap(c.x, c.y); else await page.mouse.click(c.x, c.y);
+await page.waitForFunction((l) => window.__contexter.targetLabel() === l && window.__contexter.count().nodes > 1, c.label, { timeout: 45000 });
+ok(true, `${mobile ? 'tap' : 'click'} on "${c.label}" re-centres the map on it`);
+ok(await G(() => document.documentElement.scrollWidth <= innerWidth), 'no horizontal overflow');
 await page.waitForTimeout(1500);
-console.log('clicked', lbl, '-> target now', await page.locator('#graph g.node.target text').textContent(), 'nodes', await page.locator('#graph g.node').count());
-console.log('ERRORS:', errors.length ? errors : 'none');
+ok(errors.length === 0, 'no console errors: ' + (errors.join('; ') || 'none'));
 await browser.close();

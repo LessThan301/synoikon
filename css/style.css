@@ -78,8 +78,7 @@ label.check input { accent-color: var(--accent); }
 .about { font-size: .78rem; color: var(--muted); }
 
 .overlay { position: absolute; inset: 0; display: grid; place-items: center; padding: 16px; pointer-events: none; }
-.overlay .card { pointer-events: auto; max-width: 460px; background: rgba(27, 32, 56, .92); backdrop-filter: blur(6px);
-  border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; box-shadow: 0 20px 60px rgba(0,0,0,.35); text-align: center; }
+.overlay .card { pointer-events: auto; max-width: 460px; background: rgba(27, 32, 56, .92);   border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 22px; box-shadow: 0 8px 24px rgba(0,0,0,.35); text-align: center; }
 .overlay h2 { margin: 0 0 8px; }
 .overlay p { color: var(--muted); margin: 0 0 10px; line-height: 1.5; }
 .card.error h2 { color: #ff8f8f; }
@@ -101,16 +100,10 @@ label.check input { accent-color: var(--accent); }
 .graph-tools button { width: 34px; height: 34px; border-radius: 10px; border: 1px solid var(--line); background: rgba(27,32,56,.85); color: var(--ink); font-size: 1rem; cursor: pointer; }
 .graph-tools button:hover { border-color: var(--accent2); }
 .hint { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); font-size: .75rem; color: var(--muted); background: rgba(15,18,32,.7); padding: 4px 10px; border-radius: 999px; white-space: nowrap; pointer-events: none; }
-.tooltip { position: absolute; pointer-events: none; background: rgba(15,18,32,.95); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: .8rem; max-width: 260px; line-height: 1.45; box-shadow: 0 10px 30px rgba(0,0,0,.4); z-index: 5; }
+.tooltip { position: absolute; left: 0; top: 0; will-change: transform; pointer-events: none; background: rgba(15,18,32,.95); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; font-size: .8rem; max-width: 260px; line-height: 1.45; box-shadow: 0 4px 10px rgba(0,0,0,.35); z-index: 5; }
 .tooltip b { font-size: .95rem; }
 .tooltip .muted { color: var(--muted); }
 
-/* graph */
-.node circle { transition: opacity .15s; }
-.node text { font-size: 11px; fill: var(--ink); pointer-events: none; paint-order: stroke; stroke: rgba(15,18,32,.85); stroke-width: 3px; stroke-linejoin: round; }
-.node.target text { font-weight: 700; }
-.link { transition: opacity .15s; }
-.dim { opacity: .12; }
 
 @media (max-width: 820px) {
   .layout { grid-template-columns: minmax(0, 1fr); }
