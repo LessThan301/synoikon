@@ -18,15 +18,8 @@
       </div>
     </div>
     <form id="search" class="search" autocomplete="off">
-      <input id="term" name="term" type="search" placeholder="Type a word, e.g. river" aria-label="Word" required maxlength="60">
-      <select id="lang" aria-label="Language">
-        <option value="en" selected>EN</option>
-        <option value="de">DE</option>
-        <option value="fr">FR</option>
-        <option value="es">ES</option>
-        <option value="it">IT</option>
-        <option value="nl">NL</option>
-      </select>
+      <input id="term" name="term" type="search" dir="auto" placeholder="Type a word, e.g. river" aria-label="Word" required maxlength="60">
+      <select id="lang" aria-label="Language"></select>
       <button type="submit" id="go">Map it</button>
     </form>
   </header>
@@ -93,9 +86,9 @@
             </select>
           </label>
           <fieldset>
-            <legend>Stopwords to drop</legend>
-            <label class="check"><input type="checkbox" id="stopEn" checked> English</label>
-            <label class="check"><input type="checkbox" id="stopDe" checked> German</label>
+            <legend>Stopwords</legend>
+            <label class="check"><input type="checkbox" id="stopLang" checked> Remove common words (<span id="stopLangName" dir="auto">English</span>)</label>
+            <label class="check" id="stopEnRow"><input type="checkbox" id="stopEn" checked> Also remove English ones</label>
           </fieldset>
           <fieldset id="sourceBoxes">
             <legend>Sources</legend>
@@ -119,7 +112,7 @@
         <table class="table"><thead><tr><th>Word</th><th title="Occurrences inside context windows (circle area)">Freq.</th><th title="Windows shared with the search word">With word</th><th title="Distinctiveness: log2 of how many times more often than expected from general Wikipedia text">Distinct.</th></tr></thead><tbody id="tableBody"></tbody></table>
       </details>
 
-      <p class="about">How it works: see the <a href="README.md">README</a>. Text comes live from Wikipedia, Wikiquote, Wiktionary and Hacker News; nothing is stored.</p>
+      <p class="about">How it works: see the <a href="README.md">README</a>. Text comes live from Wikipedia, Wikiquote, Wiktionary and Hacker News in 21 languages; nothing is stored.</p>
     </aside>
   </main>
 

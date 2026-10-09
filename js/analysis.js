@@ -2,40 +2,20 @@
 // their pairwise co-occurrence. Pure functions (no DOM) so they can be
 // tested in Node as well.
 
-const WORD_RE = /[\p{L}\p{N}][\p{L}\p{N}\p{M}'’\-]*/gu;
+import { tokenize, formMatcher, LANG } from './languages.js';
+export { tokenize };
 
 // Tokenizing is the most expensive step; cache per document object so that
 // slider changes (window size, top N, ranking...) don't re-tokenize the corpus.
 const tokenCache = new WeakMap();
-function tokensOf(doc) {
+function tokensOf(doc, lang) {
   let t = tokenCache.get(doc);
-  if (!t) { t = tokenize(doc.text); tokenCache.set(doc, t); }
+  if (!t || t.lang !== lang.code) { t = tokenize(doc.text, lang); t.lang = lang.code; tokenCache.set(doc, t); }
   return t;
 }
 
-export function tokenize(text) {
-  const out = [];
-  for (const m of String(text).matchAll(WORD_RE)) {
-    let raw = m[0].replace(/['’]s$/i, '').replace(/['’\-]+$/, '');
-    if (!raw) continue;
-    out.push({ raw, low: raw.toLocaleLowerCase() });
-  }
-  return out;
-}
-
-/** Inflected forms we treat as "the same word" as the search term. */
-export function targetForms(word) {
-  const w = word.toLocaleLowerCase();
-  const forms = new Set([w, w + 's', w + 'es', w + 'e', w + 'n', w + 'en', w + 'er', w + 'ern', w + 'ed', w + 'ing']);
-  if (w.endsWith('y')) forms.add(w.slice(0, -1) + 'ies');
-  if (w.endsWith('e')) { forms.add(w + 'd'); forms.add(w.slice(0, -1) + 'ing'); }
-  if (w.endsWith('s') && w.length > 3) forms.add(w.slice(0, -1));
-  if (w.endsWith('ies')) forms.add(w.slice(0, -3) + 'y');
-  return forms;
-}
-
-function isNoise(t) {
-  return t.length < 3 || /^\p{N}/u.test(t) || /^[\p{N}\-]+$/u.test(t);
+function isNoise(t, minLen) {
+  return t.length < minLen || /^\p{N}/u.test(t) || /^[\p{N}\-]+$/u.test(t);
 }
 
 /**
@@ -43,45 +23,65 @@ function isNoise(t) {
  * extract a ±window context around each occurrence.
  * Returns { windows: [{ words:[low...], text, doc }], occurrences, docsWithHits }.
  */
-export function extractWindows(docs, term, window, stop) {
-  const q = tokenize(term).map((t) => t.low);
+export function extractWindows(docs, term, window, stop, lang = LANG.en) {
+  const qt = tokenize(term, lang);
+  const q = qt.map((t) => t.low);
   if (!q.length) return { windows: [], occurrences: 0, docsWithHits: 0, qTokens: q };
-  const lastForms = targetForms(q[q.length - 1]);
-  const allTargetForms = new Set(q.flatMap((t) => [...targetForms(t)]));
+  const matchers = q.map((w) => formMatcher(w, lang));
+  const isTargetForm = (w) => matchers.some((m) => m(w));
+  // Chinese: find the search word as a substring (segmentation of the word in
+  // isolation can differ from its segmentation in running text).
+  const substring = lang.segment === 'intl';
+  const needle = term.trim().toLowerCase();
   const seenText = new Set();
   const seenWin = new Set();
   const windows = [];
   let occurrences = 0;
   let docsWithHits = 0;
 
+  const addWindow = (doc, toks, i0, i1) => { // target occupies tokens i0..i1 (inclusive)
+    occurrences++;
+    const a = Math.max(0, i0 - window);
+    const b = Math.min(toks.length, i1 + 1 + window);
+    const words = [];
+    for (let k = a; k < b; k++) {
+      if (k >= i0 && k <= i1) continue;
+      const w = toks[k].low;
+      if (stop.has(w) || isNoise(w, lang.minLen) || isTargetForm(w) || (substring && (needle.includes(w) || w.includes(needle)))) continue;
+      words.push(w);
+    }
+    const text = substring ? doc.text.slice(toks[a].s, toks[b - 1].e) : toks.slice(a, b).map((t) => t.raw).join(' ');
+    const sig = text.toLowerCase();
+    if (seenWin.has(sig)) return; // boilerplate repeated verbatim
+    seenWin.add(sig);
+    windows.push({ words, text, doc });
+  };
+
   for (const doc of docs) {
     const key = doc.text.trim().toLowerCase();
     if (seenText.has(key)) continue; // identical text from two sources
     seenText.add(key);
-    const toks = tokensOf(doc);
-    let hit = false;
-    for (let i = 0; i + q.length <= toks.length; i++) {
-      let ok = true;
-      for (let j = 0; j < q.length - 1; j++) if (toks[i + j].low !== q[j]) { ok = false; break; }
-      if (!ok || !lastForms.has(toks[i + q.length - 1].low)) continue;
-      occurrences++;
-      hit = true;
-      const a = Math.max(0, i - window);
-      const b = Math.min(toks.length, i + q.length + window);
-      const words = [];
-      for (let k = a; k < b; k++) {
-        if (k >= i && k < i + q.length) continue;
-        const w = toks[k].low;
-        if (stop.has(w) || allTargetForms.has(w) || isNoise(w)) continue;
-        words.push(w);
+    const toks = tokensOf(doc, lang);
+    const before = occurrences;
+    if (substring) {
+      const low = doc.text.toLowerCase();
+      let ti = 0;
+      for (let p = low.indexOf(needle); p >= 0 && needle; p = low.indexOf(needle, p + needle.length)) {
+        while (ti < toks.length && toks[ti].e <= p) ti++;
+        if (ti >= toks.length) break;
+        let tj = ti;
+        while (tj + 1 < toks.length && toks[tj + 1].s < p + needle.length) tj++;
+        addWindow(doc, toks, ti, tj);
       }
-      const text = toks.slice(a, b).map((t) => t.raw).join(' ');
-      const sig = text.toLowerCase();
-      if (seenWin.has(sig)) continue; // boilerplate repeated verbatim
-      seenWin.add(sig);
-      windows.push({ words, text, doc });
+    } else {
+      for (let i = 0; i + q.length <= toks.length; i++) {
+        let ok = true;
+        for (let j = 0; j < q.length - 1; j++) if (toks[i + j].low !== q[j]) { ok = false; break; }
+        if (!ok || !matchers[q.length - 1](toks[i + q.length - 1].low)) continue;
+        addWindow(doc, toks, i, i + q.length - 1);
+      }
     }
-    if (hit) docsWithHits++;
+    if (occurrences > before) docsWithHits++;
   }
   return { windows, occurrences, docsWithHits, qTokens: q };
 }
@@ -135,16 +135,16 @@ const ids = new WeakMap();
 let nextId = 1;
 const idOf = (o) => { if (!ids.has(o)) ids.set(o, nextId++); return ids.get(o); };
 
-function prepare(docs, term, window, stop) {
+function prepare(docs, term, window, stop, lang) {
   let byKey = prepCache.get(docs);
   if (!byKey) { byKey = new Map(); prepCache.set(docs, byKey); }
-  const key = `${term.trim().toLowerCase()}|${window}|${idOf(stop)}`;
+  const key = `${lang.code}|${term.trim().toLowerCase()}|${window}|${idOf(stop)}`;
   if (byKey.has(key)) return byKey.get(key);
 
-  const ex = extractWindows(docs, term, window, stop);
+  const ex = extractWindows(docs, term, window, stop, lang);
   const raw = new Map();
   for (const w of ex.windows) for (const t of w.words) raw.set(t, (raw.get(t) || 0) + 1);
-  const canon = canonicalMap(raw);
+  const canon = lang.plurals ? canonicalMap(raw) : new Map([...raw.keys()].map((w) => [w, w]));
 
   const freq = new Map();     // key -> total occurrences
   const surface = new Map();  // key -> Map(surface form -> count)
@@ -186,8 +186,8 @@ function associations(prep, reference) {
   return assoc;
 }
 
-export function buildNetwork(docs, term, { window = 5, topN = 30, minCooc = 2, maxLinksPerNode = 6, stop = new Set(), rank = 'frequency', reference = null } = {}) {
-  const prep = prepare(docs, term, window, stop);
+export function buildNetwork(docs, term, { window = 5, topN = 30, minCooc = 2, maxLinksPerNode = 6, stop = new Set(), rank = 'frequency', reference = null, lang = LANG.en } = {}) {
+  const prep = prepare(docs, term, window, stop, lang);
   const { ex, freq, surface, ctx, winSets } = prep;
   const vocab = freq.size;
   const assoc = reference ? associations(prep, reference) : new Map();

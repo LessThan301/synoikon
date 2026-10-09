@@ -1,15 +1,33 @@
+import { LANGS } from './languages.js';
+
+const ALL = LANGS.map((l) => l.code);
+
 // Corpus collection. Every source here is free, key-less and CORS-enabled,
 // so the whole app can run as static files (e.g. on GitHub Pages).
 
 const TIMEOUT_MS = 15000;
 
-async function getJSON(url) {
+async function getJSON(url, attempt = 0) {
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
   try {
-    const res = await fetch(url, { signal: ctrl.signal });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    // Browsers send their own User-Agent; in Node (tests/build scripts) identify
+    // ourselves as Wikimedia's API etiquette asks, otherwise requests get throttled.
+    const headers = typeof window === 'undefined' ? { 'User-Agent': 'ContexterTests/1.0 (https://github.com/LessThan301/contexter)' } : undefined;
+    const res = await fetch(url, { signal: ctrl.signal, headers });
+    if (!res.ok) {
+      const err = new Error(`HTTP ${res.status}`);
+      err.retry = res.status === 429 || res.status >= 500;
+      throw err;
+    }
     return await res.json();
+  } catch (err) {
+    // Rate limits / transient server or network errors: back off and retry twice.
+    if (attempt < 2 && (err.retry || err.name === 'TypeError')) {
+      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1) + Math.random() * 500));
+      return getJSON(url, attempt + 1);
+    }
+    throw err;
   } finally {
     clearTimeout(timer);
   }
@@ -90,23 +108,23 @@ async function hackerNews(term, n) {
 
 export const SOURCES = {
   wikiSnippets: {
-    label: 'Wikipedia search snippets', langs: ['en', 'de', 'fr', 'es', 'it', 'nl'], default: true,
+    label: 'Wikipedia search snippets', langs: ALL, default: true,
     fetch: (term, lang, size) => mediaWikiSnippets(`${lang}.wikipedia.org`, 'Wikipedia snippets', term, size),
   },
   wikiIntros: {
-    label: 'Wikipedia article intros', langs: ['en', 'de', 'fr', 'es', 'it', 'nl'], default: true,
+    label: 'Wikipedia article intros', langs: ALL, default: true,
     fetch: (term, lang, size) => wikipediaIntros(lang, term, Math.max(20, Math.round(size / 10))),
   },
   wikiquote: {
-    label: 'Wikiquote', langs: ['en', 'de', 'fr', 'es', 'it', 'nl'], default: true,
+    label: 'Wikiquote', langs: ALL, default: true,
     fetch: (term, lang, size) => mediaWikiSnippets(`${lang}.wikiquote.org`, 'Wikiquote', term, Math.round(size / 2)),
   },
   wiktionary: {
-    label: 'Wiktionary', langs: ['en', 'de', 'fr', 'es', 'it', 'nl'], default: false,
+    label: 'Wiktionary', langs: ALL, default: false,
     fetch: (term, lang, size) => mediaWikiSnippets(`${lang}.wiktionary.org`, 'Wiktionary', term, Math.round(size / 4)),
   },
   hackerNews: {
-    label: 'Hacker News comments', langs: ['en'], default: true,
+    label: 'Hacker News comments (English only)', langs: ['en'], default: true,
     fetch: (term, lang, size) => hackerNews(term, Math.min(1000, Math.round(size / 2))),
   },
 };

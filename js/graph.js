@@ -10,6 +10,8 @@ const TARGET_ID = '__target__';
 const TARGET_COLOR = '#ff6b4a';
 const MAX_DPR = 2;          // sharper than this costs fill-rate without visible gain
 const LABEL_MIN_PX = 7;     // labels smaller than this on screen are skipped (level of detail)
+const SCRIPT_FONTS = '"Noto Sans SC", "Noto Sans Devanagari", "Noto Sans Bengali", "Noto Naskh Arabic", "Noto Nastaliq Urdu"';
+const RTL_RE = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
 
 export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   const ctx = canvas.getContext('2d');
@@ -24,6 +26,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   let userMoved = false;     // the user zoomed/panned: don't auto-fit any more
   let frame = 0;
   let pointer = null, pointerFrame = 0;
+  let fontStack = `Inter, ui-sans-serif, system-ui, ${SCRIPT_FONTS}, sans-serif`;
 
   const sim = d3.forceSimulation()
     .alphaMin(0.004)
@@ -92,6 +95,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
       d.color = d.target ? TARGET_COLOR : tColor(share.get(d.id)?.s ?? 0);
       d.font = d.target ? Math.round(Math.max(14, Math.min(22, d.r * 0.42))) : Math.round(Math.max(10, Math.min(17, d.r * 0.42)));
       d.inside = d.target || d.r >= 18;
+      d.rtl = RTL_RE.test(d.label);
     }
 
     adj = new Map(nodes.map((d) => [d.id, new Map()]));
@@ -207,9 +211,10 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
       const dim = hovered && !focus;
       if (d.font !== font || d.target) {
         font = d.font;
-        ctx.font = `${d.target ? 700 : 400} ${font}px Inter, ui-sans-serif, system-ui, sans-serif`;
+        ctx.font = `${d.target ? 700 : 400} ${font}px ${fontStack}`;
       }
       ctx.globalAlpha = dim ? 0.12 : 1;
+      ctx.direction = d.rtl ? 'rtl' : 'ltr';
       const y = d.inside ? d.y : d.y + d.r + font * 0.75 + 1;
       ctx.strokeText(d.label, d.x, y);
       ctx.fillText(d.label, d.x, y);
@@ -335,7 +340,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     }
     const f = (v) => Math.round(v * 10) / 10;
     const out = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${f(xa)} ${f(ya)} ${f(xb - xa)} ${f(yb - ya)}" width="${Math.round(xb - xa)}" height="${Math.round(yb - ya)}">`,
-      '<style>text{font-family:Inter,system-ui,sans-serif;fill:#e9ecf7;paint-order:stroke;stroke:rgba(15,18,32,.85);stroke-width:3px;stroke-linejoin:round;text-anchor:middle}</style>',
+      `<style>text{font-family:${fontStack.replace(/"/g, "'")};fill:#e9ecf7;paint-order:stroke;stroke:rgba(15,18,32,.85);stroke-width:3px;stroke-linejoin:round;text-anchor:middle}</style>`,
       `<rect x="${f(xa)}" y="${f(ya)}" width="${f(xb - xa)}" height="${f(yb - ya)}" fill="#0f1220"/>`, '<g stroke-linecap="round">'];
     for (const b of buckets) {
       for (const l of b.links) out.push(`<line x1="${f(l.source.x)}" y1="${f(l.source.y)}" x2="${f(l.target.x)}" y2="${f(l.target.y)}" stroke="rgb(${b.color})" stroke-opacity="${f(b.alpha * 100) / 100}" stroke-width="${f(b.width)}"/>`);
@@ -344,7 +349,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     for (const d of nodes) out.push(`<circle cx="${f(d.x)}" cy="${f(d.y)}" r="${f(d.r)}" fill="${d.color}"${d.target ? '' : ' fill-opacity="0.88"'}/>`);
     for (const d of nodes) {
       const y = d.inside ? d.y : d.y + d.r + d.font * 0.75 + 1;
-      out.push(`<text x="${f(d.x)}" y="${f(y)}" dy="0.35em" font-size="${d.font}"${d.target ? ' font-weight="700"' : ''}>${esc(d.label)}</text>`);
+      out.push(`<text x="${f(d.x)}" y="${f(y)}" dy="0.35em" font-size="${d.font}"${d.target ? ' font-weight="700"' : ''}${d.rtl ? ' direction="rtl" unicode-bidi="embed"' : ''}>${esc(d.label)}</text>`);
     }
     out.push('</svg>');
     return out.join('\n');
@@ -356,12 +361,19 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
 
   return {
     setData, fit, clear, toSVG,
+    redraw: requestDraw,
+    /** Prefer the language's own web font (e.g. Nastaliq for Urdu) ahead of the generic stack. */
+    setLanguage: (lang) => {
+      const own = lang.font ? `"${lang.font.family}", ` : '';
+      fontStack = `Inter, ${own}ui-sans-serif, system-ui, ${SCRIPT_FONTS}, sans-serif`;
+    },
     zoomBy: (f) => { userMoved = true; sel.transition().duration(250).call(zoom.scaleBy, f); },
     // small read-only hooks used by the automated tests
     debug: {
       count: () => ({ nodes: nodes.length, links: links.length, buckets: buckets.length }),
       labels: () => nodes.filter((d) => !d.target).map((d) => d.label),
       targetLabel: () => target?.label,
+      fontStack: () => fontStack,
       screenPos: (i) => { const d = nodes[i]; if (!d) return null; const r = canvas.getBoundingClientRect(); const [x, y] = t.apply([d.x, d.y]); return { x: r.left + x, y: r.top + y, label: d.label }; },
       hovered: () => hovered?.label ?? null,
       settled: () => sim.alpha() < sim.alphaMin(),

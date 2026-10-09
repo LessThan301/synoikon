@@ -21,8 +21,8 @@ interactive semantic network … Size of circles shows frequency of neighbors.�
 - **Click** a circle (or a row in the neighbor table) to map that word instead.
 - **Drag** circles, **scroll/pinch** to zoom, drag the background to pan. ⤢ fits, ⤓ downloads an SVG.
 - **Settings**: ranking mode (Distinctive/Frequency), number of neighbors, context window (± words), minimum co-occurrence for a line,
-  maximum lines per word, corpus size, English/German stopwords, which sources to use.
-- Language selector (EN, DE, FR, ES, IT, NL) switches the Wikipedia/Wikiquote/Wiktionary editions.
+  maximum lines per word, corpus size, stopwords (the selected language's list, plus optionally English), which sources to use.
+- The **language selector** (21 languages, shown by native name) switches the Wikipedia/Wikiquote/Wiktionary editions, the tokenizer, the stopwords and the background list. See [Languages](#languages).
 - Links are shareable: `…/#q=river&lang=en` (add `&rank=frequency` for frequency mode).
 
 ## Where the text comes from
@@ -37,10 +37,47 @@ All requests go straight from the browser to free, key-less, CORS-enabled APIs. 
 | Wiktionary search (off by default) | dictionary usage snippets |
 | Hacker News via Algolia (English only) | comments containing the word |
 
+## Languages
+
+| Language | Code | Text sources | Stopwords | Background list (Distinctive) | Tokenization / matching notes |
+| --- | --- | --- | --- | --- | --- |
+| English | en | Wikipedia, Wikiquote, Wiktionary, Hacker News | Contexter's own list | Wikipedia (IlyaSemenov) | suffix rules (river/rivers) |
+| 中文 Chinese (Mandarin) | zh | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `cmn_wikipedia_2021_300K` | `Intl.Segmenter` words; search word matched as a substring; bigram fallback |
+| हिन्दी Hindi | hi | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `hin_wikipedia_2021_300K` | stem prefix (नदी → नदियों) |
+| Español | es | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix, plurals merged |
+| العربية Arabic | ar | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov), re-normalised | diacritics/tatweel removed, alef unified, ال/وال/بال/لل… article stripped |
+| Français | fr | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix, plurals merged |
+| বাংলা Bengali | bn | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `ben_wikipedia_2021_300K` | stem prefix |
+| Português | pt | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix, plurals merged |
+| Русский Russian | ru | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix (река → реки/реке/рекой) |
+| Bahasa Indonesia | id | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `ind_wikipedia_2021_300K` | word + up to 3 letters (sungainya) |
+| اردو Urdu | ur | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `urd_wikipedia_2021_300K` | diacritics removed; word + ≤ 2 letters (دریائے) |
+| Deutsch | de | Wikipedia, Wikiquote, Wiktionary | Contexter list + stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | suffix rules |
+| Italiano | it | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix (fiume → fiumi) |
+| Polski | pl | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | stem prefix |
+| Українська | uk | Wikipedia, Wikiquote, Wiktionary | stopwords-iso (only 73 words) + wiki terms | Wikipedia (IlyaSemenov) | stem prefix |
+| Nederlands | nl | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | word + up to 3 letters |
+| Română | ro | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `ron_wikipedia_2021_300K` | stem prefix |
+| Ελληνικά Greek | el | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `ell_wikipedia_2021_300K` | accent-insensitive; stem prefix |
+| Magyar | hu | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `hun_wikipedia_2021_300K` | word + up to 5 letters (folyóban) |
+| Čeština | cs | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Leipzig `ces_wikipedia_2021_300K` | stem prefix |
+| Svenska | sv | Wikipedia, Wikiquote, Wiktionary | stopwords-iso + wiki terms | Wikipedia (IlyaSemenov) | word + up to 3 letters |
+
+- **Hacker News** is English-only, so it's disabled for the other languages.
+- **Lazy loading:** stopword lists (`data/stop-xx.txt`, 1–8 KB), background lists (`data/freq-xx.txt`, ~200 KB gzipped) and web fonts are fetched only when a language is used.
+- **Tokenizer:** Unicode-aware. A word is a letter or digit followed by letters, digits, **combining marks** (`\p{M}`: Devanagari/Bengali vowel signs and viramas, Arabic harakat), ZWJ/ZWNJ (Indic conjuncts, Urdu), apostrophes and hyphens.
+- **Chinese:** segmented with `Intl.Segmenter('zh', {granularity: 'word'})` (Chrome/Edge/Safari, Firefox ≥ 125). Older browsers fall back to overlapping character bigrams that skip very frequent function characters (tested: noticeably noisier, but usable).
+- **Right-to-left (Arabic, Urdu):**
+  - The search box, snippets, table cells and labels use `dir="auto"` / `<bdi>`.
+  - Canvas labels are drawn with `direction = 'rtl'`.
+  - The SVG export marks RTL labels.
+- **Fonts:** Devanagari, Bengali, Arabic (Noto Naskh), Urdu (Noto Nastaliq) and Simplified Chinese (Noto Sans SC, split by Unicode range so only the needed glyphs download) come from [Fontsource](https://fontsource.org/) on jsDelivr (SIL OFL). They load only for those languages; the canvas waits for them and redraws.
+  - The downloaded SVG names the same font stack, so the viewer needs those fonts or system fonts for the script.
+
 ## Method
 
 1. **Collect** texts from the enabled sources (in parallel; one failing source doesn’t break the rest). Duplicate texts are removed.
-2. **Tokenize** (Unicode-aware, lower-cased) and find every occurrence of the search word, including simple inflections (river/rivers, Wald/Walde…). Multi-word phrases are matched as a sequence.
+2. **Tokenize** (Unicode-aware, lower-cased, language-specific normalisation; see [Languages](#languages)) and find every occurrence of the search word, including simple inflections. Multi-word phrases are matched as a sequence; Chinese words as substrings.
 3. For each occurrence take a **context window** of ±*w* words. Identical windows (boilerplate) are counted once. Stopwords, numbers, very short tokens and forms of the search word itself are dropped; simple plurals are merged with their singular.
 4. **Counts**
    - `freq(n)` = occurrences of neighbor *n* inside all windows → node area.
@@ -94,7 +131,16 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-D3 v7 is loaded from the jsDelivr CDN. Background word frequencies (`data/freq-*.txt`, top 40k words for EN/DE/FR/ES/IT/NL, about 220 KB gzipped each, loaded only for the selected language) come from [IlyaSemenov/wikipedia-word-frequency](https://github.com/IlyaSemenov/wikipedia-word-frequency) (MIT).
+D3 v7 and the script web fonts are loaded from the jsDelivr CDN.
+
+### Data sources & credits
+
+- **Background word frequencies** (`data/freq-*.txt`, top 40k words, frequencies rounded to 3 significant digits):
+  - en, de, fr, es, it, nl, pt, ru, pl, uk, sv, ar: whole-Wikipedia counts from [IlyaSemenov/wikipedia-word-frequency](https://github.com/IlyaSemenov/wikipedia-word-frequency) (MIT).
+  - zh, hi, bn, ur, id, ro, el, hu, cs: not in that set (its Chinese list isn't word-segmented). For these, Contexter counted words itself, with its own tokenizer, in the 300K-sentence Wikipedia corpora of the [Leipzig Corpora Collection](https://wortschatz.uni-leipzig.de/en/download) (downloads licensed CC BY, per their [terms](https://wortschatz.uni-leipzig.de/en/usage)). Citation: D. Goldhahn, T. Eckart, U. Quasthoff, *Building Large Monolingual Dictionaries at the Leipzig Corpora Collection: From 100 to 200 Languages*, LREC 2012.
+- **Stopwords:** [stopwords-iso](https://github.com/stopwords-iso/stopwords-iso) (MIT), normalised with Contexter's tokenizer. Contexter adds a few wiki-boilerplate words per language (disambiguation phrases, "see also", "(in English: …)"). English uses Contexter's own list.
+- **Fonts:** Google Noto via Fontsource (SIL Open Font License).
+- **Rebuilding the data:** `node tools/build-data.mjs <stopwords-iso.json> <ilya-dir> <leipzig-dir>` (inputs are downloaded separately; see the header of the script).
 
 ### Tests (optional)
 
@@ -106,6 +152,9 @@ python3 -m http.server 8765 &                  # from the repo root
 node tests/e2e.mjs river en                    # end-to-end: search, ranking toggle, hover, zoom, drag, slider, SVG, click
 node tests/e2e.mjs river en 390 844            # same on a 390 px touch phone (pinch, touch drag, tap)
 node tests/perf.mjs http://localhost:8765/     # FPS / frame-time profile under 4x CPU throttling
+node tests/languages.test.mjs                  # Node: live corpus + top neighbors for every language's sample word
+node tests/languages.e2e.mjs                   # browser: every language renders, fonts load, RTL, no console errors
+node tests/ranking.test.mjs río es             # Frequency vs Distinctive for any word/language
 ```
 
 ## Hosting
@@ -116,5 +165,17 @@ Any static host works. On GitHub Pages: push to GitHub → *Settings → Pages* 
 
 - Corpus = what free APIs return (mostly encyclopedic text plus Hacker News), so it’s skewed toward Wikipedia-style usage (e.g. place names for “river”). It doesn’t represent all language on the web.
 - Search snippets are short (≈30 words), so wide windows mostly help with article intros and comments.
-- Stemming is deliberately simple (plural/inflection suffixes only).
+- Stemming is deliberately simple: suffix rules for English/German, and elsewhere "stem prefix + a few letters".
+  - This misses forms that change the stem (Arabic broken plurals نهر → أنهار, Czech řeka → řece) and occasionally catches an unrelated word that shares the prefix.
+  - Neighbors are not lemmatised: Slavic, Hungarian, etc. show several case forms of one word (басейн / басейну).
+- **Chinese:**
+  - Wikipedia returns a mix of Simplified and Traditional characters, so variants such as 境内/境內 appear as separate words.
+  - The background list comes from a mixed-script corpus.
+  - Single-character words are ignored.
+- **Greek:** labels are shown without accents (matching is accent-insensitive).
+- **Arabic:** labels are shown without the article ال.
+- **Background lists:** the Leipzig-based lists (zh, hi, bn, ur, id, ro, el, hu, cs) come from only about 4–6 M tokens, versus 0.2–2.5 G for the whole-Wikipedia lists. Rare words in those languages get less reliable distinctiveness scores.
+- **Stopwords:** stopwords-iso quality varies (Ukrainian has only 73 words; the Russian list contains a few content words). Function words like Hindi वाली can still appear. In Distinctive mode they rarely matter.
+- **Foreign names:** many wikis cite foreign names ("(English: river)"), so words like *river* / *rio* show up as neighbors in several languages.
+- **Hacker News:** English only.
 - Neighbors are ranked by raw frequency, so very general words can rank high. Use the stopword toggles or a higher *N*.
