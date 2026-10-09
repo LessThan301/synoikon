@@ -39,7 +39,7 @@ console.log('nodes after topN=15:', await page.locator('#graph g.node').count())
 const lbl = await page.locator('#graph g.node:not(.target) text').nth(0).textContent();
 await page.locator('#graph g.node:not(.target) circle.body').nth(0).click({ force: true });
 await page.waitForFunction((l) => document.querySelector('#term').value === l, lbl, { timeout: 10000 });
-await page.waitForSelector('#graph g.node.target', { timeout: 45000 });
+await page.waitForFunction((l) => document.querySelector('#graph g.node.target text')?.textContent === l, lbl, { timeout: 45000 });
 await page.waitForTimeout(1500);
 console.log('clicked', lbl, '-> target now', await page.locator('#graph g.node.target text').textContent(), 'nodes', await page.locator('#graph g.node').count());
 console.log('ERRORS:', errors.length ? errors : 'none');
