@@ -66,6 +66,13 @@
       <details open>
         <summary>Settings</summary>
         <div class="controls">
+          <div class="seg-wrap">
+            <span class="seg-label">Rank neighbors by</span>
+            <div class="seg" role="radiogroup" aria-label="Rank neighbors by">
+              <label title="Words that occur near your word much more often than in general Wikipedia text"><input type="radio" name="rank" value="distinctive" checked><span>Distinctive</span></label>
+              <label title="Simply the most frequent words near your word"><input type="radio" name="rank" value="frequency"><span>Frequency</span></label>
+            </div>
+          </div>
           <label>Neighbors shown <output id="topNOut">30</output>
             <input id="topN" type="range" min="5" max="80" value="30">
           </label>
@@ -108,7 +115,8 @@
 
       <details id="tableBox" class="hidden">
         <summary>Neighbor table</summary>
-        <table class="table"><thead><tr><th>Word</th><th title="Occurrences inside context windows">Freq.</th><th title="Windows shared with the search word">With word</th></tr></thead><tbody id="tableBody"></tbody></table>
+        <p class="note" id="tableNote"></p>
+        <table class="table"><thead><tr><th>Word</th><th title="Occurrences inside context windows (circle area)">Freq.</th><th title="Windows shared with the search word">With word</th><th title="Distinctiveness: log2 of how many times more often than expected from general Wikipedia text">Distinct.</th></tr></thead><tbody id="tableBody"></tbody></table>
       </details>
 
       <p class="about">How it works: see the <a href="README.md">README</a>. Text comes live from Wikipedia, Wikiquote, Wiktionary and Hacker News; nothing is stored.</p>

@@ -25,6 +25,20 @@ const info = await page.evaluate(() => ({
 }));
 console.log('time ms', Date.now() - t0, JSON.stringify(info, null, 1));
 await page.screenshot({ path: `./shot-${word}-${width}.png` });
+// ranking modes: default Distinctive, then Frequency, then back
+const labelsNow = () => page.evaluate(() => [...document.querySelectorAll('#graph g.node:not(.target) text')].map((t) => t.textContent));
+console.log('mode default:', await page.locator('input[name=rank]:checked').getAttribute('value'));
+const distinct = await labelsNow();
+await page.click('.seg label:has(input[value=frequency])');
+await page.waitForTimeout(800);
+const freq = await labelsNow();
+console.log('DISTINCTIVE:', distinct.join(' '));
+console.log('FREQUENCY:  ', freq.join(' '));
+console.log('only in frequency:', freq.filter((w) => !distinct.includes(w)).join(' '));
+console.log('hash:', await page.evaluate(() => location.hash));
+await page.click('.seg label:has(input[value=distinctive])');
+await page.waitForTimeout(800);
+console.log('table first rows:', (await page.locator('#tableBody tr').evaluateAll((rs) => rs.slice(0, 3).map((r) => [...r.cells].map((c) => c.textContent).join(' ')))).join(' | '));
 // hover a neighbor, check tooltip + dimming
 const nodes = page.locator('#graph g.node:not(.target) circle.body');
 await nodes.nth(0).hover({ force: true });

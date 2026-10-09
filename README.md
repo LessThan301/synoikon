@@ -20,10 +20,10 @@ interactive semantic network … Size of circles shows frequency of neighbors.�
   panel shows real text samples where both words appear.
 - **Click** a circle (or a row in the neighbor table) to map that word instead.
 - **Drag** circles, **scroll/pinch** to zoom, drag the background to pan. ⤢ fits, ⤓ downloads an SVG.
-- **Settings**: number of neighbors, context window (± words), minimum co-occurrence for a line,
+- **Settings**: ranking mode (Distinctive/Frequency), number of neighbors, context window (± words), minimum co-occurrence for a line,
   maximum lines per word, corpus size, English/German stopwords, which sources to use.
 - Language selector (EN, DE, FR, ES, IT, NL) switches the Wikipedia/Wikiquote/Wiktionary editions.
-- Links are shareable: `…/#q=river&lang=en`.
+- Links are shareable: `…/#q=river&lang=en` (add `&rank=frequency` for frequency mode).
 
 ## Where the text comes from
 
@@ -46,8 +46,19 @@ All requests go straight from the browser to free, key-less, CORS-enabled APIs. 
    - `freq(n)` = occurrences of neighbor *n* inside all windows → node area.
    - `cooc(word, n)` = number of windows containing *n* → line from the centre.
    - `cooc(a, b)` = number of windows containing both *a* and *b* → line between neighbors.
-5. Keep the top *N* neighbors by frequency (must appear in ≥ 2 windows). Neighbor–neighbor lines need at least the minimum co-occurrence, and each word keeps only its strongest few lines to avoid a hairball.
-6. **Layout** (D3 force simulation). Each line’s strength is `s = √(count / max count)` on one scale for all lines. Its preferred length (the gap between circle edges) is `gap = gapMin + (gapMax − gapMin)·(1 − s)`, so frequent pairs sit close together. Strong lines also pull harder, plus mild repulsion and collision so circles don’t overlap. The search word is pinned at the centre. Its circle uses the same area scale but is capped so it doesn’t fill the screen (the tooltip says when the cap applies).
+5. **Choose the top *N* neighbors** with the *Rank neighbors by* toggle:
+   - **Distinctive** (default) ranks by association strength, not raw count. Each neighbor’s count inside the windows, `a` (out of `Nin` window tokens), is compared with its count `r` in all of Wikipedia in that language (`R` tokens; bundled lists in `data/`).
+     - `E = Nin·(a+r)/(Nin+R)` is how often the word would appear in the windows if it were as common as in general text.
+     - **Score** = smoothed log-ratio `log2((a+1)/(E+1))`. A score of 3 means about 8× more often than expected. The +1 (add-one) smoothing keeps tiny expected counts from blowing up.
+     - **Filters:** a word must appear in **≥ 3 windows** and have Dunning **log-likelihood G² ≥ 10.83** (p < 0.001). One-off rarities can’t dominate.
+     - Words missing from the 40k-word list get a count of half the list’s cutoff.
+     - Effect: generic words (south, north, water, state, united…) drop out, and words that really belong to the target (tributary, flowing, basin, creek, rises…) move up.
+   - **Frequency** ranks by raw count (must appear in ≥ 2 windows).
+   - Either way, **circle area is still frequency**. Only *which* neighbors appear changes. The tooltip and neighbor table show the distinctiveness score (plus the ≈× factor and G² in the tooltip).
+
+   Why not use the rest of the fetched text as the background? Every fetched text was retrieved *because* it contains the word, so it’s biased toward that word’s topic. Tested on “river”, an in-corpus background mostly pushed obscure river names up and left generic words like *major* and *south* near the top. A general-language reference fixes that.
+6. Neighbor–neighbor lines need at least the minimum co-occurrence, and each word keeps only its strongest few lines to avoid a hairball.
+7. **Layout** (D3 force simulation). Each line’s strength is `s = √(count / max count)` on one scale for all lines. Its preferred length (the gap between circle edges) is `gap = gapMin + (gapMax − gapMin)·(1 − s)`, so frequent pairs sit close together. Strong lines also pull harder, plus mild repulsion and collision so circles don’t overlap. The search word is pinned at the centre. Its circle uses the same area scale but is capped so it doesn’t fill the screen (the tooltip says when the cap applies).
 
 ## Run locally
 
@@ -59,12 +70,13 @@ python3 -m http.server 8000
 # open http://localhost:8000
 ```
 
-D3 v7 is loaded from the jsDelivr CDN.
+D3 v7 is loaded from the jsDelivr CDN. Background word frequencies (`data/freq-*.txt`, top 40k words for EN/DE/FR/ES/IT/NL, about 220 KB gzipped each, loaded only for the selected language) come from [IlyaSemenov/wikipedia-word-frequency](https://github.com/IlyaSemenov/wikipedia-word-frequency) (MIT).
 
 ### Tests (optional)
 
 ```bash
 node tests/analysis.test.mjs                   # analysis on a tiny corpus
+node tests/ranking.test.mjs river en           # Frequency vs Distinctive top-30 on a live corpus
 npm i playwright && npx playwright install chromium
 python3 -m http.server 8765 &                  # from the repo root
 node tests/e2e.mjs river en                    # headless end-to-end check, saves screenshots

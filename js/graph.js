@@ -142,7 +142,8 @@ export function renderGraph(svgEl, net, { onSelect, onFocus } = {}) {
       .map(([id, w]) => `${byId.get(id).label} <span class="muted">×${w}</span>`).join(', ');
     const html = d.target
       ? `<b>${esc(d.label)}</b><br><span class="muted">${d.freq} occurrences found · ${d.cooc} context windows${d.capped ? ' · circle capped for display' : ''}</span>`
-      : `<b>${esc(d.label)}</b><br>${d.freq}× near <i>${esc(target.label)}</i> <span class="muted">(in ${d.cooc} of ${target.cooc} windows)</span>`
+      : `<b>${esc(d.label)}</b> <span class="muted">#${d.rank}</span><br>${d.freq}× near <i>${esc(target.label)}</i> <span class="muted">(in ${d.cooc} of ${target.cooc} windows)</span>`
+        + (d.lr != null ? `<br>Distinctiveness <b>${d.lr.toFixed(1)}</b> <span class="muted">(≈${fmtX(d.lr)} more often than in general text; LL ${Math.round(d.g2)})</span>` : '')
         + (nb ? `<br><span class="muted">Often with:</span> ${nb}` : '')
         + `<br><span class="muted">Click to map “${esc(d.label)}”</span>`;
     const [x, y] = d3.pointer(event, svgEl.parentNode);
@@ -163,6 +164,11 @@ export function renderGraph(svgEl, net, { onSelect, onFocus } = {}) {
     focus: (id) => { const d = byId.get(id); if (d) highlight(d); },
     clear,
   };
+}
+
+function fmtX(lr) {
+  const x = 2 ** lr;
+  return x >= 10 ? `${Math.round(x)}×` : `${x.toFixed(1)}×`;
 }
 
 function esc(s) {

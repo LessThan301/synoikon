@@ -42,6 +42,7 @@ export function extractWindows(docs, term, window, stop) {
   const seenText = new Set();
   const seenWin = new Set();
   const windows = [];
+  const bg = new Map(); // filtered word counts OUTSIDE all context windows
   let occurrences = 0;
   let docsWithHits = 0;
 
@@ -50,6 +51,7 @@ export function extractWindows(docs, term, window, stop) {
     if (seenText.has(key)) continue; // identical text from two sources
     seenText.add(key);
     const toks = tokenize(doc.text);
+    const inWin = new Uint8Array(toks.length);
     let hit = false;
     for (let i = 0; i + q.length <= toks.length; i++) {
       let ok = true;
@@ -59,6 +61,7 @@ export function extractWindows(docs, term, window, stop) {
       hit = true;
       const a = Math.max(0, i - window);
       const b = Math.min(toks.length, i + q.length + window);
+      inWin.fill(1, a, b);
       const words = [];
       for (let k = a; k < b; k++) {
         if (k >= i && k < i + q.length) continue;
@@ -73,8 +76,14 @@ export function extractWindows(docs, term, window, stop) {
       windows.push({ words, text, doc });
     }
     if (hit) docsWithHits++;
+    for (let k = 0; k < toks.length; k++) {
+      if (inWin[k]) continue;
+      const w = toks[k].low;
+      if (stop.has(w) || allTargetForms.has(w) || isNoise(w)) continue;
+      bg.set(w, (bg.get(w) || 0) + 1);
+    }
   }
-  return { windows, occurrences, docsWithHits, qTokens: q };
+  return { windows, bg, occurrences, docsWithHits, qTokens: q };
 }
 
 /** Merge simple plural/singular pairs (e.g. "bank" + "banks") into one key. */
@@ -99,7 +108,26 @@ function canonicalMap(counts) {
  *  cooc(T, w)   = number of windows containing w                    -> link target–w
  *  cooc(a, b)   = number of windows containing both a and b         -> link a–b
  */
-export function buildNetwork(docs, term, { window = 5, topN = 30, minCooc = 2, maxLinksPerNode = 6, stop = new Set() } = {}) {
+/**
+ * Association of a neighbor with the search word, against a general-language
+ * reference corpus (Wikipedia word counts).
+ *   a = count inside context windows (Nin tokens in total)
+ *   r = count in the reference corpus (R tokens in total)
+ *   E = expected count inside windows if the word were as common as in general text
+ *   g2 = Dunning log-likelihood (2x2 table) -> is the difference significant?
+ *   lr = log2((a + 1) / (E + 1)) -> how much more often than expected (add-one smoothed)
+ */
+export function association(a, Nin, r, R) {
+  const E = (Nin * (a + r)) / (Nin + R);
+  const E2 = (R * (a + r)) / (Nin + R);
+  const term = (o, e) => (o > 0 ? o * Math.log(o / e) : 0);
+  const g2 = 2 * (term(a, E) + term(Nin - a, Nin - E) + term(r, E2) + term(R - r, R - E2));
+  return { expected: E, g2: a >= E ? g2 : -g2, lr: Math.log2((a + 1) / (E + 1)) };
+}
+
+export const DISTINCTIVE = { minWindows: 3, minG2: 10.83 /* p < 0.001 */ };
+
+export function buildNetwork(docs, term, { window = 5, topN = 30, minCooc = 2, maxLinksPerNode = 6, stop = new Set(), rank = 'frequency', reference = null } = {}) {
   const ex = extractWindows(docs, term, window, stop);
   const raw = new Map();
   for (const w of ex.windows) for (const t of w.words) raw.set(t, (raw.get(t) || 0) + 1);
@@ -123,11 +151,31 @@ export function buildNetwork(docs, term, { window = 5, topN = 30, minCooc = 2, m
   }
 
   const vocab = freq.size;
-  const top = [...freq.entries()]
-    .filter(([k]) => (ctx.get(k) || 0) >= Math.min(2, ex.windows.length))
-    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
-    .slice(0, topN)
-    .map(([k]) => k);
+  const Nin = [...freq.values()].reduce((x, y) => x + y, 0);
+
+  // association scores (only possible when a reference list is available)
+  const assoc = new Map();
+  if (reference) {
+    for (const [k, a] of freq) {
+      let r = 0;
+      for (const form of surface.get(k).keys()) r += reference.counts.get(form) ?? 0;
+      if (r === 0) r = reference.floor;
+      assoc.set(k, association(a, Nin, r, reference.total));
+    }
+  }
+  const useDistinctive = rank === 'distinctive' && reference;
+  let candidates = [...freq.entries()];
+  if (useDistinctive) {
+    candidates = candidates
+      .filter(([k]) => (ctx.get(k) || 0) >= DISTINCTIVE.minWindows && assoc.get(k).g2 >= DISTINCTIVE.minG2)
+      .sort((a, b) => assoc.get(b[0]).lr - assoc.get(a[0]).lr || b[1] - a[1]);
+  } else {
+    candidates = candidates
+      .filter(([k]) => (ctx.get(k) || 0) >= Math.min(2, ex.windows.length))
+      .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }
+  const eligible = candidates.length;
+  const top = candidates.slice(0, topN).map(([k]) => k);
   const idx = new Map(top.map((k, i) => [k, i]));
 
   // pairwise co-occurrence among the top-N neighbors
@@ -147,7 +195,7 @@ export function buildNetwork(docs, term, { window = 5, topN = 30, minCooc = 2, m
   const label = (k) => [...surface.get(k).entries()].sort((a, b) => b[1] - a[1])[0][0];
   const nodes = [
     { id: '__target__', label: term.trim(), freq: ex.occurrences, cooc: ex.windows.length, target: true },
-    ...top.map((k) => ({ id: k, label: label(k), freq: freq.get(k), cooc: ctx.get(k), samples: samples.get(k) })),
+    ...top.map((k, i) => ({ id: k, label: label(k), freq: freq.get(k), cooc: ctx.get(k), samples: samples.get(k), rank: i + 1, ...(assoc.get(k) || {}) })),
   ];
 
   const links = top.map((k) => ({ source: '__target__', target: k, weight: ctx.get(k), kind: 'target' }));
@@ -170,6 +218,7 @@ export function buildNetwork(docs, term, { window = 5, topN = 30, minCooc = 2, m
     stats: {
       docs: docs.length, docsWithHits: ex.docsWithHits, occurrences: ex.occurrences,
       windows: ex.windows.length, vocabulary: vocab, pairLinks: links.length - top.length,
+      rank: useDistinctive ? 'distinctive' : 'frequency', eligible,
     },
   };
 }
