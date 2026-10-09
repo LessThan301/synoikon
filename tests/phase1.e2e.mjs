@@ -1,14 +1,14 @@
 // Phase 1 end-to-end checks: PWA installability + service worker + offline, word of the day,
 // precomputed words, Share map, static word pages, analytics gating.
-// Serve first: node tools/serve.mjs 8765   (mounts the repo at /synoikon/ like GitHub Pages)
-// usage: node tests/phase1.e2e.mjs [base=http://localhost:8765/synoikon/] [width=1400] [height=900]
+// Serve first: node tools/serve.mjs 8765   (serves the repo at the site root, like synoikon.com)
+// usage: node tests/phase1.e2e.mjs [base=http://localhost:8765/] [width=1400] [height=900]
 import { chromium } from 'playwright';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
 import { wordOfDay, POPULAR } from '../js/words.js';
 
-const [base = 'http://localhost:8765/synoikon/', width = '1400', height = '900'] = process.argv.slice(2);
+const [base = 'http://localhost:8765/', width = '1400', height = '900'] = process.argv.slice(2);
 const mobile = +width < 600;
 const live = !base.includes('localhost');
 const userDir = fs.mkdtempSync(path.join(os.tmpdir(), 'ctx-pwa-'));
@@ -48,7 +48,7 @@ const man = await cdp.send('Page.getAppManifest');
 const manifest = JSON.parse(man.data || '{}');
 ok(man.errors.length === 0 && manifest.name === 'Synoikon', `manifest parses (${man.url}) errors=${JSON.stringify(man.errors)}`);
 const scopeUrl = new URL(manifest.scope, man.url).href, startUrl = new URL(manifest.start_url, man.url).href;
-ok(scopeUrl === base && startUrl.startsWith(base), `start_url ${startUrl} and scope ${scopeUrl} are inside the /synoikon/ subpath`);
+ok(scopeUrl === base && startUrl.startsWith(base), `start_url ${startUrl} and scope ${scopeUrl} are the site root`);
 const purposes = manifest.icons.map((i) => `${i.sizes}:${i.purpose}`);
 ok(purposes.includes('192x192:any') && purposes.includes('512x512:any') && purposes.includes('512x512:maskable'), `icons 192/512 + maskable: ${purposes.join(', ')}`);
 for (const icon of manifest.icons.filter((i) => i.type === 'image/png')) {
@@ -164,7 +164,7 @@ watch(wp);
 await wp.goto(`${base}w/en/${encodeURIComponent(pop)}/`, { waitUntil: 'networkidle' });
 const metaOf = (sel) => wp.locator(sel).getAttribute('content');
 ok((await wp.title()).includes(pop) && (await metaOf('meta[name=description]')).length > 80, `word page title/description: "${await wp.title()}"`);
-ok((await wp.locator('link[rel=canonical]').getAttribute('href')) === `https://lessthan301.github.io/synoikon/w/en/${encodeURIComponent(pop)}/`, 'canonical URL');
+ok((await wp.locator('link[rel=canonical]').getAttribute('href')) === `https://synoikon.com/w/en/${encodeURIComponent(pop)}/`, 'canonical URL');
 const ogImg = await metaOf('meta[property="og:image"]');
 ok(/\/w\/en\/.+\/og\.png$/.test(ogImg), `og:image is the pre-rendered PNG: ${ogImg}`);
 ok((await wp.locator('a.btn').first().getAttribute('href')).includes(`#q=${pop}&lang=en`), 'links into the app');

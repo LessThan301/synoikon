@@ -2,11 +2,11 @@
 
 **The company a word keeps, drawn from real text on the web.**
 
-Live: **https://lessthan301.github.io/synoikon/** · installable as an app · works offline for popular words ·
-[today’s word](https://lessthan301.github.io/synoikon/#wotd) · [all precomputed words](https://lessthan301.github.io/synoikon/w/) · [about & attribution](https://lessthan301.github.io/synoikon/about.html)
+Live: **https://synoikon.com/** · installable as an app · works offline for popular words ·
+[today’s word](https://synoikon.com/#wotd) · [all precomputed words](https://synoikon.com/w/) · [about & attribution](https://synoikon.com/about.html)
 
-*Formerly **Contexter**.* Old links (`lessthan301.github.io/contexter/…`, including `#q=` links and `/w/` pages) redirect to the
-same page here via the small [LessThan301/contexter](https://github.com/LessThan301/contexter) repo, whose `sw.js` also
+*Formerly **Contexter**.* Old links (`lessthan301.github.io/contexter/…` and `lessthan301.github.io/synoikon/…`, including `#q=`
+links and `/w/` pages) redirect to the same page on synoikon.com: `/synoikon/` via GitHub Pages' custom-domain redirect, `/contexter/` via the small [LessThan301/contexter](https://github.com/LessThan301/contexter) repo, whose `sw.js` also
 retires the old app's service worker and caches on devices that installed it; saved settings carry over.
 
 Type a word. Synoikon gathers hundreds of real sentences that contain it, looks at
@@ -144,8 +144,8 @@ Measured in headless Chromium with 4× CPU throttling, 80 neighbors, ±15 window
 ### Installable, offline-capable (PWA)
 
 - `manifest.webmanifest`: name, 192/512 icons + maskable icons, theme colours, `start_url`/`scope` relative to the manifest so
-  they resolve to `/synoikon/` on GitHub Pages, and a *Word of the day* shortcut.
-- `sw.js` (scope `/synoikon/`). Cache names carry content hashes written by `node tools/stamp-sw.mjs`; old caches are deleted on activate.
+  they resolve to the site root `/`, and a *Word of the day* shortcut.
+- `sw.js` (scope `/`). Cache names carry content hashes written by `node tools/stamp-sw.mjs`; old caches are deleted on activate.
 
   | Cache | What | Strategy |
   | --- | --- | --- |
@@ -193,17 +193,17 @@ and a button into the interactive map. Also `w/` and `w/<lang>/` indexes, `sitem
 ### Analytics
 
 Cloudflare Web Analytics (cookieless) is configured in `js/analytics.js` (`CF_ANALYTICS.token`; empty = off). It loads only on
-`lessthan301.github.io`, so local runs and tests send nothing, and it runs on the app, `about.html` and every word page.
+`synoikon.com` (and `www.`), so local runs and tests send nothing, and it runs on the app, `about.html` and every word page.
 
 ## Run locally
 
 It’s plain static files (ES modules), so it needs a local web server rather than `file://`.
-`tools/serve.mjs` mounts the repo at `/synoikon/` like GitHub Pages (the offline page and service worker expect that path):
+`tools/serve.mjs` serves the repo at the site root, like synoikon.com (the offline page and service worker expect that):
 
 ```bash
 cd synoikon
 node tools/serve.mjs 8765
-# open http://localhost:8765/synoikon/
+# open http://localhost:8765/
 ```
 
 D3 v7 and the script web fonts are loaded from the jsDelivr CDN.
@@ -233,19 +233,19 @@ node tests/ranking.test.mjs río es             # Frequency vs Distinctive for a
 node tests/words.test.mjs                      # word-of-the-day lists (≥60 × 21, single tokens, UTC day logic)
 node tests/precomputed.test.mjs                # precomputed record decodes to exactly the live network (482 checks)
 node tools/stamp-sw.mjs --check                # sw.js cache version matches the current files
-node tools/serve.mjs 8765 &                    # Phase 1 browser test needs the /synoikon/ mount:
-node tests/phase1.e2e.mjs http://localhost:8765/synoikon/            # PWA installability (CDP), SW, offline, WOTD, precomputed, share, pages, analytics
-node tests/phase1.e2e.mjs http://localhost:8765/synoikon/ 390 844    # same on a phone (Web Share with files is stubbed)
-node tests/sidebar.e2e.mjs http://localhost:8765/synoikon/            # sidebar: rail collapse, canvas refit, persistence, keyboard, RTL
-node tests/sidebar.e2e.mjs http://localhost:8765/synoikon/ 390 844    # drawer: open/close, backdrop, Esc, focus trap
-node tests/redirect.e2e.mjs [1400 900|390 844]                          # live: old /contexter/ links redirect, old SW/caches retired
+node tools/serve.mjs 8765 &                    # browser tests use the local server:
+node tests/phase1.e2e.mjs http://localhost:8765/            # PWA installability (CDP), SW, offline, WOTD, precomputed, share, pages, analytics
+node tests/phase1.e2e.mjs http://localhost:8765/ 390 844    # same on a phone (Web Share with files is stubbed)
+node tests/sidebar.e2e.mjs http://localhost:8765/            # sidebar: rail collapse, canvas refit, persistence, keyboard, RTL
+node tests/sidebar.e2e.mjs http://localhost:8765/ 390 844    # drawer: open/close, backdrop, Esc, focus trap
+node tests/redirect.e2e.mjs [1400 900|390 844]                          # live: old /contexter/, /synoikon/ and www links reach synoikon.com
 ```
 
-The e2e/perf/language tests take the base URL as an argument (`http://localhost:8765/synoikon/`).
+The e2e/perf/language tests take the base URL as an argument (`http://localhost:8765/`).
 
 ## Hosting
 
-Any static host works. On GitHub Pages: push to GitHub → *Settings → Pages* → deploy from the `main` branch, root folder.
+Any static host works. Live on GitHub Pages (deploy from `main`, root folder) with the custom domain **synoikon.com** (`CNAME` file; DNS at Cloudflare, DNS-only: apex A records to GitHub Pages, `www` CNAME to `lessthan301.github.io`; GitHub redirects `www` and `lessthan301.github.io/synoikon/` to the apex).
 
 ## Limitations
 
@@ -269,7 +269,6 @@ Any static host works. On GitHub Pages: push to GitHub → *Settings → Pages* 
   `data/precomputed` contains short excerpts of CC BY-SA text (and short HN excerpts), so those files are CC BY-SA too.
 - **Rich link previews** exist only for precomputed words (`/w/…` pages). `#q=` links show the generic preview because
   crawlers don’t run JavaScript or read URL fragments.
-- **robots.txt** is only honoured at the host root (`lessthan301.github.io/robots.txt`, which this project site doesn’t control).
   The copy here documents intent; submit `sitemap.xml` in Google Search Console instead.
 - **Install button** needs `beforeinstallprompt` (Chromium); Safari/iOS and Firefox use their own menus. **Web Share with files**
   works on Android Chrome and iOS Safari; elsewhere the card is downloaded.

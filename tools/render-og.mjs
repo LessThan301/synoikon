@@ -12,7 +12,7 @@ import { serve } from './serve.mjs';
 import { slug } from '../js/words.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = 'https://lessthan301.github.io/synoikon/';
+const SITE = 'https://synoikon.com/';
 const FORCE = process.argv.includes('--force');
 const i = process.argv.indexOf('--langs');
 const ONLY = i > 0 ? process.argv[i + 1].split(',') : null;
@@ -22,7 +22,7 @@ const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1200, height: 800 } });
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
-await page.goto(`http://localhost:${port}/synoikon/?og=1`, { waitUntil: 'networkidle' });
+await page.goto(`http://localhost:${port}/?og=1`, { waitUntil: 'networkidle' });
 await page.waitForFunction(() => window.__synoikonApp);
 
 async function render(code, word, url, file) {

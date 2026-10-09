@@ -21,7 +21,7 @@ const els = {
   tableBox: $('tableBox'), tableBody: $('tableBody'), examples: $('examples'), examplesLabel: $('examplesLabel'),
   errorTitle: $('errorTitle'), offlineWords: $('offlineWords'),
 };
-const SITE = new URL('./', location.href).href.replace(/[?#].*$/, ''); // e.g. https://lessthan301.github.io/synoikon/
+const SITE = new URL('./', location.href).href.replace(/[?#].*$/, ''); // e.g. https://synoikon.com/
 const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode */ } } };
 const sidebar = setupSidebar({ store });
 

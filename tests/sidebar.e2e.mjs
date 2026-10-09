@@ -2,7 +2,7 @@
 // keyboard access, RTL content, no console errors. Serve the repo first: node tools/serve.mjs 8765
 // usage: node tests/sidebar.e2e.mjs [baseUrl] [width] [height]
 import { chromium } from 'playwright';
-const [base = 'http://localhost:8765/synoikon/', width = '1400', height = '900'] = process.argv.slice(2);
+const [base = 'http://localhost:8765/', width = '1400', height = '900'] = process.argv.slice(2);
 const mobile = +width < 768;
 const browser = await chromium.launch();
 const context = await browser.newContext({ viewport: { width: +width, height: +height }, isMobile: +width < 600, hasTouch: +width < 600, deviceScaleFactor: 1, serviceWorkers: 'block' });

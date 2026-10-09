@@ -2,7 +2,7 @@
 // production host so local development and automated tests don't send beacons.
 export const CF_ANALYTICS = {
   token: 'fd0db7a5d3e946f39be6ce44cc1c35dc', // empty string = off
-  hosts: ['lessthan301.github.io'],
+  hosts: ['synoikon.com', 'www.synoikon.com', 'lessthan301.github.io'],
   src: 'https://static.cloudflareinsights.com/beacon.min.js',
 };
 

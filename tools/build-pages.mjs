@@ -11,7 +11,7 @@ import { decode } from '../js/precomputed.js';
 import { ATTRIBUTION } from '../js/card.js';
 
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
-const SITE = 'https://lessthan301.github.io/synoikon/';
+const SITE = 'https://synoikon.com/';
 const PRE = path.join(ROOT, 'data/precomputed');
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const enc = (s) => encodeURIComponent(slug(s));
@@ -172,11 +172,9 @@ const xml = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://ww
     .map((a) => a.trim().replace(/^<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">$/, '<xhtml:link rel="alternate" hreflang="$1" href="$2"/>')).join('')}</url>`),
   '</urlset>', ''].join('\n');
 fs.writeFileSync(path.join(ROOT, 'sitemap.xml'), xml);
-fs.writeFileSync(path.join(ROOT, 'robots.txt'), `# Crawlers only read robots.txt at the host root (lessthan301.github.io/robots.txt);
-# this copy documents intent and lists the sitemap for tools that look here.
-User-agent: *
-Allow: /synoikon/
-Disallow: /synoikon/offline.html
+fs.writeFileSync(path.join(ROOT, 'robots.txt'), `User-agent: *
+Allow: /
+Disallow: /offline.html
 Sitemap: ${SITE}sitemap.xml
 `);
 console.log(`built ${written.length} word pages in ${recs.size} languages, ${sitemap.length + 3} sitemap URLs`);

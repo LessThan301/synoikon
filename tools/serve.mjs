@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Static server that mounts the repo at /synoikon/ (like GitHub Pages) for tests and builds.
+// Static server for the repo at the site root (like GitHub Pages with the synoikon.com custom domain), for tests and builds.
 // usage: node tools/serve.mjs [port]
 import http from 'http';
 import fs from 'fs';
@@ -8,10 +8,10 @@ import { fileURLToPath } from 'url';
 const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const TYPES = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript', '.css': 'text/css', '.json': 'application/json',
   '.txt': 'text/plain; charset=utf-8', '.png': 'image/png', '.svg': 'image/svg+xml', '.webmanifest': 'application/manifest+json', '.xml': 'application/xml', '.md': 'text/markdown; charset=utf-8' };
-export function serve(port = 8765, base = '/synoikon/') {
+export function serve(port = 8765, base = '/') {
   const server = http.createServer((req, res) => {
     let p = decodeURIComponent(new URL(req.url, 'http://x').pathname);
-    if (p === '/' || p === base.slice(0, -1)) { res.writeHead(301, { Location: base }); res.end(); return; }
+    if (base !== '/' && p === base.slice(0, -1)) { res.writeHead(301, { Location: base }); res.end(); return; }
     if (!p.startsWith(base)) { res.writeHead(404); res.end('not found'); return; }
     p = path.join(ROOT, p.slice(base.length));
     if (!p.startsWith(ROOT)) { res.writeHead(403); res.end(); return; }
@@ -27,5 +27,5 @@ export function serve(port = 8765, base = '/synoikon/') {
 if (process.argv[1] === fileURLToPath(import.meta.url)) {
   const port = +(process.argv[2] || 8765);
   await serve(port);
-  console.log(`serving ${ROOT} at http://localhost:${port}/synoikon/`);
+  console.log(`serving ${ROOT} at http://localhost:${port}/`);
 }
