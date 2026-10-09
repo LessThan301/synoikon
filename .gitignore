@@ -3,3 +3,4 @@ node_modules/
 tests/*.png
 .DS_Store
 !/og.png
+languages-result.json

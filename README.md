@@ -19,8 +19,12 @@ interactive semantic network … Size of circles shows frequency of neighbors.�
 ## Using it
 
 - Type a word or short phrase and press **Map it** (or try an example chip).
-- **Hover** a circle: its connections light up, the tooltip shows counts, and the side
-  panel shows real text samples where both words appear.
+- **Sidebar** (left, full height): *Search & language*, *Ranking*, *Network* sliders, *Sources*, *Stopwords*, *Display & export*
+  and *Results* (corpus, samples, neighbor table), each scrolling inside the sidebar. On desktop it is open by default; the
+  panel button collapses it to an icon rail (the map widens and refits; the search moves to a top bar; the choice is remembered).
+  Rail icons jump to a section. On phones (< 768 px) it is a drawer: ☰ opens it over the map, Esc / × / tapping outside closes it.
+- **Hover** a circle: its connections light up, the tooltip shows counts, and the sidebar
+  shows real text samples where both words appear.
 - **Click** a circle (or a row in the neighbor table) to map that word instead.
 - **Drag** circles, **scroll/pinch** to zoom, drag the background to pan. ⤢ fits, ⤓ downloads an SVG.
 - **Settings**: ranking mode (Distinctive/Frequency), number of neighbors, context window (± words), minimum co-occurrence for a line,
@@ -31,7 +35,7 @@ interactive semantic network … Size of circles shows frequency of neighbors.�
 - **Share map** (share icon under the zoom buttons): a PNG card (1200×630 or 1080×1080) with the word, language, the network,
   the link and the text attribution. *Share image…* uses the Web Share API with files where the browser supports it (mobile);
   otherwise *Download PNG*. *Copy link* copies the static word page (for precomputed words, which has a proper preview image) or the `#q=` link.
-- **Install app**: appears in the header where the browser supports install prompts (Chrome/Edge/Android). On iOS use Safari’s *Share → Add to Home Screen*.
+- **Install app**: appears under *Display & export* where the browser supports install prompts (Chrome/Edge/Android). On iOS use Safari’s *Share → Add to Home Screen*.
 
 ## Where the text comes from
 
@@ -168,8 +172,11 @@ instantly and offline. Changing the window, corpus size, sources or stopwords, o
 Politeness: `Api-User-Agent`/`User-Agent` with contact, at most 3 requests in flight, `Retry-After` honoured on 429/503,
 exponential back-off otherwise. Files younger than 30 days are skipped.
 
-`.github/workflows/precompute.yml` runs daily at 02:17 UTC (and on demand): precompute (≤150 words per run, so refreshes spread
-out), render Open Graph images, rebuild pages and sitemap, commit, push, request a Pages build.
+`.github/workflows/precompute.yml` runs daily at 02:17 UTC (and on demand) and stays short: it computes today's and the next two
+days' words of the day, then rotates through missing or > 30-day-old popular words (≤ 60 per run, `--budget-min 20` wall-clock
+budget, `--word-timeout 180` per word; on GitHub runners Wikimedia answers ~3× slower than from a home connection, ~30 s/word).
+Then it renders Open Graph images for new/refreshed words, rebuilds pages and sitemap, commits, pushes and requests a Pages build.
+Steps have their own timeouts and anything finished is still committed if precompute is cut short.
 
 ### Static word pages (SEO)
 
@@ -225,6 +232,8 @@ node tools/stamp-sw.mjs --check                # sw.js cache version matches the
 node tools/serve.mjs 8765 &                    # Phase 1 browser test needs the /contexter/ mount:
 node tests/phase1.e2e.mjs http://localhost:8765/contexter/            # PWA installability (CDP), SW, offline, WOTD, precomputed, share, pages, analytics
 node tests/phase1.e2e.mjs http://localhost:8765/contexter/ 390 844    # same on a phone (Web Share with files is stubbed)
+node tests/sidebar.e2e.mjs http://localhost:8765/contexter/            # sidebar: rail collapse, canvas refit, persistence, keyboard, RTL
+node tests/sidebar.e2e.mjs http://localhost:8765/contexter/ 390 844    # drawer: open/close, backdrop, Esc, focus trap
 ```
 
 The e2e/perf/language tests take the base URL as an argument (`http://localhost:8765/contexter/`).
