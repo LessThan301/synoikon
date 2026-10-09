@@ -1,0 +1,62 @@
+name: Precompute popular words
+
+# Daily: (re)compute the next 30 days of words of the day + popular words that are
+# missing or older than 30 days (at most 150 per run, so refreshes spread out),
+# render their Open Graph images, rebuild the static word pages + sitemap, commit.
+on:
+  schedule:
+    - cron: '17 2 * * *'   # 02:17 UTC daily
+  workflow_dispatch:
+    inputs:
+      limit:
+        description: 'Max words to (re)compute in this run'
+        default: '150'
+
+permissions:
+  contents: write   # commit the results
+  pages: write      # request a Pages build after pushing
+
+concurrency:
+  group: precompute
+  cancel-in-progress: false
+
+jobs:
+  precompute:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install Playwright (OG image rendering) and Pillow (PNG quantization)
+        run: |
+          npm ci --no-audit --no-fund
+          npx playwright install --with-deps chromium
+          python3 -m pip install --quiet pillow
+      - name: Precompute networks (≤3 requests in flight, honours Retry-After)
+        run: node tools/precompute.mjs --days 30 --max-age 30 --limit "${{ github.event.inputs.limit || '150' }}"
+      - name: Render Open Graph images
+        run: node tools/render-og.mjs
+      - name: Build static word pages, sitemap, robots
+        run: node tools/build-pages.mjs
+      - name: Sanity checks
+        run: |
+          node tests/words.test.mjs
+          node tools/stamp-sw.mjs --check
+          node -e "const r=require('./data/precomputed/index.json'); const n=Object.values(r.langs).reduce((a,b)=>a+b,0); console.log('precomputed words:', n); if(n<21) process.exit(1)"
+      - name: Commit and push
+        run: |
+          git config user.name "contexter-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/precomputed w sitemap.xml robots.txt og.png
+          if git diff --cached --quiet; then echo "Nothing changed"; exit 0; fi
+          git commit -q -m "Precompute $(date -u +%F): $(jq -r '"\(.written) written, \(.failed|length) failed, \(.requests) requests"' data/precomputed/last-run.json 2>/dev/null || echo update)"
+          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 5; done
+      - name: Request a GitHub Pages build
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" --jq .status || echo "(Pages build request failed; the push may still trigger one)"

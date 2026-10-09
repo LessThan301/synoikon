@@ -13,6 +13,10 @@ const EU = 'European';
  *          'en'     English/German suffix rules (river/rivers, Wald/Walde…)
  *          'prefix' stem = word minus its last stemTrim letters (if ≥ stemMin long), followed by ≤ maxExtra letters
  *          'exact'  exact match (after normalisation)
+ * trimOnly only trim the stem when its last letter matches (vowels / vowel signs), so
+ *          consonant-final words aren't cut (Russian волк must not match воля)
+ *          Words shorter than stemMin in plural languages (es/fr/pt/it) only match
+ *          themselves, +s/+es, or a swapped final vowel (mar ≠ marzo, luna ≠ lunes).
  * plurals  merge simple -s/-es plurals among neighbors
  * segment  'intl' → Intl.Segmenter word segmentation (Chinese), with a character-bigram fallback
  * font     extra web font (Fontsource via jsDelivr) loaded on demand
@@ -22,30 +26,30 @@ export const LANGS = [
   { code: 'en', native: 'English', english: 'English', group: MAJOR, forms: 'en', plurals: true, hn: true, freq: 'wikipedia-ilya', sample: 'river' },
   { code: 'zh', native: '中文', english: 'Chinese (Mandarin)', group: MAJOR, forms: 'exact', minLen: 2, segment: 'intl', freq: 'leipzig', sample: '河流',
     font: { family: 'Noto Sans SC', pkg: 'noto-sans-sc' } },
-  { code: 'hi', native: 'हिन्दी', english: 'Hindi', group: MAJOR, forms: 'prefix', stemMin: 3, maxExtra: 4, minLen: 2, freq: 'leipzig', sample: 'नदी',
+  { code: 'hi', native: 'हिन्दी', english: 'Hindi', group: MAJOR, forms: 'prefix', stemMin: 3, maxExtra: 4, minLen: 2, trimOnly: /\p{M}$/u, freq: 'leipzig', sample: 'नदी',
     font: { family: 'Noto Sans Devanagari', pkg: 'noto-sans-devanagari' } },
   { code: 'es', native: 'Español', english: 'Spanish', group: MAJOR, forms: 'prefix', plurals: true, freq: 'wikipedia-ilya', sample: 'río' },
   { code: 'ar', native: 'العربية', english: 'Arabic', group: MAJOR, dir: 'rtl', forms: 'exact', minLen: 2, freq: 'wikipedia-ilya', sample: 'نهر',
     font: { family: 'Noto Naskh Arabic', pkg: 'noto-naskh-arabic' } },
   { code: 'fr', native: 'Français', english: 'French', group: MAJOR, forms: 'prefix', plurals: true, freq: 'wikipedia-ilya', sample: 'fleuve' },
-  { code: 'bn', native: 'বাংলা', english: 'Bengali', group: MAJOR, forms: 'prefix', stemMin: 3, maxExtra: 4, minLen: 2, freq: 'leipzig', sample: 'নদী',
+  { code: 'bn', native: 'বাংলা', english: 'Bengali', group: MAJOR, forms: 'prefix', stemMin: 3, maxExtra: 4, minLen: 2, trimOnly: /\p{M}$/u, freq: 'leipzig', sample: 'নদী',
     font: { family: 'Noto Sans Bengali', pkg: 'noto-sans-bengali' } },
   { code: 'pt', native: 'Português', english: 'Portuguese', group: MAJOR, forms: 'prefix', plurals: true, freq: 'wikipedia-ilya', sample: 'rio' },
-  { code: 'ru', native: 'Русский', english: 'Russian', group: MAJOR, forms: 'prefix', stemMin: 4, maxExtra: 2, freq: 'wikipedia-ilya', sample: 'река' },
+  { code: 'ru', native: 'Русский', english: 'Russian', group: MAJOR, forms: 'prefix', stemMin: 4, maxExtra: 2, trimOnly: /[аяоеёьйыиую]$/, freq: 'wikipedia-ilya', sample: 'река' },
   { code: 'id', native: 'Bahasa Indonesia', english: 'Indonesian', group: MAJOR, forms: 'prefix', stemMin: 99, freq: 'leipzig', sample: 'sungai' },
   { code: 'ur', native: 'اردو', english: 'Urdu', group: MAJOR, dir: 'rtl', forms: 'prefix', stemMin: 99, maxExtra: 2, minLen: 2, freq: 'leipzig', sample: 'دریا',
     font: { family: 'Noto Nastaliq Urdu', pkg: 'noto-nastaliq-urdu' } },
   { code: 'de', native: 'Deutsch', english: 'German', group: EU, forms: 'en', plurals: true, freq: 'wikipedia-ilya', sample: 'Fluss' },
   { code: 'it', native: 'Italiano', english: 'Italian', group: EU, forms: 'prefix', plurals: true, freq: 'wikipedia-ilya', sample: 'fiume' },
-  { code: 'pl', native: 'Polski', english: 'Polish', group: EU, forms: 'prefix', stemMin: 4, maxExtra: 2, freq: 'wikipedia-ilya', sample: 'rzeka' },
-  { code: 'uk', native: 'Українська', english: 'Ukrainian', group: EU, forms: 'prefix', stemMin: 4, maxExtra: 2, freq: 'wikipedia-ilya', sample: 'річка' },
+  { code: 'pl', native: 'Polski', english: 'Polish', group: EU, forms: 'prefix', stemMin: 4, maxExtra: 2, trimOnly: /[aeiouyąę]$/, freq: 'wikipedia-ilya', sample: 'rzeka' },
+  { code: 'uk', native: 'Українська', english: 'Ukrainian', group: EU, forms: 'prefix', stemMin: 4, maxExtra: 2, trimOnly: /[аяоеєьйиіїую]$/, freq: 'wikipedia-ilya', sample: 'річка' },
   { code: 'nl', native: 'Nederlands', english: 'Dutch', group: EU, forms: 'prefix', stemMin: 99, plurals: true, freq: 'wikipedia-ilya', sample: 'rivier' },
   { code: 'ro', native: 'Română', english: 'Romanian', group: EU, forms: 'prefix', freq: 'leipzig', sample: 'râu' },
   { code: 'el', native: 'Ελληνικά', english: 'Greek', group: EU, forms: 'prefix', stemMin: 5, stemTrim: 2, freq: 'leipzig', sample: 'ποταμός' },
   { code: 'hu', native: 'Magyar', english: 'Hungarian', group: EU, forms: 'prefix', stemMin: 99, maxExtra: 5, freq: 'leipzig', sample: 'folyó' },
-  { code: 'cs', native: 'Čeština', english: 'Czech', group: EU, forms: 'prefix', stemMin: 4, maxExtra: 2, freq: 'leipzig', sample: 'řeka' },
+  { code: 'cs', native: 'Čeština', english: 'Czech', group: EU, forms: 'prefix', stemMin: 4, maxExtra: 2, trimOnly: /[aeiouyáéěíóúůý]$/, freq: 'leipzig', sample: 'řeka' },
   { code: 'sv', native: 'Svenska', english: 'Swedish', group: EU, forms: 'prefix', stemMin: 99, freq: 'wikipedia-ilya', sample: 'flod' },
-].map((l) => ({ dir: 'ltr', minLen: 3, stemMin: 5, stemTrim: 1, maxExtra: 3, plurals: false, hn: false, ...l }));
+].map((l) => ({ trimOnly: null, dir: 'ltr', minLen: 3, stemMin: 5, stemTrim: 1, maxExtra: 3, plurals: false, hn: false, ...l }));
 
 export const LANG = Object.fromEntries(LANGS.map((l) => [l.code, l]));
 export const getLang = (code) => LANG[code] || LANG.en;
@@ -129,7 +133,13 @@ function englishForms(w) {
 export function formMatcher(w, lang) {
   if (lang.forms === 'en') { const f = englishForms(w); return (t) => f.has(t); }
   if (lang.forms === 'prefix') {
-    const stem = w.length >= lang.stemMin ? w.slice(0, -lang.stemTrim) : w;
+    if (lang.plurals && w.length < lang.stemMin) {
+      const vowel = /[aeiouàèéìòóù]$/;
+      return (t) => t === w || t === w + 's' || t === w + 'es'
+        || (vowel.test(w) && vowel.test(t) && t.length === w.length && t.slice(0, -1) === w.slice(0, -1));
+    }
+    const trim = w.length >= lang.stemMin && (!lang.trimOnly || lang.trimOnly.test(w));
+    const stem = trim ? w.slice(0, -lang.stemTrim) : w;
     const max = stem.length + lang.maxExtra;
     return (t) => t === w || (t.length <= max && t.length >= stem.length && t.startsWith(stem));
   }

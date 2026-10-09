@@ -2,6 +2,9 @@
 
 **The company a word keeps, drawn from real text on the web.**
 
+Live: **https://lessthan301.github.io/contexter/** · installable as an app · works offline for popular words ·
+[today’s word](https://lessthan301.github.io/contexter/#wotd) · [all precomputed words](https://lessthan301.github.io/contexter/w/) · [about & attribution](https://lessthan301.github.io/contexter/about.html)
+
 Type a word. Contexter gathers hundreds of real sentences that contain it, looks at
 the words that appear around it, and draws them as an interactive semantic network.
 
@@ -23,11 +26,18 @@ interactive semantic network … Size of circles shows frequency of neighbors.�
 - **Settings**: ranking mode (Distinctive/Frequency), number of neighbors, context window (± words), minimum co-occurrence for a line,
   maximum lines per word, corpus size, stopwords (the selected language's list, plus optionally English), which sources to use.
 - The **language selector** (21 languages, shown by native name) switches the Wikipedia/Wikiquote/Wiktionary editions, the tokenizer, the stopwords and the background list. See [Languages](#languages).
-- Links are shareable: `…/#q=river&lang=en` (add `&rank=frequency` for frequency mode).
+- Links are shareable: `…/#q=river&lang=en` (add `&rank=frequency` for frequency mode). `…/#wotd` (optionally `&lang=de`) opens today’s word.
+- **Today’s word** (start screen): one word per language per day, the same for everyone, changing at 00:00 UTC.
+- **Share map** (share icon under the zoom buttons): a PNG card (1200×630 or 1080×1080) with the word, language, the network,
+  the link and the text attribution. *Share image…* uses the Web Share API with files where the browser supports it (mobile);
+  otherwise *Download PNG*. *Copy link* copies the static word page (for precomputed words, which has a proper preview image) or the `#q=` link.
+- **Install app**: appears in the header where the browser supports install prompts (Chrome/Edge/Android). On iOS use Safari’s *Share → Add to Home Screen*.
 
 ## Where the text comes from
 
-All requests go straight from the browser to free, key-less, CORS-enabled APIs. Nothing is stored.
+All requests go straight from the browser to free, key-less, CORS-enabled APIs (Wikimedia requests carry
+`Api-User-Agent: LessThan301 contexter (github.com/LessThan301/contexter)`, which Wikimedia’s CORS policy allows).
+The only stored text is the precomputed popular words (below).
 
 | Source | What is used |
 | --- | --- |
@@ -121,14 +131,68 @@ Measured in headless Chromium with 4× CPU throttling, 80 neighbors, ±15 window
 | wheel zoom, software raster | 60 fps | 44 fps (zoomed-in thick strokes are rasterised on the main thread) |
 | slider change → new layout (longest frame) | 567 ms | 150 ms |
 
+## App features
+
+### Installable, offline-capable (PWA)
+
+- `manifest.webmanifest`: name, 192/512 icons + maskable icons, theme colours, `start_url`/`scope` relative to the manifest so
+  they resolve to `/contexter/` on GitHub Pages, and a *Word of the day* shortcut.
+- `sw.js` (scope `/contexter/`). Cache names carry content hashes written by `node tools/stamp-sw.mjs`; old caches are deleted on activate.
+
+  | Cache | What | Strategy |
+  | --- | --- | --- |
+  | `contexter-shell-<hash>` | HTML, CSS, JS modules, icons, D3 | precached on install, cache-first |
+  | `contexter-data-<hash>` | stopword + background lists, per language as used | cache-first |
+  | `contexter-precomputed` | precomputed networks (≤250) | stale-while-revalidate |
+  | `contexter-api` | recent search results from Wikimedia/HN (≤160 responses ≈ the last 30–40 searches) | stale-while-revalidate |
+  | `contexter-pages` / `contexter-fonts` | visited word pages (≤60) / script fonts (≤60) | network-first / cache-first |
+
+  Offline, the app opens, precomputed words and recent searches work, and other words show an offline message listing what is available.
+  Unknown pages fall back to `offline.html`. Requests to Cloudflare’s analytics are never intercepted (and POSTs are never touched).
+
+### Word of the day
+
+`js/words.js` holds 66 evocative concepts (moon, sea, forest … autumn) translated into all 21 languages, plus 20 popular concepts.
+Literal translations that the word matcher would confuse were replaced (e.g. French *été* is also “been”, Dutch *zon* would match
+*zondag*); the substitute carries its own English gloss. The day’s word is `concepts[shuffle[day mod 66]]` with
+`day = floor(UTC ms / 86 400 000)` and a fixed seeded shuffle, so it is identical worldwide and the same concept in every language.
+
+### Precomputed popular words
+
+`node tools/precompute.mjs` runs the same fetch + analysis as the browser for the next 30 days of words of the day plus the 20 popular
+words in every language (≈1 050 words), and writes `data/precomputed/<lang>/<word>.json` (~13 KB each). A file stores the
+top 80 neighbours in both ranking modes plus every pair count ≥ 2 among them, so the app rebuilds **exactly** the live network
+(verified by `tests/precomputed.test.mjs`) for any *Neighbors shown* ≤ 80, *Min. co-occurrence* ≥ 2, any *Max. lines* and either ranking,
+instantly and offline. Changing the window, corpus size, sources or stopwords, or pressing *Refresh with live data*, fetches live text.
+
+Politeness: `Api-User-Agent`/`User-Agent` with contact, at most 3 requests in flight, `Retry-After` honoured on 429/503,
+exponential back-off otherwise. Files younger than 30 days are skipped.
+
+`.github/workflows/precompute.yml` runs daily at 02:17 UTC (and on demand): precompute (≤150 words per run, so refreshes spread
+out), render Open Graph images, rebuild pages and sitemap, commit, push, request a Pages build.
+
+### Static word pages (SEO)
+
+`node tools/build-pages.mjs` writes `w/<lang>/<word>/index.html` for every precomputed word: title, meta description with the
+top neighbours, canonical URL, Open Graph/Twitter tags with a pre-rendered 1200×630 image (`og.png`, made by
+`node tools/render-og.mjs` with the app’s own card renderer in headless Chromium, then palette-quantized to ~40 KB),
+`hreflang` links to the same concept in other languages, JSON-LD, top neighbour lists, sample sentences with source links,
+and a button into the interactive map. Also `w/` and `w/<lang>/` indexes, `sitemap.xml`, `robots.txt` and `about.html`.
+
+### Analytics
+
+Cloudflare Web Analytics (cookieless) is configured in `js/analytics.js` (`CF_ANALYTICS.token`; empty = off). It loads only on
+`lessthan301.github.io`, so local runs and tests send nothing, and it runs on the app, `about.html` and every word page.
+
 ## Run locally
 
-It’s plain static files (ES modules), so it needs a local web server rather than `file://`:
+It’s plain static files (ES modules), so it needs a local web server rather than `file://`.
+`tools/serve.mjs` mounts the repo at `/contexter/` like GitHub Pages (the offline page and service worker expect that path):
 
 ```bash
 cd contexter
-python3 -m http.server 8000
-# open http://localhost:8000
+node tools/serve.mjs 8765
+# open http://localhost:8765/contexter/
 ```
 
 D3 v7 and the script web fonts are loaded from the jsDelivr CDN.
@@ -155,7 +219,15 @@ node tests/perf.mjs http://localhost:8765/     # FPS / frame-time profile under 
 node tests/languages.test.mjs                  # Node: live corpus + top neighbors for every language's sample word
 node tests/languages.e2e.mjs                   # browser: every language renders, fonts load, RTL, no console errors
 node tests/ranking.test.mjs río es             # Frequency vs Distinctive for any word/language
+node tests/words.test.mjs                      # word-of-the-day lists (≥60 × 21, single tokens, UTC day logic)
+node tests/precomputed.test.mjs                # precomputed record decodes to exactly the live network (482 checks)
+node tools/stamp-sw.mjs --check                # sw.js cache version matches the current files
+node tools/serve.mjs 8765 &                    # Phase 1 browser test needs the /contexter/ mount:
+node tests/phase1.e2e.mjs http://localhost:8765/contexter/            # PWA installability (CDP), SW, offline, WOTD, precomputed, share, pages, analytics
+node tests/phase1.e2e.mjs http://localhost:8765/contexter/ 390 844    # same on a phone (Web Share with files is stubbed)
 ```
+
+The e2e/perf/language tests take the base URL as an argument (`http://localhost:8765/contexter/`).
 
 ## Hosting
 
@@ -179,3 +251,13 @@ Any static host works. On GitHub Pages: push to GitHub → *Settings → Pages* 
 - **Foreign names:** many wikis cite foreign names ("(English: river)"), so words like *river* / *rio* show up as neighbors in several languages.
 - **Hacker News:** English only.
 - Neighbors are ranked by raw frequency, so very general words can rank high. Use the stopword toggles or a higher *N*.
+- **Precomputed words** use the default settings only; other settings fetch live text. They are up to 30 days old.
+  `data/precomputed` contains short excerpts of CC BY-SA text (and short HN excerpts), so those files are CC BY-SA too.
+- **Rich link previews** exist only for precomputed words (`/w/…` pages). `#q=` links show the generic preview because
+  crawlers don’t run JavaScript or read URL fragments.
+- **robots.txt** is only honoured at the host root (`lessthan301.github.io/robots.txt`, which this project site doesn’t control).
+  The copy here documents intent; submit `sitemap.xml` in Google Search Console instead.
+- **Install button** needs `beforeinstallprompt` (Chromium); Safari/iOS and Firefox use their own menus. **Web Share with files**
+  works on Android Chrome and iOS Safari; elsewhere the card is downloaded.
+- **Updates** reach installed/offline users on the second load after a deploy (the new service worker installs in the background).
+- **Repository growth:** each precomputed word adds ~13 KB JSON + ~40 KB OG image; refreshes rewrite JSON only.

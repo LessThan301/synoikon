@@ -1,3 +1,5 @@
 node_modules/
-*.png
+/*.png
+tests/*.png
 .DS_Store
+!/og.png

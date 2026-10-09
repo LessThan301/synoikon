@@ -5,23 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Contexter · the company a word keeps</title>
   <meta name="description" content="Type a word. Contexter gathers real text from the web and draws the network of words that keep it company.">
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='14' fill='%23ff6b4a'/><circle cx='12' cy='14' r='7' fill='%235b8def'/><circle cx='52' cy='18' r='9' fill='%2338c6a8'/><circle cx='48' cy='52' r='6' fill='%23f2b134'/></svg>">
+  <link rel="canonical" href="https://lessthan301.github.io/contexter/">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0f1220">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="icons/icon-192.png" sizes="192x192" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <meta name="apple-mobile-web-app-title" content="Contexter">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Contexter">
+  <meta property="og:title" content="Contexter · the company a word keeps">
+  <meta property="og:description" content="Type a word in any of 21 languages. Contexter gathers real sentences from Wikipedia and draws the network of words that keep it company.">
+  <meta property="og:url" content="https://lessthan301.github.io/contexter/">
+  <meta property="og:image" content="https://lessthan301.github.io/contexter/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand">
+    <a class="brand" href="./" id="home" title="Start page">
       <span class="logo" aria-hidden="true"></span>
       <div>
         <h1>Contexter</h1>
         <p class="tagline">The company a word keeps, drawn from real text on the web.</p>
       </div>
-    </div>
+    </a>
     <form id="search" class="search" autocomplete="off">
       <input id="term" name="term" type="search" dir="auto" placeholder="Type a word, e.g. river" aria-label="Word" required maxlength="60">
       <select id="lang" aria-label="Language"></select>
       <button type="submit" id="go">Map it</button>
     </form>
+    <button type="button" id="install" class="install hidden" title="Install Contexter as an app">Install app</button>
   </header>
 
   <main class="layout">
@@ -29,6 +45,12 @@
       <canvas id="graph" role="img" aria-label="Semantic network of co-occurring words"></canvas>
       <div id="empty" class="overlay">
         <div class="card">
+          <section class="wotd" id="wotdCard" aria-label="Today's word">
+            <div class="wotd-head"><span>Today’s word</span> <time id="wotdDate"></time></div>
+            <button type="button" id="wotdWord" class="wotd-word" dir="auto"></button>
+            <div id="wotdGloss" class="wotd-gloss"></div>
+            <a id="wotdLink" href="#wotd" class="wotd-link">Link to today’s word</a>
+          </section>
           <h2>Pick a word</h2>
           <p>Contexter collects hundreds of real sentences containing your word, looks at the words around it, and draws them as a network.</p>
           <ul class="legend-list">
@@ -36,6 +58,7 @@
             <li><span class="line short"></span><b>Short, thick line</b> = the two words often appear together</li>
             <li><span class="line long"></span><b>Long, faint line</b> = they rarely do</li>
           </ul>
+          <p class="chips-label" id="examplesLabel">Popular</p>
           <div class="chips" id="examples"></div>
         </div>
       </div>
@@ -43,13 +66,14 @@
         <div class="card"><div class="spinner"></div><p id="loadingText">Collecting text…</p></div>
       </div>
       <div id="error" class="overlay hidden" role="alert">
-        <div class="card error"><h2>Hmm.</h2><p id="errorText"></p></div>
+        <div class="card error"><h2 id="errorTitle">Hmm.</h2><p id="errorText"></p><div id="offlineWords" class="chips hidden"></div></div>
       </div>
       <div class="graph-tools">
         <button id="zoomIn" title="Zoom in" aria-label="Zoom in">+</button>
         <button id="zoomOut" title="Zoom out" aria-label="Zoom out">−</button>
         <button id="zoomFit" title="Fit to screen" aria-label="Fit to screen">⤢</button>
         <button id="download" title="Download SVG" aria-label="Download SVG">⤓</button>
+        <button id="share" title="Share map (image, link)" aria-label="Share map"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></g></svg></button>
       </div>
       <div id="tooltip" class="tooltip hidden"></div>
       <div class="hint">Hover a circle to highlight its neighbors · click to map that word · drag, scroll or pinch to explore</div>
@@ -112,9 +136,27 @@
         <table class="table"><thead><tr><th>Word</th><th title="Occurrences inside context windows (circle area)">Freq.</th><th title="Windows shared with the search word">With word</th><th title="Distinctiveness: log2 of how many times more often than expected from general Wikipedia text">Distinct.</th></tr></thead><tbody id="tableBody"></tbody></table>
       </details>
 
-      <p class="about">How it works: see the <a href="README.md">README</a>. Text comes live from Wikipedia, Wikiquote, Wiktionary and Hacker News in 21 languages; nothing is stored.</p>
+      <p class="about"><a href="about.html">About, method &amp; attribution</a> · Text comes from Wikipedia, Wikiquote, Wiktionary (CC BY-SA) and Hacker News in 21 languages. Popular words are precomputed daily; everything else is fetched live by your browser.</p>
     </aside>
   </main>
+
+  <dialog id="shareDlg" class="share-dlg" aria-labelledby="shareTitle">
+    <form method="dialog" class="share-inner">
+      <header><h2 id="shareTitle">Share this map</h2><button value="close" class="x" aria-label="Close">×</button></header>
+      <div class="seg" role="radiogroup" aria-label="Image format">
+        <label><input type="radio" name="cardFormat" value="og" checked><span>Landscape</span></label>
+        <label><input type="radio" name="cardFormat" value="square"><span>Square</span></label>
+      </div>
+      <img id="cardPreview" alt="Preview of the share image">
+      <div class="share-actions">
+        <button type="button" id="shareImage" class="primary">Share image…</button>
+        <button type="button" id="downloadPng">Download PNG</button>
+        <button type="button" id="copyLink">Copy link</button>
+      </div>
+      <input id="shareUrl" readonly aria-label="Shareable link">
+      <p id="shareStatus" class="note" role="status"></p>
+    </form>
+  </dialog>
 
   <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
   <script type="module" src="js/app.js"></script>

@@ -6,31 +6,62 @@ const ALL = LANGS.map((l) => l.code);
 // so the whole app can run as static files (e.g. on GitHub Pages).
 
 const TIMEOUT_MS = 15000;
+// Wikimedia's API etiquette: identify the tool and a contact. Browsers may not override
+// User-Agent, but Wikimedia's CORS policy explicitly allows the Api-User-Agent header.
+export const API_USER_AGENT = 'LessThan301 contexter (github.com/LessThan301/contexter)';
+const IS_NODE = typeof window === 'undefined';
+const isWikimedia = (url) => /^https:\/\/[a-z-]+\.(wikipedia|wikiquote|wiktionary)\.org\//.test(url);
+
+// Optional global limit on concurrent requests (the precompute script sets 3).
+let maxConcurrent = Infinity, active = 0;
+const waiting = [];
+export function setMaxConcurrent(n) { maxConcurrent = n; }
+async function acquire() {
+  if (active < maxConcurrent) { active++; return; }
+  await new Promise((r) => waiting.push(r));
+  active++;
+}
+function release() { active--; waiting.shift()?.(); }
+export const requestStats = { requests: 0, retries: 0, retryAfterWaits: 0 };
+
+/** Seconds to wait from a Retry-After header (delta-seconds or HTTP date), capped. */
+export function retryAfterMs(value, cap = 120000) {
+  if (!value) return null;
+  const secs = /^\d+$/.test(value.trim()) ? +value : (Date.parse(value) - Date.now()) / 1000;
+  return Number.isFinite(secs) ? Math.min(cap, Math.max(0, secs * 1000)) : null;
+}
 
 async function getJSON(url, attempt = 0) {
+  await acquire();
   const ctrl = new AbortController();
   const timer = setTimeout(() => ctrl.abort(), TIMEOUT_MS);
+  let data, error;
   try {
-    // Browsers send their own User-Agent; in Node (tests/build scripts) identify
-    // ourselves as Wikimedia's API etiquette asks, otherwise requests get throttled.
-    const headers = typeof window === 'undefined' ? { 'User-Agent': 'ContexterTests/1.0 (https://github.com/LessThan301/contexter)' } : undefined;
+    const headers = {};
+    if (isWikimedia(url)) headers['Api-User-Agent'] = API_USER_AGENT;
+    if (IS_NODE) headers['User-Agent'] = `${API_USER_AGENT} Node.js`;
+    requestStats.requests++;
     const res = await fetch(url, { signal: ctrl.signal, headers });
     if (!res.ok) {
-      const err = new Error(`HTTP ${res.status}`);
-      err.retry = res.status === 429 || res.status >= 500;
-      throw err;
-    }
-    return await res.json();
+      error = new Error(`HTTP ${res.status}`);
+      error.retry = res.status === 429 || res.status >= 500;
+      error.wait = retryAfterMs(res.headers.get('Retry-After'));
+    } else data = await res.json();
   } catch (err) {
-    // Rate limits / transient server or network errors: back off and retry twice.
-    if (attempt < 2 && (err.retry || err.name === 'TypeError')) {
-      await new Promise((r) => setTimeout(r, 1000 * (attempt + 1) + Math.random() * 500));
-      return getJSON(url, attempt + 1);
-    }
-    throw err;
+    error = err;
   } finally {
     clearTimeout(timer);
+    release();
   }
+  if (!error) return data;
+  // Rate limits / transient errors: honour Retry-After, else back off exponentially; retry up to 3 times.
+  if (attempt < 3 && (error.retry || error.name === 'TypeError')) {
+    requestStats.retries++;
+    if (error.wait != null) requestStats.retryAfterWaits++;
+    await new Promise((r) => setTimeout(r, error.wait ?? (1000 * 2 ** attempt + Math.random() * 500)));
+    return getJSON(url, attempt + 1);
+  }
+  throw error;
 }
 
 const decoder = typeof document !== 'undefined' ? document.createElement('textarea') : null;
@@ -41,6 +72,19 @@ export function htmlToText(html) {
     .replace(/<[^>]+>/g, '');
   if (decoder) { decoder.innerHTML = noTags; return decoder.value; }
   return noTags.replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/&amp;/g, '&');
+}
+
+// Template sentences from disambiguation/sister-project boxes that otherwise show up as
+// "neighbours" of every word (e.g. "Look up gold in Wiktionary, the free dictionary.").
+const BOILERPLATE = [
+  /look up [^.]{1,80}? in wiktionary,? the free dictionary\.?/gi,
+  /wiktionary,? the free dictionary/gi,
+  /the free encyclopedia/gi,
+];
+export function cleanText(text) {
+  let t = text;
+  for (const re of BOILERPLATE) t = t.replace(re, ' ');
+  return t;
 }
 
 function qs(params) {
@@ -145,7 +189,7 @@ export async function collectCorpus(term, { lang = 'en', size = 500, enabled, on
   results.forEach((r, i) => {
     const label = SOURCES[keys[i]].label;
     if (r.status === 'fulfilled') {
-      const docsOk = r.value.filter((d) => d.text && d.text.trim());
+      const docsOk = r.value.map((d) => ({ ...d, text: cleanText(d.text || '') })).filter((d) => d.text.trim());
       docs.push(...docsOk);
       report.push({ key: keys[i], label, count: docsOk.length });
     } else {

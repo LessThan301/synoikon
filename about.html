@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>About & attribution · Contexter</title>
+  <meta name="description" content="How Contexter turns real Wikipedia text into a network of the words that keep a word company, in 21 languages. Method, data sources, licences and privacy.">
+  <link rel="canonical" href="https://lessthan301.github.io/contexter/about.html">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="About Contexter">
+  <meta property="og:description" content="Method, data sources, licences and privacy.">
+  <meta property="og:url" content="https://lessthan301.github.io/contexter/about.html">
+  <meta property="og:image" content="https://lessthan301.github.io/contexter/og.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#0f1220">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/page.css">
+</head>
+<body>
+  <header class="top">
+    <a class="brand" href="./"><img src="icons/favicon.svg" alt="" width="30" height="30">Contexter</a>
+    <nav><a href="w/">All words</a><a href="./">Open the app</a></nav>
+  </header>
+  <main class="page narrow">
+    <h1>About Contexter</h1>
+    <p class="sub">“You shall know a word by the company it keeps” (J. R. Firth, 1957).</p>
+    <p>Type a word and Contexter collects hundreds of real sentences that contain it, looks at the words around each occurrence, and draws them as a network:</p>
+    <ul>
+      <li><b>Circle area</b> = how often a neighbour appears near your word (inside a window of ± 5 words by default).</li>
+      <li><b>Line length</b>: the more often two words appear in the same context window, the <b>shorter</b> (and thicker) the line between them.</li>
+      <li><b>Distinctive</b> ranking (default) favours words that occur near your word far more often than in general text of that language (log-ratio against a Wikipedia-based background list, with a log-likelihood significance filter). <b>Frequency</b> ranking simply shows the most common neighbours.</li>
+    </ul>
+    <p>It works in 21 languages: English, 中文, हिन्दी, Español, العربية, Français, বাংলা, Português, Русский, Bahasa Indonesia, اردو, Deutsch, Italiano, Polski, Українська, Nederlands, Română, Ελληνικά, Magyar, Čeština and Svenska.</p>
+
+    <h2>Word of the day & popular words</h2>
+    <p>Every day at 00:00 UTC there is a new word of the day, the same for everyone. It comes from a curated list of 66 evocative concepts translated into every language (<a href="./#wotd">today’s word</a>). Popular words and the next 30 days of words are <b>precomputed daily</b> by a GitHub Actions job, so they open instantly and work offline. Any other word is fetched live by your browser.</p>
+
+    <h2>Data sources & licences</h2>
+    <table class="credits">
+      <tr><th>What</th><th>Source</th><th>Licence</th></tr>
+      <tr><td>Text snippets & article intros</td><td><a href="https://www.wikipedia.org/">Wikipedia</a>, <a href="https://www.wikiquote.org/">Wikiquote</a>, <a href="https://www.wiktionary.org/">Wiktionary</a> via the public MediaWiki API</td><td><a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>. Excerpts are shown with links to their source pages.</td></tr>
+      <tr><td>English comments (optional source)</td><td><a href="https://news.ycombinator.com/">Hacker News</a> via the <a href="https://hn.algolia.com/api">Algolia HN API</a></td><td>© the comment authors; only short excerpts with links are shown.</td></tr>
+      <tr><td>Background word frequencies</td><td><a href="https://github.com/IlyaSemenov/wikipedia-word-frequency">IlyaSemenov/wikipedia-word-frequency</a>; <a href="https://wortschatz.uni-leipzig.de/en/download">Leipzig Corpora Collection</a> (D. Goldhahn, T. Eckart, U. Quasthoff, LREC 2012) for zh, hi, bn, ur, id, ro, el, hu, cs</td><td>MIT; CC BY 4.0</td></tr>
+      <tr><td>Stopword lists</td><td><a href="https://github.com/stopwords-iso/stopwords-iso">stopwords-iso</a></td><td>MIT</td></tr>
+      <tr><td>Fonts</td><td><a href="https://fonts.google.com/noto">Noto</a> via <a href="https://fontsource.org/">Fontsource</a>/jsDelivr</td><td>SIL Open Font License</td></tr>
+      <tr><td>Graph library</td><td><a href="https://d3js.org/">D3</a></td><td>ISC</td></tr>
+    </table>
+    <p>Shared images carry the attribution “Text: Wikipedia/Wikiquote, CC BY-SA”.</p>
+
+    <h2>Privacy</h2>
+    <ul>
+      <li>Your searches go straight from your browser to the Wikimedia and Algolia APIs (identified as “LessThan301 contexter”). Contexter has no server and stores nothing about you.</li>
+      <li>The app caches its own files, the language data you use and your recent search results on your device (service worker) so it works offline. Clear site data to remove them.</li>
+      <li>Visits are counted with <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, which uses no cookies and no fingerprinting.</li>
+    </ul>
+
+    <h2>Install</h2>
+    <p>Contexter is an installable web app: use “Install app” in the header (Chrome, Edge, Android) or “Add to Home Screen” in Safari’s share menu (iOS).</p>
+
+    <h2>Source</h2>
+    <p>Open source at <a href="https://github.com/LessThan301/contexter">github.com/LessThan301/contexter</a>. Issues and ideas are welcome there.</p>
+  </main>
+  <footer class="foot">Text: Wikipedia/Wikiquote, CC BY-SA 4.0 · <a href="./">Contexter</a></footer>
+  <script type="module">
+    import { loadAnalytics } from './js/analytics.js';
+    loadAnalytics();
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
+  </script>
+</body>
+</html>

@@ -155,12 +155,20 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, W, H);
     if (!nodes.length) return;
-    ctx.setTransform(dpr * t.k, 0, 0, dpr * t.k, dpr * t.x, dpr * t.y);
+    paint(ctx, t, W, H, dpr, hovered, LABEL_MIN_PX);
+  }
+
+  /**
+   * Paint the network with world→screen transform `tr` into a w×h (CSS px) area of
+   * context `ctx` scaled by `pr`. Shared by the live canvas and the share card.
+   */
+  function paint(ctx, tr, W, H, pr, hovered, labelMin) {
+    ctx.setTransform(pr * tr.k, 0, 0, pr * tr.k, pr * tr.x, pr * tr.y);
     const nb = hovered ? adj.get(hovered.id) : null;
     const incident = (l) => l.source === hovered || l.target === hovered;
-    const k = t.k;
+    const k = tr.k;
     // visible world rectangle (for culling)
-    const x0 = -t.x / k, y0 = -t.y / k, x1 = (W - t.x) / k, y1 = (H - t.y) / k;
+    const x0 = -tr.x / k, y0 = -tr.y / k, x1 = (W - tr.x) / k, y1 = (H - tr.y) / k;
 
     // links. Stroked one by one: in software-rasterised canvases one huge
     // multi-segment path builds a full-screen coverage mask and is several
@@ -206,7 +214,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     let font = 0;
     for (const d of labelOrder) {
       const focus = d.target || d === hovered || (nb && nb.has(d.id));
-      if (!focus && d.font * k < LABEL_MIN_PX) continue;
+      if (!focus && d.font * k < labelMin) continue;
       if (!visible(d, 60)) continue;
       const dim = hovered && !focus;
       if (d.font !== font || d.target) {
@@ -229,16 +237,41 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
 
   function fit(animate = true) {
     if (!nodes.length || !W) return;
-    const pad = 30;
+    const nt = fitTransform(W, H, 30, 2);
+    if (animate) sel.transition().duration(600).call(zoom.transform, nt);
+    else sel.call(zoom.transform, nt);
+  }
+
+  /** Transform that fits the whole network into a w×h box (world bounds include labels). */
+  function fitTransform(w, h, pad, maxK) {
     let xa = Infinity, xb = -Infinity, ya = Infinity, yb = -Infinity;
     for (const d of nodes) {
       xa = Math.min(xa, d.x - d.r - 40); xb = Math.max(xb, d.x + d.r + 40);
       ya = Math.min(ya, d.y - d.r - 10); yb = Math.max(yb, d.y + d.r + 24);
     }
-    const k = Math.min(2, 0.95 * Math.min((W - pad) / (xb - xa), (H - pad) / (yb - ya)));
-    const nt = d3.zoomIdentity.translate(W / 2, H / 2).scale(k).translate(-(xa + xb) / 2, -(ya + yb) / 2);
-    if (animate) sel.transition().duration(600).call(zoom.transform, nt);
-    else sel.call(zoom.transform, nt);
+    const k = Math.min(maxK, 0.95 * Math.min((w - pad) / (xb - xa), (h - pad) / (yb - ya)));
+    return d3.zoomIdentity.translate(w / 2, h / 2).scale(k).translate(-(xa + xb) / 2, -(ya + yb) / 2);
+  }
+
+  /** Draw the current network, fitted, into a box of another canvas (share card, OG image). */
+  function renderInto(c, x, y, w, h, { pr = 1, maxK = 2.2, labelMin = 5 } = {}) {
+    if (!nodes.length) return false;
+    const f = fitTransform(w, h, 10, maxK);
+    c.save();
+    c.beginPath(); c.rect(x * pr, y * pr, w * pr, h * pr); c.clip();
+    paint(c, d3.zoomIdentity.translate(x + f.x, y + f.y).scale(f.k), w + x, h + y, pr, null, labelMin);
+    c.restore();
+    return true;
+  }
+
+  /** Run the layout to rest synchronously (used before rendering images). */
+  function settleNow(maxTicks = 600) {
+    if (!nodes.length) return;
+    sim.stop();
+    for (let i = 0; i < maxTicks && sim.alpha() >= sim.alphaMin(); i++) sim.tick();
+    sim.alpha(0);
+    if (!userMoved) fit(false);
+    requestDraw();
   }
 
   // ---- hit testing ------------------------------------------------------
@@ -360,7 +393,8 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   }
 
   return {
-    setData, fit, clear, toSVG,
+    setData, fit, clear, toSVG, renderInto, settleNow,
+    hasData: () => nodes.length > 0,
     redraw: requestDraw,
     /** Prefer the language's own web font (e.g. Nastaliq for Urdu) ahead of the generic stack. */
     setLanguage: (lang) => {

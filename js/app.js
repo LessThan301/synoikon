@@ -3,7 +3,12 @@ import { buildNetwork } from './analysis.js';
 import { createGraph } from './graph.js';
 import { STOP_EN } from './stopwords.js';
 import { loadReference } from './reference.js';
-import { LANGS, getLang, tokenize, formMatcher, normalize } from './languages.js';
+import { LANGS, getLang, tokenize, formMatcher } from './languages.js';
+import { POPULAR, wordOfDay, slug } from './words.js';
+import { decode, covers, precomputedPath, DEFAULTS } from './precomputed.js';
+import { renderCard, cardBlob, FORMATS } from './card.js';
+import { setupPWA } from './pwa.js';
+import { loadAnalytics } from './analytics.js';
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -12,10 +17,13 @@ const els = {
   topN: $('topN'), window: $('window'), minCooc: $('minCooc'), maxLinks: $('maxLinks'), size: $('size'),
   stopLang: $('stopLang'), stopEn: $('stopEn'), stopLangName: $('stopLangName'), stopEnRow: $('stopEnRow'), sourceBoxes: $('sourceBoxes'),
   stats: $('stats'), statsBox: $('statsBox'), samples: $('samples'), samplesBox: $('samplesBox'), sampleFor: $('sampleFor'),
-  tableBox: $('tableBox'), tableBody: $('tableBody'), examples: $('examples'),
+  tableBox: $('tableBox'), tableBody: $('tableBody'), examples: $('examples'), examplesLabel: $('examplesLabel'),
+  errorTitle: $('errorTitle'), offlineWords: $('offlineWords'),
 };
+const SITE = new URL('./', location.href).href.replace(/[?#].*$/, ''); // e.g. https://lessthan301.github.io/contexter/
+const store = { get: (k) => { try { return localStorage.getItem(k); } catch { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch { /* private mode */ } } };
 
-const state = { corpus: null, corpusKey: '', term: '', lang: 'en', graph: null, net: null, requestId: 0, analyseId: 0, refError: '' };
+const state = { corpus: null, corpusKey: '', pre: null, term: '', lang: 'en', graph: null, net: null, requestId: 0, analyseId: 0, refError: '' };
 const rankMode = () => document.querySelector('input[name=rank]:checked').value;
 
 // ---- setup ---------------------------------------------------------------
@@ -38,12 +46,27 @@ for (const group of [...new Set(LANGS.map((l) => l.group))]) {
   els.lang.appendChild(og);
 }
 els.lang.value = 'en';
-for (const [w, lang] of [['river', 'en'], ['trust', 'en'], ['河流', 'zh'], ['नदी', 'hi'], ['نهر', 'ar'], ['Wald', 'de'], ['freedom', 'en']]) {
-  const b = document.createElement('button');
-  b.type = 'button'; b.textContent = w; b.dir = 'auto';
-  b.title = getLang(lang).english;
-  b.onclick = () => { els.lang.value = lang; onLangChange(); search(w); };
-  els.examples.appendChild(b);
+function renderExamples(code) {
+  const lang = getLang(code);
+  els.examplesLabel.textContent = `Popular in ${lang.english} · open instantly`;
+  els.examples.innerHTML = '';
+  for (const { word, gloss } of POPULAR[code].slice(0, 8)) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = word; b.dir = 'auto';
+    if (code !== 'en') b.title = gloss;
+    b.onclick = () => search(word);
+    els.examples.appendChild(b);
+  }
+}
+function renderWotd(code) {
+  const w = wordOfDay(code);
+  $('wotdWord').textContent = w.word;
+  $('wotdWord').onclick = () => search(w.word);
+  $('wotdGloss').textContent = code === 'en' ? 'Tap to see the company it keeps' : `“${w.gloss}” in ${getLang(code).english}`;
+  const d = $('wotdDate');
+  d.dateTime = w.date;
+  d.textContent = new Date(w.date + 'T12:00:00Z').toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
+  $('wotdLink').href = `#wotd&lang=${code}`;
 }
 
 const enabledSources = () => [...els.sourceBoxes.querySelectorAll('input:checked')].map((i) => i.value);
@@ -106,6 +129,9 @@ function onLangChange() {
   }
   els.term.placeholder = lang.code === 'en' ? 'Type a word, e.g. river' : `${lang.native}: ${lang.sample}`;
   ensureFont(lang);
+  renderExamples(lang.code);
+  renderWotd(lang.code);
+  store.set('contexter.lang', lang.code);
 }
 const params = () => ({
   topN: +els.topN.value, window: +els.window.value, minCooc: +els.minCooc.value, maxLinksPerNode: +els.maxLinks.value,
@@ -116,11 +142,35 @@ function show(which, text) {
   els.loading.classList.toggle('hidden', which !== 'loading');
   els.error.classList.toggle('hidden', which !== 'error');
   if (which === 'loading') els.loadingText.textContent = text || 'Collecting text…';
-  if (which === 'error') els.errorText.textContent = text;
+  if (which === 'error') { els.errorText.textContent = text; els.errorTitle.textContent = 'Hmm.'; els.offlineWords.classList.add('hidden'); }
+  $('share').disabled = which !== 'none';
 }
 
 // ---- main flow -----------------------------------------------------------
-async function search(term) {
+// Settings that the precomputed files were built with (anything else needs live text).
+function preSettingsOk() {
+  const enabled = enabledSources().filter((k) => SOURCES[k].langs.includes(els.lang.value));
+  const dflt = DEFAULTS.sources.filter((k) => SOURCES[k].langs.includes(els.lang.value));
+  return +els.size.value === DEFAULTS.size && enabled.join() === dflt.join() && els.stopLang.checked
+    && (els.lang.value === 'en' || els.stopEn.checked);
+}
+const preIndex = new Map(); // lang -> Promise<index json | null>
+function loadPreIndex(code) {
+  if (!preIndex.has(code)) {
+    preIndex.set(code, fetch(`data/precomputed/${code}/index.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null));
+  }
+  return preIndex.get(code);
+}
+async function loadPrecomputed(code, term) {
+  const idx = await loadPreIndex(code);
+  if (!idx?.words?.[slug(term)]) return null;
+  try {
+    const r = await fetch(precomputedPath(code, term));
+    return r.ok ? await r.json() : null;
+  } catch { return null; }
+}
+
+async function search(term, { live = false } = {}) {
   term = (term || '').trim();
   if (!term) return;
   els.term.value = term;
@@ -133,6 +183,19 @@ async function search(term) {
   document.title = `${term} · Contexter`;
 
   const id = ++state.requestId;
+  // 1) precomputed popular words load instantly (and work offline)
+  if (!live && preSettingsOk() && state.corpusKey !== key) {
+    if (state.pre && state.pre.lang === lang && slug(state.pre.word) === slug(term)) { state.term = term; state.lang = lang; await analyse(); return; }
+    const pre = await loadPrecomputed(lang, term);
+    if (id !== state.requestId) return;
+    if (pre) {
+      state.pre = pre; state.corpus = null; state.corpusKey = '';
+      state.term = pre.word; state.lang = lang;
+      await analyse();
+      return;
+    }
+  }
+  // 2) live text from the APIs
   if (state.corpusKey !== key) {
     show('loading', `Collecting text about “${term}”…`);
     els.go.disabled = true;
@@ -142,17 +205,41 @@ async function search(term) {
         onProgress: (d, t, label) => { if (id === state.requestId) els.loadingText.textContent = `Collecting text about “${term}”… ${d}/${t} sources (${label} done)`; },
       });
       if (id !== state.requestId) return; // a newer search has started
+      // every source unreachable (not just empty) → treat as offline
+      if (corpus.report.every((r) => r.error && (!navigator.onLine || /fetch|network|load failed/i.test(r.error)))) throw new Error('offline');
       state.corpus = corpus; state.corpusKey = key;
     } catch (err) {
-      if (id === state.requestId) show('error', `Could not reach the text sources (${err.message}). Check your connection and try again.`);
+      if (id === state.requestId) showFetchError(err);
       return;
     } finally {
       if (id === state.requestId) els.go.disabled = false;
     }
   }
+  state.pre = null;
   state.term = term;
   state.lang = lang;
   await analyse();
+}
+
+/** Network failure: explain, and when offline offer the words that work without a connection. */
+async function showFetchError(err) {
+  if (navigator.onLine && err.message !== 'offline') {
+    show('error', `Could not reach the text sources (${err.message}). Check your connection and try again.`);
+    return;
+  }
+  show('error', 'You seem to be offline: the text sources can’t be reached. New words need a connection, but popular words and your recent searches still work:');
+  els.errorTitle.textContent = 'Offline';
+  const code = els.lang.value;
+  const idx = await loadPreIndex(code);
+  const words = Object.values(idx?.words || {}).map((w) => w.w).slice(0, 24);
+  els.offlineWords.innerHTML = '';
+  for (const w of words) {
+    const b = document.createElement('button');
+    b.type = 'button'; b.textContent = w; b.dir = 'auto'; b.onclick = () => search(w);
+    els.offlineWords.appendChild(b);
+  }
+  els.offlineWords.classList.toggle('hidden', !words.length);
+  if (!words.length) els.errorText.textContent = 'You’re offline and nothing is cached for this language yet. Reconnect and try again.';
 }
 
 function updateHash(term, lang) {
@@ -160,30 +247,37 @@ function updateHash(term, lang) {
 }
 
 async function analyse() {
-  const { corpus, term } = state;
-  if (!corpus) return;
+  const { corpus, pre, term } = state;
+  if (!corpus && !pre) return;
   const aid = ++state.analyseId;
   const lang = getLang(state.lang);
   let reference = null;
   state.refError = '';
   state.stopError = '';
-  const stop = await stopwords(lang.code);
-  if (aid !== state.analyseId) return;
-  if (rankMode() === 'distinctive') {
-    try { reference = await loadReference(state.lang); }
-    catch (err) { state.refError = `Background word list for ${lang.english} could not be loaded (${err.message}); ranking by frequency instead.`; }
-    if (aid !== state.analyseId) return; // superseded
+  let net;
+  if (pre) {
+    const p = { ...params(), rank: rankMode() };
+    if (!covers({ ...p, window: +els.window.value }) || !preSettingsOk()) { search(term, { live: true }); return; } // needs live text
+    net = decode(pre, p);
+  } else {
+    const stop = await stopwords(lang.code);
+    if (aid !== state.analyseId) return;
+    if (rankMode() === 'distinctive') {
+      try { reference = await loadReference(state.lang); }
+      catch (err) { state.refError = `Background word list for ${lang.english} could not be loaded (${err.message}); ranking by frequency instead.`; }
+      if (aid !== state.analyseId) return; // superseded
+    }
+    if (!corpus.docs.length) {
+      const errs = corpus.report.filter((r) => r.error);
+      show('error', errs.length === corpus.report.length
+        ? `All sources failed: ${errs.map((e) => `${e.label}: ${e.error}`).join('; ')}`
+        : `No text found for “${term}”. Check the spelling or try another language.`);
+      state.graph?.clear(); state.drawnTerm = '';
+      renderStats(null);
+      return;
+    }
+    net = buildNetwork(corpus.docs, term, { ...params(), stop, rank: rankMode(), reference, lang });
   }
-  if (!corpus.docs.length) {
-    const errs = corpus.report.filter((r) => r.error);
-    show('error', errs.length === corpus.report.length
-      ? `All sources failed: ${errs.map((e) => `${e.label}: ${e.error}`).join('; ')}`
-      : `No text found for “${term}”. Check the spelling or try another language.`);
-    state.graph?.clear(); state.drawnTerm = '';
-    renderStats(null);
-    return;
-  }
-  const net = buildNetwork(corpus.docs, term, { ...params(), stop, rank: rankMode(), reference, lang });
   state.net = net;
   renderStats(net);
   if (net.nodes.length < 2) {
@@ -203,7 +297,10 @@ async function analyse() {
 // ---- side panel ----------------------------------------------------------
 function renderStats(net) {
   els.statsBox.classList.remove('hidden');
-  const rep = state.corpus.report.map((r) => r.error
+  const report = state.pre ? state.pre.report : state.corpus.report;
+  const preNote = state.pre
+    ? `<p class="pre-note">⚡ Precomputed on ${esc(state.pre.generated.slice(0, 10))} with default settings. <button type="button" id="refreshLive">Refresh with live data</button></p>` : '';
+  const rep = report.map((r) => r.error
     ? `<li class="err">${r.label}: failed (${esc(r.error)})</li>`
     : `<li>${r.label}: <b>${r.count}</b> texts</li>`).join('');
   els.stats.innerHTML = net
@@ -212,8 +309,9 @@ function renderStats(net) {
        Showing the top <b>${net.nodes.length - 1}</b> ${net.stats.rank === 'distinctive'
          ? `<b>most distinctive</b> neighbors (of ${net.stats.eligible} that pass the significance test)`
          : 'most <b>frequent</b> neighbors'} with <b>${net.stats.pairLinks}</b> neighbor–neighbor lines.</p>
-       ${[state.refError, state.stopError].filter(Boolean).map((e) => `<p class="err">${esc(e)}</p>`).join('')}<ul>${rep}</ul>`
+       ${[state.refError, state.stopError].filter(Boolean).map((e) => `<p class="err">${esc(e)}</p>`).join('')}${preNote}<ul>${rep}</ul>`
     : `<ul>${rep}</ul>`;
+  $('refreshLive')?.addEventListener('click', () => search(state.term, { live: true }));
 }
 
 function renderSamples(d) {
@@ -230,7 +328,8 @@ function renderSamples(d) {
     els.sampleFor.textContent = '';
     const seen = new Set();
     items = [];
-    for (const doc of state.corpus.docs) {
+    if (state.pre) items = state.pre.docs.map(([source, title, url, text]) => ({ text, doc: { source, title, url } }));
+    for (const doc of state.pre ? [] : state.corpus.docs) {
       if (items.length >= 12) break;
       if (seen.has(doc.source + doc.title)) continue;
       const pos = hl.first(doc.text);
@@ -320,7 +419,103 @@ function downloadSvg() {
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
 }
 
-// ---- start (supports shareable links like #q=river&lang=en) ---------------
+// ---- share map ---------------------------------------------------------------
+const share = { format: 'og', blob: null, url: '' };
+async function shareUrl() {
+  const idx = await loadPreIndex(state.lang);
+  if (idx?.words?.[slug(state.term)]) return `${SITE}w/${state.lang}/${encodeURIComponent(slug(state.term))}/`;
+  return `${SITE}#q=${encodeURIComponent(state.term)}&lang=${state.lang}`;
+}
+function cardInfo(url) {
+  const lang = getLang(state.lang);
+  return {
+    word: state.term,
+    langLine: lang.native === lang.english ? lang.native : `${lang.native} · ${lang.english}`,
+    neighbors: state.net.nodes.filter((n) => !n.target).slice(0, 6).map((n) => n.label),
+    rankLabel: state.net.stats.rank === 'distinctive' ? 'Most distinctive neighbours' : 'Most frequent neighbours',
+    url, fontStack: state.graph.debug.fontStack(),
+  };
+}
+async function makeCard(format) {
+  const lang = getLang(state.lang);
+  await fontsFor(lang, state.term + state.net.nodes.map((n) => n.label).join(''));
+  state.graph.settleNow();
+  return cardBlob(renderCard(state.graph, cardInfo(share.url), format));
+}
+async function openShare() {
+  if (!state.net || !state.graph.hasData()) return;
+  const dlg = $('shareDlg');
+  share.url = await shareUrl();
+  $('shareUrl').value = share.url;
+  $('shareStatus').textContent = '';
+  const file = () => new File([share.blob], `contexter-${slug(state.term)}-${state.lang}-${share.format}.png`, { type: 'image/png' });
+  const canShareFiles = () => !!navigator.canShare && navigator.canShare({ files: [file()] });
+  async function refresh() {
+    share.format = document.querySelector('input[name=cardFormat]:checked').value;
+    share.blob = await makeCard(share.format);
+    const img = $('cardPreview');
+    if (img.src) URL.revokeObjectURL(img.src);
+    img.src = URL.createObjectURL(share.blob);
+    img.width = FORMATS[share.format].w; img.height = FORMATS[share.format].h;
+    $('shareImage').classList.toggle('hidden', !canShareFiles());
+    $('downloadPng').classList.toggle('primary', !canShareFiles());
+  }
+  for (const r of document.querySelectorAll('input[name=cardFormat]')) r.onchange = refresh;
+  $('shareImage').onclick = async () => {
+    try {
+      await navigator.share({ files: [file()], title: `${state.term} · Contexter`, text: `The company “${state.term}” keeps`, url: share.url });
+      $('shareStatus').textContent = 'Shared.';
+    } catch (err) { if (err.name !== 'AbortError') { $('shareStatus').textContent = `Sharing failed (${err.message}); downloading instead.`; download(); } }
+  };
+  const download = () => {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(share.blob); a.download = file().name; a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    $('shareStatus').textContent = `Downloaded ${a.download}.`;
+  };
+  $('downloadPng').onclick = download;
+  $('copyLink').onclick = async () => {
+    try { await navigator.clipboard.writeText(share.url); $('shareStatus').textContent = 'Link copied.'; }
+    catch { $('shareUrl').select(); $('shareStatus').textContent = 'Press Ctrl/⌘+C to copy the selected link.'; }
+  };
+  if (!dlg.open) dlg.showModal();
+  await refresh();
+}
+$('share').onclick = openShare;
+
+// ---- routing: #q=river&lang=en[&rank=frequency] · #wotd[&lang=de] · start page -----
+function route() {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.get('rank') === 'frequency') document.querySelector('input[name=rank][value=frequency]').checked = true;
+  const code = h.get('lang') || store.get('contexter.lang');
+  if (code && LANGS.some((l) => l.code === code)) els.lang.value = code;
+  onLangChange();
+  if (h.has('wotd')) search(wordOfDay(els.lang.value).word);
+  else if (h.get('q')) search(h.get('q'));
+  else home();
+}
+function home() {
+  state.requestId++; state.analyseId++;
+  state.term = ''; state.net = null; state.drawnTerm = '';
+  state.graph?.clear();
+  for (const b of [els.statsBox, els.samplesBox, els.tableBox]) b.classList.add('hidden');
+  document.title = 'Contexter · the company a word keeps';
+  show('empty');
+}
+$('home').addEventListener('click', (e) => {
+  if (e.metaKey || e.ctrlKey || e.shiftKey) return;
+  e.preventDefault();
+  history.pushState(null, '', location.pathname + location.search);
+  home();
+});
+window.addEventListener('hashchange', () => {
+  const h = new URLSearchParams(location.hash.slice(1));
+  if (h.has('wotd') || (h.get('q') && h.get('q') !== state.term)) route();
+});
+
+// ---- start ---------------------------------------------------------------------
+setupPWA({ installButton: $('install') });
+loadAnalytics();
 if (typeof d3 === 'undefined') {
   show('error', 'The graph library (D3) could not be loaded. Check your connection or ad-blocker and reload.');
 } else {
@@ -329,9 +524,11 @@ if (typeof d3 === 'undefined') {
     onFocus: (d) => renderSamples(d),
   });
   window.__contexter = state.graph.debug; // read-only hooks for automated tests
-  const h = new URLSearchParams(location.hash.slice(1));
-  if (h.get('rank') === 'frequency') document.querySelector('input[name=rank][value=frequency]').checked = true;
-  if (h.get('lang') && [...els.lang.options].some((o) => o.value === h.get('lang'))) els.lang.value = h.get('lang');
-  onLangChange();
-  if (h.get('q')) search(h.get('q')); else show('empty');
+  window.__contexterApp = { // test/build hooks (OG image rendering)
+    state: () => ({ term: state.term, lang: state.lang, precomputed: !!state.pre, live: !!state.corpus, rank: state.net?.stats.rank }),
+    search: (w, opts) => search(w, opts),
+    card: async (format = 'og', url) => { share.url = url || await shareUrl(); return makeCard(format); },
+    cardDataURL: async (format = 'og', url) => { const b = await window.__contexterApp.card(format, url); return new Promise((r) => { const fr = new FileReader(); fr.onload = () => r(fr.result); fr.readAsDataURL(b); }); },
+  };
+  route();
 }
