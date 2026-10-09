@@ -8,7 +8,8 @@ import { chromium } from 'playwright';
 const [width = '1400', height = '900', scheme = 'https'] = process.argv.slice(2);
 const GH = 'https://lessthan301.github.io';
 const NEW = 'synoikon.com';
-const browser = await chromium.launch();
+// PIN_DNS=1: resolve synoikon.com/www via a GitHub Pages IP (for sandboxes whose DNS proxy can't do plain HTTP by name)
+const browser = await chromium.launch(process.env.PIN_DNS ? { args: ['--host-resolver-rules=MAP synoikon.com 185.199.108.153, MAP www.synoikon.com 185.199.108.153'] } : {});
 const context = await browser.newContext({ viewport: { width: +width, height: +height }, isMobile: +width < 600, hasTouch: +width < 600 });
 await context.route('**/static.cloudflareinsights.com/**', (r) => r.fulfill({ status: 200, contentType: 'text/javascript', body: '' }));
 const page = await context.newPage();
