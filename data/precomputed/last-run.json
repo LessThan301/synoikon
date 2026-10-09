@@ -1,10 +1,12 @@
 {
- "finished": "2026-10-09T15:15:03.454Z",
- "minutes": 21,
- "written": 43,
+ "finished": "2026-10-09T21:51:02.748Z",
+ "minutes": 20.8,
+ "written": 42,
  "kept": 0,
  "deferred": 17,
- "failed": [],
- "requests": 327,
- "retries": 112
+ "failed": [
+  "ru/история (timed out after 180s)"
+ ],
+ "requests": 322,
+ "retries": 108
 }
