@@ -21,11 +21,11 @@ const WORDLIKE = /^[\p{L}\p{M}][\p{L}\p{N}\p{M}\u200c\u200d'’\-]*$/u;
 // that otherwise shows up as neighbors of almost any word.
 const WIKI_EXTRA = {
   zh: '可以 指 消歧义 消歧義 页面 頁面 条目 條目 维基 維基 参见 參見 英语 英語',
-  hi: 'पृष्ठ लेख देखें अन्य अंग्रेज़ी अंग्रेजी विकिपीडिया',
+  hi: 'पृष्ठ लेख देखें अन्य अंग्रेज़ी अंग्रेजी विकिपीडिया जाता जाती जाते तथा रूप',
   es: 'puede referirse desambiguación véase artículo página wikipedia editar inglés',
-  ar: 'صفحة مقالة انظر يمكن يشير توضيح ويكيبيديا الإنجليزية إنجليزية',
-  fr: 'peut désigner homonymie homonymes voir projets correspondants article page wikipédia anglais',
-  bn: 'পৃষ্ঠা নিবন্ধ দেখুন উইকিপিডিয়া ইংরেজি',
+  ar: 'صفحة مقالة انظر يمكن يشير توضيح ويكيبيديا الإنجليزية إنجليزية تعديل مصدري ويكي بيانات',
+  fr: 'peut désigner homonymie homonymes voir projets correspondants article page wikipédia anglais fiche technique distribution détails titre',
+  bn: 'পৃষ্ঠা নিবন্ধ দেখুন উইকিপিডিয়া ইংরেজি সাথে এক হিসেবে সালে',
   pt: 'pode referir desambiguação significados editar código-fonte ver página artigo wikipédia inglês',
   ru: 'может означать значения викискладе см статья страница википедия англ английский',
   id: 'merujuk dapat disambiguasi lihat halaman artikel wikipedia inggris',

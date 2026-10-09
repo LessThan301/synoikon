@@ -175,6 +175,7 @@ différents
 dire
 directe
 directement
+distribution
 dit
 dite
 dits
@@ -202,6 +203,7 @@ dès
 début
 désigner
 désormais
+détails
 e
 effet
 egale
@@ -255,6 +257,7 @@ faites
 façon
 feront
 fi
+fiche
 flac
 floc
 fois
@@ -600,6 +603,7 @@ tandis
 tant
 tardive
 te
+technique
 tel
 telle
 tellement
@@ -615,6 +619,7 @@ tien
 tienne
 tiennes
 tiens
+titre
 toc
 toi
 toi-même

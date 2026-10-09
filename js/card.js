@@ -47,7 +47,8 @@ export function renderCard(graph, info, format = 'og') {
   const c = cv.getContext('2d');
   const stack = info.fontStack;
   c.fillStyle = BG; c.fillRect(0, 0, w, h); // flat: gradients bloat PNGs
-  const shortUrl = info.url.replace(/^https?:\/\//, '');
+  let shortUrl = info.url.replace(/^https?:\/\//, '');
+  try { shortUrl = decodeURI(shortUrl); } catch { /* keep encoded */ }
 
   if (format === 'og') {
     const L = 56, colW = 380;

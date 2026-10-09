@@ -107,7 +107,7 @@ for (const [code, m] of recs) {
         + (alts.some(([c]) => c === 'en') ? `  <link rel="alternate" hreflang="x-default" href="${pageUrl('en', concepts.get(info.concept).en)}">\n` : '');
     }
     const app = `${rel}#q=${encodeURIComponent(rec.word)}&lang=${code}`;
-    const li = (n, score) => `<li dir="auto">${esc(n.label)} <small>${score(n)}</small></li>`;
+    const li = (n, score) => `<li><bdi>${esc(n.label)}</bdi> <small dir="ltr">${score(n)}</small></li>`;
     const mark = (text) => esc(text);
     const jsonld = { '@context': 'https://schema.org', '@type': 'WebPage', name: title, description: desc, inLanguage: code, url: pageUrl(code, rec.word),
       dateModified: rec.generated, isPartOf: { '@type': 'WebSite', name: 'Contexter', url: SITE },

@@ -139,7 +139,7 @@ ok(clip === url || /copy/i.test(await page.locator('#shareStatus').innerText()),
 await page.keyboard.press('Escape');
 
 // ---- 5. offline ---------------------------------------------------------------------------
-if (!live) {
+{
   await context.setOffline(true);
   await page.goto(base + `#q=${pop}&lang=en`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => window.__contexter?.count().nodes > 1, null, { timeout: 15000 });
@@ -192,7 +192,7 @@ const loaded = await page.evaluate(async () => {
   await new Promise((r) => { if (window.__beacon) r(); else { s.onload = r; s.onerror = r; setTimeout(r, 4000); } });
   return { added, cfg: s?.getAttribute('data-cf-beacon'), ran: !!window.__beacon, controlled: !!navigator.serviceWorker.controller };
 });
-ok(loaded.added && JSON.parse(loaded.cfg).token === 'fd0db7a5d3e946f39be6ce44cc1c35dc', `beacon tag carries the token: ${loaded.cfg}`);
+ok((loaded.added || live) && JSON.parse(loaded.cfg).token === 'fd0db7a5d3e946f39be6ce44cc1c35dc', `beacon tag carries the token${live ? ' (already injected at load on production)' : ''}: ${loaded.cfg}`);
 ok(loaded.ran && loaded.controlled, 'beacon script loads normally while the service worker controls the page (SW does not intercept it)');
 await wp.close();
 

@@ -1,8 +1,8 @@
 // Contexter service worker.
 // VERSION / DATA_VERSION are content hashes written by tools/stamp-sw.mjs; when any app-shell
 // file (or data list) changes, the cache name changes and old caches are deleted on activate.
-const VERSION = '2b8aa6a3bb41';
-const DATA_VERSION = '99559d3d57d2';
+const VERSION = 'b887d2aa9403';
+const DATA_VERSION = '2852294be9d9';
 const SHELL = `contexter-shell-${VERSION}`;
 const DATA = `contexter-data-${DATA_VERSION}`;       // stopword + background frequency lists (per language, on demand)
 const PRE = 'contexter-precomputed';                   // precomputed networks: stale-while-revalidate
