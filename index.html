@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Contexter · the company a word keeps</title>
+  <meta name="description" content="Type a word. Contexter gathers real text from the web and draws the network of words that keep it company.">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><circle cx='32' cy='32' r='14' fill='%23ff6b4a'/><circle cx='12' cy='14' r='7' fill='%235b8def'/><circle cx='52' cy='18' r='9' fill='%2338c6a8'/><circle cx='48' cy='52' r='6' fill='%23f2b134'/></svg>">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true"></span>
+      <div>
+        <h1>Contexter</h1>
+        <p class="tagline">The company a word keeps, drawn from real text on the web.</p>
+      </div>
+    </div>
+    <form id="search" class="search" autocomplete="off">
+      <input id="term" name="term" type="search" placeholder="Type a word, e.g. river" aria-label="Word" required maxlength="60">
+      <select id="lang" aria-label="Language">
+        <option value="en" selected>EN</option>
+        <option value="de">DE</option>
+        <option value="fr">FR</option>
+        <option value="es">ES</option>
+        <option value="it">IT</option>
+        <option value="nl">NL</option>
+      </select>
+      <button type="submit" id="go">Map it</button>
+    </form>
+  </header>
+
+  <main class="layout">
+    <section class="stage" aria-label="Semantic network">
+      <svg id="graph" role="img" aria-label="Semantic network of co-occurring words"></svg>
+      <div id="empty" class="overlay">
+        <div class="card">
+          <h2>Pick a word</h2>
+          <p>Contexter collects hundreds of real sentences containing your word, looks at the words around it, and draws them as a network.</p>
+          <ul class="legend-list">
+            <li><span class="dot big"></span><b>Circle area</b> = how often a neighbor appears near the word</li>
+            <li><span class="line short"></span><b>Short, thick line</b> = the two words often appear together</li>
+            <li><span class="line long"></span><b>Long, faint line</b> = they rarely do</li>
+          </ul>
+          <div class="chips" id="examples"></div>
+        </div>
+      </div>
+      <div id="loading" class="overlay hidden" aria-live="polite">
+        <div class="card"><div class="spinner"></div><p id="loadingText">Collecting text…</p></div>
+      </div>
+      <div id="error" class="overlay hidden" role="alert">
+        <div class="card error"><h2>Hmm.</h2><p id="errorText"></p></div>
+      </div>
+      <div class="graph-tools">
+        <button id="zoomIn" title="Zoom in" aria-label="Zoom in">+</button>
+        <button id="zoomOut" title="Zoom out" aria-label="Zoom out">−</button>
+        <button id="zoomFit" title="Fit to screen" aria-label="Fit to screen">⤢</button>
+        <button id="download" title="Download SVG" aria-label="Download SVG">⤓</button>
+      </div>
+      <div id="tooltip" class="tooltip hidden"></div>
+      <div class="hint">Hover a circle to highlight its neighbors · click to map that word · drag, scroll or pinch to explore</div>
+    </section>
+
+    <aside class="panel">
+      <details open>
+        <summary>Settings</summary>
+        <div class="controls">
+          <label>Neighbors shown <output id="topNOut">30</output>
+            <input id="topN" type="range" min="5" max="80" value="30">
+          </label>
+          <label>Context window (± words) <output id="windowOut">5</output>
+            <input id="window" type="range" min="1" max="15" value="5">
+          </label>
+          <label>Min. co-occurrence for a line <output id="minCoocOut">2</output>
+            <input id="minCooc" type="range" min="1" max="20" value="2">
+          </label>
+          <label>Max. lines per word <output id="maxLinksOut">6</output>
+            <input id="maxLinks" type="range" min="0" max="20" value="6">
+          </label>
+          <label>Corpus size
+            <select id="size">
+              <option value="250">Small (fast)</option>
+              <option value="500" selected>Medium</option>
+              <option value="1000">Large</option>
+            </select>
+          </label>
+          <fieldset>
+            <legend>Stopwords to drop</legend>
+            <label class="check"><input type="checkbox" id="stopEn" checked> English</label>
+            <label class="check"><input type="checkbox" id="stopDe" checked> German</label>
+          </fieldset>
+          <fieldset id="sourceBoxes">
+            <legend>Sources</legend>
+          </fieldset>
+        </div>
+      </details>
+
+      <details open id="statsBox" class="hidden">
+        <summary>Corpus</summary>
+        <div id="stats"></div>
+      </details>
+
+      <details id="samplesBox" class="hidden">
+        <summary>Sample instances <span id="sampleFor"></span></summary>
+        <ol id="samples" class="samples"></ol>
+      </details>
+
+      <details id="tableBox" class="hidden">
+        <summary>Neighbor table</summary>
+        <table class="table"><thead><tr><th>Word</th><th title="Occurrences inside context windows">Freq.</th><th title="Windows shared with the search word">With word</th></tr></thead><tbody id="tableBody"></tbody></table>
+      </details>
+
+      <p class="about">How it works: see the <a href="README.md">README</a>. Text comes live from Wikipedia, Wikiquote, Wiktionary and Hacker News; nothing is stored.</p>
+    </aside>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
