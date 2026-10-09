@@ -3,7 +3,7 @@
 // Runs the same fetch + analysis as the browser app and writes compact JSON to
 // data/precomputed/<lang>/<word>.json plus a per-language index.json.
 //
-// usage: node tools/precompute.mjs [--days 30] [--max-age 30] [--limit 400] [--langs en,de] [--words river,Wald] [--force]
+// usage: node tools/precompute.mjs [--days 30] [--max-age 30] [--limit 400] [--budget-min 25] [--word-timeout 180] [--langs en,de] [--words river,Wald] [--force]
 //        [--index-only]  just rebuild index.json files
 //        [--cache DIR]  also save raw corpora there;  [--offline]  re-encode from DIR only (no network)
 //
@@ -31,6 +31,10 @@ const ONLY_LANGS = arg('langs', '') ? arg('langs').split(',') : null;
 const ONLY_WORDS = arg('words', '') ? arg('words').split(',').map(slug) : null;
 const CACHE = arg('cache', '');
 const OFFLINE = process.argv.includes('--offline');
+// Wall-clock budget: workers stop taking new words after this many minutes, so a slow or
+// throttled run still finishes (and commits what it has) well inside the CI timeout.
+const BUDGET_MS = +arg('budget-min', 0) * 60000 || Infinity;
+const WORD_TIMEOUT_MS = +arg('word-timeout', 180) * 1000; // give up on one word after this
 setMaxConcurrent(3);
 async function getCorpus(job) {
   const cf = CACHE && path.join(CACHE, job.lang, `${slug(job.word)}.json`);
@@ -64,8 +68,10 @@ for (const l of LANGS) {
     jobs.push({ lang: l.code, word, file, why, age });
   }
 }
-// missing files first, then the stalest; today's words before everything else
-jobs.sort((a, b) => (b.why === 'wotd-today') - (a.why === 'wotd-today') || b.age - a.age);
+// today's words first, then upcoming words of the day, then missing/stalest popular words
+// (so a small daily --limit rotates through the popular set over ~max-age days)
+const prio = (j) => (j.why === 'wotd-today' ? 2 : j.why === 'wotd' ? 1 : 0);
+jobs.sort((a, b) => prio(b) - prio(a) || b.age - a.age);
 jobs.length = process.argv.includes('--index-only') ? 0 : Math.min(jobs.length, LIMIT);
 console.log(`${jobs.length} words to (re)compute (days=${DAYS}, max-age=${MAX_AGE_DAYS}d)`);
 
@@ -83,14 +89,17 @@ function resources(code) {
 
 // ---- run (3 words at a time; the request gate keeps ≤ 3 HTTP requests in flight) ----
 const t0 = Date.now();
-const done = { ok: 0, kept: 0, failed: [] };
+const done = { ok: 0, kept: 0, skipped: 0, failed: [] };
 let next = 0;
 async function worker() {
   while (next < jobs.length) {
+    if (Date.now() - t0 > BUDGET_MS) { done.skipped = jobs.length - next; next = jobs.length; console.log(`  time budget reached; ${done.skipped} words left for the next run`); break; }
     const job = jobs[next++];
     const lang = getLang(job.lang);
+    let timer;
     try {
-      const corpus = await getCorpus(job);
+      const corpus = await Promise.race([getCorpus(job), new Promise((_, rej) => { timer = setTimeout(() => rej(new Error(`timed out after ${WORD_TIMEOUT_MS / 1000}s`)), WORD_TIMEOUT_MS); })]);
+      clearTimeout(timer);
       const errors = corpus.report.filter((r) => r.error);
       if (errors.length && fs.existsSync(job.file)) { // don't replace good data with partial data
         done.kept++; console.log(`  keep ${job.lang}/${job.word}: ${errors.map((e) => `${e.label}: ${e.error}`).join('; ')}`); continue;
@@ -102,8 +111,9 @@ async function worker() {
       fs.mkdirSync(path.dirname(job.file), { recursive: true });
       fs.writeFileSync(job.file, JSON.stringify(rec));
       done.ok++;
-      console.log(`  ${String(done.ok).padStart(4)} ${job.lang}/${job.word} [${job.why}] hits ${rec.stats.occurrences}, distinctive ${n}, ${(JSON.stringify(rec).length / 1024).toFixed(1)} KB: ${rec.order.distinctive.slice(0, 6).map((i) => rec.words[i][1] || rec.words[i][0]).join(', ')}`);
+      console.log(`  ${String(done.ok).padStart(4)} ${job.lang}/${job.word} [${job.why}] hits ${rec.stats.occurrences}, distinctive ${n}, ${((Date.now() - t0) / 60000).toFixed(1)} min, req ${requestStats.requests}/retry ${requestStats.retries}, ${(JSON.stringify(rec).length / 1024).toFixed(1)} KB: ${rec.order.distinctive.slice(0, 6).map((i) => rec.words[i][1] || rec.words[i][0]).join(', ')}`);
     } catch (err) {
+      clearTimeout(timer);
       done.failed.push(`${job.lang}/${job.word} (${err.message})`);
       console.log(`  FAIL ${job.lang}/${job.word}: ${err.message}`);
     }
@@ -127,6 +137,6 @@ for (const l of LANGS) {
 }
 fs.writeFileSync(path.join(OUT, 'index.json'), JSON.stringify({ v: 1, langs: summary }, null, 1));
 const mins = ((Date.now() - t0) / 60000).toFixed(1);
-console.log(`done in ${mins} min: ${done.ok} written, ${done.kept} kept (source errors), ${done.failed.length} failed; ${requestStats.requests} requests, ${requestStats.retries} retries (${requestStats.retryAfterWaits} with Retry-After)`);
+console.log(`done in ${mins} min: ${done.ok} written, ${done.kept} kept (source errors), ${done.failed.length} failed, ${done.skipped} deferred; ${requestStats.requests} requests, ${requestStats.retries} retries (${requestStats.retryAfterWaits} with Retry-After)`);
 if (done.failed.length) console.log('failed:', done.failed.join(', '));
-if (!process.argv.includes('--index-only')) fs.writeFileSync(path.join(OUT, 'last-run.json'), JSON.stringify({ finished: new Date().toISOString(), minutes: +mins, written: done.ok, kept: done.kept, failed: done.failed, requests: requestStats.requests, retries: requestStats.retries }, null, 1));
+if (!process.argv.includes('--index-only')) fs.writeFileSync(path.join(OUT, 'last-run.json'), JSON.stringify({ finished: new Date().toISOString(), minutes: +mins, written: done.ok, kept: done.kept, deferred: done.skipped, failed: done.failed, requests: requestStats.requests, retries: requestStats.retries }, null, 1));

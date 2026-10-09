@@ -50,8 +50,9 @@ for (const code of fs.readdirSync(pre).filter((d) => fs.statSync(path.join(pre, 
   for (const f of fs.readdirSync(path.join(pre, code)).filter((x) => x.endsWith('.json') && x !== 'index.json')) {
     const s = f.slice(0, -5);
     const file = path.join(ROOT, 'w', code, s, 'og.png');
-    if (!FORCE && fs.existsSync(file)) continue;
-    const { word } = JSON.parse(fs.readFileSync(path.join(pre, code, f), 'utf8'));
+    const { word, generated } = JSON.parse(fs.readFileSync(path.join(pre, code, f), 'utf8'));
+    // re-render when the record was regenerated after the image was written (refreshed words)
+    if (!FORCE && fs.existsSync(file) && fs.statSync(file).mtimeMs >= Date.parse(generated)) continue;
     try {
       await render(code, word, `${SITE}w/${code}/${encodeURIComponent(slug(word))}/`, file);
       n++; bytes += fs.statSync(file).size; fresh.push(file);
