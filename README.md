@@ -5,6 +5,10 @@
 Live: **https://lessthan301.github.io/synoikon/** · installable as an app · works offline for popular words ·
 [today’s word](https://lessthan301.github.io/synoikon/#wotd) · [all precomputed words](https://lessthan301.github.io/synoikon/w/) · [about & attribution](https://lessthan301.github.io/synoikon/about.html)
 
+*Formerly **Contexter**.* Old links (`lessthan301.github.io/contexter/…`, including `#q=` links and `/w/` pages) redirect to the
+same page here via the small [LessThan301/contexter](https://github.com/LessThan301/contexter) repo, whose `sw.js` also
+retires the old app's service worker and caches on devices that installed it; saved settings carry over.
+
 Type a word. Synoikon gathers hundreds of real sentences that contain it, looks at
 the words that appear around it, and draws them as an interactive semantic network.
 
@@ -234,6 +238,7 @@ node tests/phase1.e2e.mjs http://localhost:8765/synoikon/            # PWA insta
 node tests/phase1.e2e.mjs http://localhost:8765/synoikon/ 390 844    # same on a phone (Web Share with files is stubbed)
 node tests/sidebar.e2e.mjs http://localhost:8765/synoikon/            # sidebar: rail collapse, canvas refit, persistence, keyboard, RTL
 node tests/sidebar.e2e.mjs http://localhost:8765/synoikon/ 390 844    # drawer: open/close, backdrop, Esc, focus trap
+node tests/redirect.e2e.mjs [1400 900|390 844]                          # live: old /contexter/ links redirect, old SW/caches retired
 ```
 
 The e2e/perf/language tests take the base URL as an argument (`http://localhost:8765/synoikon/`).
