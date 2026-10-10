@@ -2,6 +2,27 @@
 
 **The company a word keeps, drawn from real text on the web.**
 
+> **Status (2026-10-10): synoikon.com shows a "coming soon" placeholder** (on `main`) until an Impressum is in place.
+> The full app lives on this `app` branch; tag `app-live-2026-10-10` marks exactly what was live. The daily
+> precompute workflow is disabled.
+>
+> **To restore the app on synoikon.com:**
+> ```bash
+> git fetch origin
+> git checkout main
+> git reset --hard origin/app          # or: git merge origin/app  (keeps the placeholder commits in history)
+> git push --force-with-lease origin main   # only needed after reset --hard
+> gh workflow enable precompute.yml -R LessThan301/synoikon
+> gh workflow run precompute.yml -R LessThan301/synoikon    # optional: refresh precomputed words now
+> ```
+> Keep the `CNAME` file (synoikon.com). Before going live: add the Impressum/privacy page (e.g. link it from the
+> sidebar footer and `about.html`), and fix the Cloudflare Web Analytics hostname (Web Analytics → Manage site →
+> hostname `synoikon.com`, or put a new token in `js/analytics.js`). Returning visitors pick up the app again
+> automatically: the placeholder's `/sw.js` unregisters itself, and the app registers its own service worker.
+> Note: the placeholder period's commits on `main` only delete files and add the placeholder, so `git merge origin/app`
+> would keep those deletions; use `git reset --hard origin/app` (or `git revert` the placeholder commit) to bring every file back.
+
+
 Live: **https://synoikon.com/** · installable as an app · works offline for popular words ·
 [today’s word](https://synoikon.com/#wotd) · [all precomputed words](https://synoikon.com/w/) · [about & attribution](https://synoikon.com/about.html)
 
