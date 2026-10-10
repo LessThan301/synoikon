@@ -1,6 +1,0 @@
-node_modules/
-/*.png
-tests/*.png
-.DS_Store
-!/og.png
-languages-result.json
