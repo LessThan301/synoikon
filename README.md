@@ -3,27 +3,13 @@
 **The company a word keeps, drawn from real text on the web.**
 
 > **Status (2026-10-10): synoikon.com shows a "coming soon" placeholder** (on `main`) until an Impressum is in place.
-> The full app lives on this `app` branch; tag `app-live-2026-10-10` marks exactly what was live. The daily
-> precompute workflow is disabled.
->
-> **To restore the app on synoikon.com:**
-> ```bash
-> git fetch origin
-> git checkout main
-> git reset --hard origin/app          # brings back every file (a plain merge would keep the placeholder deletions)
-> git push --force-with-lease origin main   # rewrites main; alternative without force: git revert the placeholder commit(s)
-> gh workflow enable precompute.yml -R LessThan301/synoikon
-> gh workflow run precompute.yml -R LessThan301/synoikon    # optional: refresh precomputed words now
-> ```
-> Keep the `CNAME` file (synoikon.com). Before going live: add the Impressum/privacy page (e.g. link it from the
-> sidebar footer and `about.html`), and fix the Cloudflare Web Analytics hostname (Web Analytics → Manage site →
-> hostname `synoikon.com`, or put a new token in `js/analytics.js`). Returning visitors pick up the app again
-> automatically: the placeholder's `/sw.js` unregisters itself, and the app registers its own service worker.
-> Note: the placeholder period's commits on `main` only delete files and add the placeholder, so `git merge origin/app`
-> would keep those deletions; use `git reset --hard origin/app` (or `git revert` the placeholder commit) to bring every file back.
+> The app is developed on this **`app`** branch; every push to `app` is deployed automatically to the
+> **preview: https://lessthan301.github.io/synoikon-preview/** (noindex, no analytics). Tag `app-live-2026-10-10`
+> marks exactly what was live before the placeholder. The daily precompute workflow is disabled.
+> See [Development, preview & release](#development-preview--release) for how to release to synoikon.com.
 
 
-Live: **https://synoikon.com/** · installable as an app · works offline for popular words ·
+Production: **https://synoikon.com/** (placeholder for now; preview: https://lessthan301.github.io/synoikon-preview/) · installable as an app · works offline for popular words ·
 [today’s word](https://synoikon.com/#wotd) · [all precomputed words](https://synoikon.com/w/) · [about & attribution](https://synoikon.com/about.html)
 
 *Formerly **Contexter**.* Old links (`lessthan301.github.io/contexter/…` and `lessthan301.github.io/synoikon/…`, including `#q=`
@@ -260,13 +246,68 @@ node tests/phase1.e2e.mjs http://localhost:8765/ 390 844    # same on a phone (W
 node tests/sidebar.e2e.mjs http://localhost:8765/            # sidebar: rail collapse, canvas refit, persistence, keyboard, RTL
 node tests/sidebar.e2e.mjs http://localhost:8765/ 390 844    # drawer: open/close, backdrop, Esc, focus trap
 node tests/redirect.e2e.mjs [1400 900|390 844]                          # live: old /contexter/, /synoikon/ and www links reach synoikon.com
+node tests/preview.e2e.mjs https://lessthan301.github.io/synoikon-preview/ [390 844]   # preview build checks
 ```
 
 The e2e/perf/language tests take the base URL as an argument (`http://localhost:8765/`).
 
+## Development, preview & release
+
+Branches: **`app`** = the source of the app (work here) · **`main`** = what GitHub Pages serves at synoikon.com
+(currently the coming-soon placeholder) · [LessThan301/synoikon-preview](https://github.com/LessThan301/synoikon-preview)
+= build output of the preview (force-pushed on every deploy; don't edit it).
+
+The source is written for production (site at the domain root `https://synoikon.com/`, analytics token set, indexable).
+`tools/build-site.mjs` makes a deployable copy for any public URL:
+
+```bash
+node tools/build-site.mjs --out _site --site https://lessthan301.github.io/synoikon-preview/ --preview   # preview
+node tools/build-site.mjs --out _site --site https://synoikon.com/                                      # production
+```
+
+It copies only the site files (no `tests/`, `tools/`, README), rewrites absolute URLs (canonical, OG, hreflang,
+JSON-LD, sitemap, robots `Sitemap:`), root paths in `offline.html` and the manifest `id` for a subpath base, and
+re-stamps `sw.js` (manifest `start_url`/`scope` and the service-worker scope are relative, so they follow the base).
+`--preview` also turns analytics off (empty token), adds `<meta name="robots" content="noindex,nofollow">` to every page,
+writes `robots.txt` with `Disallow: /`, shows a "Preview" badge, names the manifest "Synoikon (preview)", uses separate
+cache names (`synoikon-preview-*`) and leaves out `CNAME`. The production build is byte-identical to the source files.
+
+**Develop → preview (automatic).** Commit and push to `app`; `.github/workflows/preview.yml` ("Deploy preview") builds the
+preview and pushes it to `LessThan301/synoikon-preview` (`main`, served by GitHub Pages) in about a minute. Auth: a write
+deploy key on synoikon-preview whose private half is the `PREVIEW_DEPLOY_KEY` secret of this repo (rotate: create a new
+key pair, `gh repo deploy-key add new.pub -R LessThan301/synoikon-preview --allow-write`, `gh secret set PREVIEW_DEPLOY_KEY
+-R LessThan301/synoikon < new`, delete the old key). Redeploy by hand: `gh workflow run preview.yml --ref app`.
+Check a preview: `node tests/preview.e2e.mjs https://lessthan301.github.io/synoikon-preview/ [390 844]` (noindex, robots,
+badge, no analytics requests, installable under the subpath, precomputed words, word pages, no console errors).
+
+**Release → synoikon.com (manual; only once the Impressum is in place).** `.github/workflows/release.yml` ("Release to
+production") builds the production site (root base, analytics on, indexable, `CNAME`) from `app` and commits it on top of
+`main` (a normal commit, no force-push; the placeholder stays in history). Start it with a release tag:
+
+```bash
+git tag release-2026-10-20 app && git push origin release-2026-10-20
+```
+
+or, if `app` is made the repository's default branch (`gh repo edit LessThan301/synoikon --default-branch app`; Pages
+keeps serving `main`), with the button / `gh workflow run release.yml -f ref=app -f confirm=RELEASE`. (GitHub only offers
+manual `workflow_dispatch` runs and `schedule` runs for workflow files on the default branch.) Undo a release:
+`git revert` the release commit on `main`, or run the release again from an older ref (e.g. tag `app-live-2026-10-10`).
+Before the first release: add the Impressum/privacy page (e.g. linked from the sidebar footer and `about.html`) and fix
+the Cloudflare Web Analytics hostname (Web Analytics → Manage site → hostname `synoikon.com`, or a new token in
+`js/analytics.js`). Returning visitors get the app back by themselves: the placeholder's `/sw.js` unregisters itself and the
+app registers its own service worker.
+
+**Precomputed words.** The precompute workflow is disabled. It now commits to `app` and then starts the preview deploy; the
+results reach synoikon.com with the next release. To use it: `gh workflow enable precompute.yml -R LessThan301/synoikon`, then
+`gh workflow run precompute.yml --ref app` (manual; this needs `app` as default branch too). Its daily `schedule` only fires
+once `app` is the default branch.
+
+Manual alternative to the release workflow: build production locally (`node tools/build-site.mjs --out _site --site
+https://synoikon.com/`), replace the contents of a `main` checkout with `_site/` (keep `.git`), commit, push.
+
 ## Hosting
 
-Any static host works. Live on GitHub Pages (deploy from `main`, root folder) with the custom domain **synoikon.com** (`CNAME` file; DNS at Cloudflare, DNS-only: apex A records to GitHub Pages, `www` CNAME to `lessthan301.github.io`; GitHub redirects `www` and `lessthan301.github.io/synoikon/` to the apex).
+Any static host works. Production: GitHub Pages (deploy from `main`, root folder) with the custom domain **synoikon.com** (`CNAME` file; DNS at Cloudflare, DNS-only: apex A records to GitHub Pages, `www` CNAME to `lessthan301.github.io`; GitHub redirects `www` and `lessthan301.github.io/synoikon/` to the apex).
 
 ## Limitations
 

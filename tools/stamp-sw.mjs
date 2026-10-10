@@ -1,11 +1,12 @@
 #!/usr/bin/env node
 // Write content hashes into sw.js so a changed app shell / data list gets a new cache.
-// usage: node tools/stamp-sw.mjs [--check]   (--check: exit 1 if sw.js is out of date)
+// usage: node tools/stamp-sw.mjs [--check] [--root DIR]   (--check: exit 1 if sw.js is out of date; --root: a built copy)
 import fs from 'fs';
 import path from 'path';
 import crypto from 'crypto';
 import { fileURLToPath } from 'url';
-const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
+const ri = process.argv.indexOf('--root');
+const ROOT = ri > 0 ? path.resolve(process.argv[ri + 1]) : path.join(path.dirname(fileURLToPath(import.meta.url)), '..');
 const swPath = path.join(ROOT, 'sw.js');
 const sw = fs.readFileSync(swPath, 'utf8');
 const list = JSON.parse('[' + sw.match(/const SHELL_FILES = \[([\s\S]*?)\];/)[1].replace(/'/g, '"').replace(/\bD3\b/, '"D3"').replace(/,\s*$/, '') + ']');

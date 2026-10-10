@@ -5,6 +5,9 @@ name: Precompute popular words
 # wall-clock budget keeps the run short even when Wikimedia throttles the runner (~30 s/word
 # was observed on GitHub runners vs ~8 s locally); whatever was computed is still committed.
 # Then render Open Graph images for new/refreshed words, rebuild the word pages + sitemap.
+# Results are committed to `app` (the source branch) and the preview is redeployed; they reach
+# synoikon.com with the next "Release to production". Note: GitHub runs `schedule` only from the
+# default branch's copy of this file, so the daily run needs `app` as default branch (or a copy on main).
 on:
   schedule:
     - cron: '17 2 * * *'   # 02:17 UTC daily
@@ -19,7 +22,7 @@ on:
 
 permissions:
   contents: write   # commit the results
-  pages: write      # request a Pages build after pushing
+  actions: write    # start the preview deploy (pushes made with GITHUB_TOKEN trigger no workflows)
 
 concurrency:
   group: precompute
@@ -32,6 +35,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: app
           fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
@@ -73,9 +77,9 @@ jobs:
           git add data/precomputed w sitemap.xml robots.txt og.png
           if git diff --cached --quiet; then echo "Nothing changed"; exit 0; fi
           git commit -q -m "Precompute $(date -u +%F): $(jq -r '"\(.written) written, \(.failed|length) failed, \(.requests) requests"' data/precomputed/last-run.json 2>/dev/null || echo update)"
-          for i in 1 2 3; do git pull -q --rebase origin main && git push -q origin HEAD:main && break; sleep 5; done
-      - name: Request a GitHub Pages build
+          for i in 1 2 3; do git pull -q --rebase origin app && git push -q origin HEAD:app && break; sleep 5; done
+      - name: Redeploy the preview
         if: ${{ !cancelled() && steps.push.outcome == 'success' }}
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" --jq .status || echo "(Pages build request failed; the push may still trigger one)"
+        run: gh workflow run preview.yml --ref app -R "${{ github.repository }}"

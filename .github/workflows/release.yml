@@ -1,0 +1,74 @@
+name: Release to production
+
+# Manual only. Builds the PRODUCTION site (domain root https://synoikon.com/, analytics on,
+# indexable, CNAME) from `app` (or the given ref) and commits it on top of `main`, which
+# GitHub Pages serves at synoikon.com. A normal (non-force) commit: the previous main (e.g. the
+# coming-soon placeholder) stays in history, so a release can be undone with `git revert`.
+# Note: GitHub only offers "Run workflow" for workflow_dispatch if this file is on the DEFAULT
+# branch; while the default branch is `main` (placeholder) use a release tag instead:
+#   git tag release-2026-10-20 app && git push origin release-2026-10-20
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch/tag/commit to release'
+        default: 'app'
+      confirm:
+        description: 'Type RELEASE to publish to synoikon.com'
+        required: true
+  push:
+    tags: ['release-*']
+
+permissions:
+  contents: write   # commit to main
+  pages: write      # request a Pages build
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: ${{ github.event_name == 'push' || github.event.inputs.confirm == 'RELEASE' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event_name == 'push' && github.ref || github.event.inputs.ref }}
+          path: src
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          path: prod
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build production
+        working-directory: src
+        run: |
+          node tools/build-site.mjs --out ../_site --site https://synoikon.com/
+          node tests/words.test.mjs
+          node tools/stamp-sw.mjs --check --root ../_site
+          grep -qx 'synoikon.com' ../_site/CNAME
+          ! grep -q 'name="robots"' ../_site/index.html
+          grep -q "token: '[0-9a-f]\+'" ../_site/js/analytics.js
+          grep -q 'https://synoikon.com/' ../_site/sitemap.xml
+      - name: Commit to main
+        id: push
+        run: |
+          SRC_SHA=$(git -C src rev-parse --short HEAD)
+          rsync -a --delete --exclude .git _site/ prod/
+          cd prod
+          git config user.name "synoikon-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "main already matches $SRC_SHA"; exit 0; fi
+          git commit -q -m "Release ${SRC_SHA} (from ${{ github.event_name == 'push' && github.ref_name || github.event.inputs.ref }}) to synoikon.com"
+          git push -q origin HEAD:main
+          echo "Released ${SRC_SHA} → https://synoikon.com/ (main $(git rev-parse --short HEAD))" >> "$GITHUB_STEP_SUMMARY"
+      - name: Request a GitHub Pages build
+        if: ${{ steps.push.outcome == 'success' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" --jq .status || echo "(Pages build request failed; the push may still trigger one)"

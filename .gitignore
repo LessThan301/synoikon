@@ -4,3 +4,4 @@ tests/*.png
 .DS_Store
 !/og.png
 languages-result.json
+_site/

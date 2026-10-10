@@ -1,0 +1,54 @@
+name: Deploy preview
+
+# Every push to `app` builds the site for https://lessthan301.github.io/synoikon-preview/
+# (subpath base, analytics off, noindex/nofollow, robots.txt Disallow all, "Preview" badge)
+# and force-pushes the build output as a single commit to LessThan301/synoikon-preview (main),
+# which GitHub Pages serves. Auth: write deploy key on synoikon-preview, private half in the
+# PREVIEW_DEPLOY_KEY secret of this repo. Production (main → synoikon.com) is not touched.
+on:
+  push:
+    branches: [app]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: preview
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Build preview
+        run: |
+          node tools/build-site.mjs --out _site --site https://lessthan301.github.io/synoikon-preview/ --preview
+          node tests/words.test.mjs
+          node tools/stamp-sw.mjs --check --root _site
+          grep -q 'name="robots" content="noindex,nofollow"' _site/index.html
+          grep -q "token: ''" _site/js/analytics.js   # analytics off
+          test ! -e _site/CNAME
+      - name: Push to LessThan301/synoikon-preview
+        env:
+          DEPLOY_KEY: ${{ secrets.PREVIEW_DEPLOY_KEY }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$DEPLOY_KEY" > ~/.ssh/preview_deploy && chmod 600 ~/.ssh/preview_deploy
+          ssh-keyscan -t ed25519 github.com >> ~/.ssh/known_hosts 2>/dev/null
+          cd _site
+          git init -q -b main
+          git config user.name "synoikon-bot"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Preview of ${GITHUB_REPOSITORY}@${GITHUB_SHA::7} (app)"
+          GIT_SSH_COMMAND="ssh -i ~/.ssh/preview_deploy -o IdentitiesOnly=yes" git push -q -f git@github.com:LessThan301/synoikon-preview.git main
+          echo "Deployed ${GITHUB_SHA::7} → https://lessthan301.github.io/synoikon-preview/" >> "$GITHUB_STEP_SUMMARY"
+      - name: Clean up key
+        if: always()
+        run: rm -f ~/.ssh/preview_deploy
