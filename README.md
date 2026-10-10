@@ -289,8 +289,10 @@ git tag release-2026-10-20 app && git push origin release-2026-10-20
 ```
 
 or, if `app` is made the repository's default branch (`gh repo edit LessThan301/synoikon --default-branch app`; Pages
-keeps serving `main`), with the button / `gh workflow run release.yml -f ref=app -f confirm=RELEASE`. (GitHub only offers
-manual `workflow_dispatch` runs and `schedule` runs for workflow files on the default branch.) Undo a release:
+keeps serving `main`), with the "Run workflow" button / `gh workflow run release.yml -f ref=app -f confirm=RELEASE`.
+(The button and `schedule` only exist for workflow files on the default branch. `gh workflow run --ref app` also works for
+a workflow GitHub has already registered from `app`: verified for `preview.yml`; `release.yml` is registered after its first
+tag-triggered run.) Undo a release:
 `git revert` the release commit on `main`, or run the release again from an older ref (e.g. tag `app-live-2026-10-10`).
 Before the first release: add the Impressum/privacy page (e.g. linked from the sidebar footer and `about.html`) and fix
 the Cloudflare Web Analytics hostname (Web Analytics → Manage site → hostname `synoikon.com`, or a new token in
@@ -299,8 +301,8 @@ app registers its own service worker.
 
 **Precomputed words.** The precompute workflow is disabled. It now commits to `app` and then starts the preview deploy; the
 results reach synoikon.com with the next release. To use it: `gh workflow enable precompute.yml -R LessThan301/synoikon`, then
-`gh workflow run precompute.yml --ref app` (manual; this needs `app` as default branch too). Its daily `schedule` only fires
-once `app` is the default branch.
+`gh workflow run precompute.yml --ref app` (if GitHub no longer lists the workflow because it isn't on `main`, make `app` the
+default branch first). Its daily `schedule` only fires once `app` is the default branch.
 
 Manual alternative to the release workflow: build production locally (`node tools/build-site.mjs --out _site --site
 https://synoikon.com/`), replace the contents of a `main` checkout with `_site/` (keep `.git`), commit, push.
