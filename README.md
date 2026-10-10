@@ -10,8 +10,8 @@
 > ```bash
 > git fetch origin
 > git checkout main
-> git reset --hard origin/app          # or: git merge origin/app  (keeps the placeholder commits in history)
-> git push --force-with-lease origin main   # only needed after reset --hard
+> git reset --hard origin/app          # brings back every file (a plain merge would keep the placeholder deletions)
+> git push --force-with-lease origin main   # rewrites main; alternative without force: git revert the placeholder commit(s)
 > gh workflow enable precompute.yml -R LessThan301/synoikon
 > gh workflow run precompute.yml -R LessThan301/synoikon    # optional: refresh precomputed words now
 > ```
