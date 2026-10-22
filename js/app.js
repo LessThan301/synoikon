@@ -107,7 +107,9 @@ function ensureFont(lang) {
   if (!fontLoads.has(lang.code)) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = `https://cdn.jsdelivr.net/npm/@fontsource/${lang.font.pkg}@5/index.css`;
+    link.href = `https://cdn.jsdelivr.net/npm/@fontsource/${lang.font.pkg}@${lang.font.ver}/index.css`;
+    link.integrity = lang.font.sri;
+    link.crossOrigin = 'anonymous';
     document.head.appendChild(link);
     fontLoads.set(lang.code, new Promise((res) => { link.onload = res; link.onerror = res; }));
   }
