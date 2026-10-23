@@ -11,7 +11,7 @@
   document.querySelectorAll('.langs button').forEach(function (b) { b.addEventListener('click', function () { setLang(b.dataset.set); history.replaceState(null, '', '#' + b.dataset.set); }); });
   setLang(start);
   // email: assembled at runtime from reversed parts, so it is not in the HTML source
-  var addr = ['moc', 'nokioniys', 'tkatnok'].map(function (s) { return s.split('').reverse().join(''); });
+  var addr = ['moc', 'nokionys', 'tkatnok'].map(function (s) { return s.split('').reverse().join(''); });
   addr = addr[2] + '@' + addr[1] + '.' + addr[0];
   document.querySelectorAll('.js-mail').forEach(function (el) { var a = document.createElement('a'); a.href = 'mailto:' + addr; a.textContent = addr; el.replaceWith(a); });
   // contact form
