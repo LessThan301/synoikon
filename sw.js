@@ -1,23 +1,23 @@
 // Synoikon service worker.
 // VERSION / DATA_VERSION are content hashes written by tools/stamp-sw.mjs; when any app-shell
 // file (or data list) changes, the cache name changes and old caches are deleted on activate.
-const VERSION = '21dd60ea88f8';
+const VERSION = '0f742039b666';
 const DATA_VERSION = 'f737ac5bcc52';
 const SHELL = `synoikon-shell-${VERSION}`;
 const DATA = `synoikon-data-${DATA_VERSION}`;       // stopword + background frequency lists (per language, on demand)
 const PRE = 'synoikon-precomputed';                   // precomputed networks: stale-while-revalidate
 const API = 'synoikon-api';                           // recent search results (Wikimedia/HN): stale-while-revalidate
 const PAGES = 'synoikon-pages';                       // visited static word pages
-const FONTS = 'synoikon-fonts';                       // Fontsource CSS + woff2 from jsDelivr
+const FONTS = 'synoikon-fonts';                       // self-hosted Fontsource CSS + woff2 (fonts/)
 const LIMITS = { [PRE]: 250, [API]: 160, [PAGES]: 60, [FONTS]: 60 };
-const D3 = 'https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js';
+
 const SHELL_FILES = [
   './', 'index.html', 'about.html', 'offline.html', 'manifest.webmanifest',
   'css/style.css', 'css/page.css',
   'js/app.js', 'js/analysis.js', 'js/graph.js', 'js/languages.js', 'js/reference.js', 'js/sources.js', 'js/stopwords.js',
   'js/words.js', 'js/precomputed.js', 'js/card.js', 'js/pwa.js', 'js/analytics.js', 'js/sidebar.js', 'js/legend.js',
   'icons/favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
-  D3,
+  'js/vendor/d3.min.js',
 ];
 const SCOPE = new URL('./', self.location).href;
 
@@ -81,13 +81,12 @@ self.addEventListener('fetch', (event) => {
   if (req.mode === 'navigate' && req.url.startsWith(SCOPE)) { event.respondWith(navigate(req, event)); return; }
   if (req.url.startsWith(SCOPE)) {
     const path = url.pathname.slice(new URL(SCOPE).pathname.length);
-    if (path.startsWith('data/precomputed/')) event.respondWith(staleWhileRevalidate(PRE, req, event));
+    if (path.startsWith('fonts/')) event.respondWith(cacheFirst(FONTS, req));
+    else if (path.startsWith('data/precomputed/')) event.respondWith(staleWhileRevalidate(PRE, req, event));
     else if (/^data\/(stop|freq)-[a-z]{2}\.txt$/.test(path)) event.respondWith(cacheFirst(DATA, req));
     else if (SHELL_FILES.includes(path) || path === '') event.respondWith(caches.match(req, { ignoreSearch: true }).then((hit) => hit || fetch(req)));
     return;
   }
   if (/\.(wikipedia|wikiquote|wiktionary)\.org$/.test(url.hostname) && url.pathname.endsWith('/api.php')) { event.respondWith(staleWhileRevalidate(API, req, event)); return; }
   if (url.hostname === 'hn.algolia.com') { event.respondWith(staleWhileRevalidate(API, req, event)); return; }
-  if (req.url === D3) { event.respondWith(caches.match(req).then((hit) => hit || fetch(req))); return; }
-  if (url.hostname === 'cdn.jsdelivr.net' && url.pathname.startsWith('/npm/@fontsource/')) event.respondWith(cacheFirst(FONTS, req));
 });

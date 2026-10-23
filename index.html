@@ -195,10 +195,10 @@
               <tr><th data-l="k1">Circle size</th><td data-l="v1">How often the word appears near your search word</td></tr>
               <tr><th data-l="k2">Line length / thickness</th><td data-l="v2">How often two words appear together: shorter and bolder = more often</td></tr>
               <tr><th data-l="k3">“12× near …”</th><td data-l="v3">Times found within the word window around your search word (default ±5)</td></tr>
-              <tr><th data-l="k4">“in 8 of 120 windows”</th><td data-l="v4">How many of the text snippets contain both words</td></tr>
-              <tr><th data-l="k5">#3</th><td data-l="v5">Rank among the neighbours</td></tr>
+              <tr class="opt"><th data-l="k4">“in 8 of 120 windows”</th><td data-l="v4">How many of the text snippets contain both words</td></tr>
+              <tr class="opt"><th data-l="k5">#3</th><td data-l="v5">Rank among the neighbours</td></tr>
               <tr><th data-l="k6">Distinctiveness</th><td data-l="v6">How much more often than in general text (only with “distinctive” ranking)</td></tr>
-              <tr><th data-l="k7">Often with</th><td data-l="v7">Other neighbours it is linked to, with shared counts</td></tr>
+              <tr class="opt"><th data-l="k7">Often with</th><td data-l="v7">Other neighbours it is linked to, with shared counts</td></tr>
             </tbody>
           </table>
           <p class="legend-foot" data-l="foot">Hover a circle to see these numbers (on touch screens: press and drag it) · click or tap to map that word</p>
@@ -227,7 +227,7 @@
     </form>
   </dialog>
 
-  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+  <script src="js/vendor/d3.min.js"></script>
   <script type="module" src="js/app.js"></script>
   <script src="js/legend.js" defer></script>
 </body>

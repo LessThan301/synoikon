@@ -20,7 +20,7 @@ const PREVIEW = process.argv.includes('--preview');
 const PROD_SITE = 'https://synoikon.com/';
 if (!/^https:\/\/[^/]+\/(.+\/)?$/.test(SITE)) throw new Error(`--site must be an https URL ending in "/": ${SITE}`);
 const BASE = new URL(SITE).pathname; // "/" or "/synoikon-preview/"
-const INCLUDE = ['index.html', 'about.html', 'offline.html', 'manifest.webmanifest', 'sw.js', 'robots.txt', 'sitemap.xml', 'og.png', 'css', 'js', 'icons', 'data', 'w'];
+const INCLUDE = ['index.html', 'about.html', 'offline.html', 'manifest.webmanifest', 'sw.js', 'robots.txt', 'sitemap.xml', 'og.png', 'css', 'js', 'icons', 'data', 'w', 'fonts'];
 
 fs.rmSync(OUT, { recursive: true, force: true });
 fs.mkdirSync(OUT, { recursive: true });

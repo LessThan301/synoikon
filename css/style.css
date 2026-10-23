@@ -236,4 +236,4 @@ summary span { color: var(--accent); font-weight: 500; }
 .map-legend th { font-weight: 600; padding-right: 10px; white-space: nowrap; }
 .map-legend td { color: #c9cfe4; }
 .map-legend .legend-foot { margin: 6px 0 0; color: var(--muted); font-size: .72rem; }
-@media (max-width: 560px) { .map-legend th { white-space: normal; width: 38%; } }
+@media (max-width: 560px) { .map-legend { font-size: .72rem; padding: 8px 10px; max-width: min(270px, calc(100% - 64px)); } .map-legend .opt { display: none; } .map-legend th { white-space: normal; width: 40%; padding-right: 8px; } .map-legend th, .map-legend td { padding: 3px 0; } .map-legend .legend-foot { font-size: .68rem; } }
