@@ -1,0 +1,92 @@
+Het gezelschap van een woord, uit echte tekst op het web.
+Startpagina
+Instellingen inklappen
+Instellingen uitklappen
+Instellingen sluiten
+Instellingen openen
+Instellingen
+Zoeken & taal
+Rangorde
+Netwerk
+Bronnen
+Stopwoorden
+Weergave & export
+Resultaten
+Typ een woord, bijv. rivier
+Woord
+Taal
+In kaart
+Kenmerkend
+Frequentie
+Kenmerkend: woorden die veel vaker bij jouw woord staan dan in gewone tekst. Frequentie: gewoon de meest voorkomende buren.
+Getoonde buren
+Contextvenster (± woorden)
+Min. samen voorkomen voor een lijn
+Max. lijnen per woord
+Corpusgrootte
+Klein (snel)
+Middel
+Groot
+Veelvoorkomende woorden weglaten (
+Ook Engelse weglaten
+Passend maken
+SVG downloaden
+Afbeelding / link delen
+App installeren
+Breng een woord in kaart om hier het corpus, voorbeeldzinnen en de burentabel te zien.
+Corpus
+Voorbeelden
+Burentabel
+Over, methode & bronnen
+Woord van de dag
+Kies een woord
+Synoikon verzamelt honderden echte zinnen met jouw woord, bekijkt de woorden eromheen en tekent ze als netwerk.
+Cirkeloppervlak
+= hoe vaak een buur bij het woord voorkomt
+Korte, dikke lijn
+= de twee woorden komen vaak samen voor
+Lange, vage lijn
+= ze komen zelden samen voor
+Tekst verzamelen…
+Inzoomen
+Uitzoomen
+Kaart delen
+Wat de kaart toont
+Beweeg over een cirkel om zijn buren te markeren · klik om dat woord in kaart te brengen · sleep, scrol of knijp om te verkennen
+Wat je ziet
+Cirkelgrootte
+Hoe vaak het woord bij je zoekwoord voorkomt
+Lijnlengte / -dikte
+Hoe vaak twee woorden samen voorkomen: korter en dikker = vaker
+Aantal keer gevonden in het woordvenster rond je zoekwoord (standaard ±5)
+Hoeveel tekstfragmenten beide woorden bevatten
+Rang onder de buren
+Kenmerkendheid
+Hoeveel vaker dan in gewone tekst (alleen bij rangorde ‘kenmerkend’)
+Vaak met
+Andere buren waarmee het verbonden is, met gedeelde aantallen
+Beweeg over een cirkel om deze cijfers te zien · Ctrl/⌘+klik (touch: lang drukken) zet ze vast · klik of tik brengt het woord in kaart
+Vastzetten
+Losmaken
+{0} keer gevonden · {1} contextvensters
+{0}× bij {1}
+in {0} van {1} vensters
+≈{0} vaker dan in gewone tekst
+Klik om ‘{0}’ in kaart te brengen
+Tekst over ‘{0}’ verzamelen…
+Geen tekst gevonden voor ‘{0}’. Controleer de spelling of probeer een andere taal.
+Taal van de interface
+Populair
+Tik om zijn gezelschap te zien
+Freq.
+Met woord
+Kenm.
+Gerangschikt op kenmerkendheid (log₂-verhouding t.o.v. gewone Wikipedia-tekst). Het cirkeloppervlak toont nog steeds de frequentie.
+Gerangschikt op frequentie binnen de contextvensters.
+{0} keer “{1}” in {2} van {3} teksten, met {4} unieke contextvensters en {5} verschillende buurwoorden.
+De top {0} buren met {1} lijnen tussen buren.
+{0} teksten
+Vernieuwen met live gegevens
+Vooraf berekend op {0} met standaardinstellingen.
+Automatisch (kaarttaal)
+Machinaal vertaalde interface; correcties welkom.

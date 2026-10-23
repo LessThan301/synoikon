@@ -1,0 +1,92 @@
+The company a word keeps, drawn from real text on the web.
+Start page
+Collapse settings
+Expand settings
+Close settings
+Open settings
+Settings
+Search & language
+Ranking
+Network
+Sources
+Stopwords
+Display & export
+Results
+Type a word, e.g. river
+Word
+Language
+Map it
+Distinctive
+Frequency
+Distinctive: words that turn up near yours far more often than in ordinary text. Frequency: simply the commonest neighbors.
+Neighbors shown
+Context window (± words)
+Min. co-occurrence for a line
+Max. lines per word
+Corpus size
+Small (fast)
+Medium
+Large
+Remove common words (
+Also remove English ones
+Fit to screen
+Download SVG
+Share image / link
+Install app
+Map a word to see the corpus, sample sentences and the neighbor table here.
+Corpus
+Sample instances
+Neighbor table
+About, method & attribution
+Today’s word
+Pick a word
+Synoikon collects hundreds of real sentences containing your word, looks at the words around it, and draws them as a network.
+Circle area
+= how often a neighbor appears near the word
+Short, thick line
+= the two words often appear together
+Long, faint line
+= they rarely do
+Collecting text…
+Zoom in
+Zoom out
+Share map
+What the map shows
+Hover a circle to highlight its neighbors · click to map that word · drag, scroll or pinch to explore
+What you see
+Circle size
+How often the word appears near your search word
+Line length / thickness
+How often two words appear together: shorter and bolder = more often
+Times found within the word window around your search word (default ±5)
+How many of the text snippets contain both words
+Rank among the neighbours
+Distinctiveness
+How much more often than in general text (only with “distinctive” ranking)
+Often with
+Other neighbours it is linked to, with shared counts
+Hover a circle to see these numbers · Ctrl/⌘+click (touch: long-press) pins them · click or tap maps the word
+Pin
+Unpin
+{0} occurrences found · {1} context windows
+{0}× near {1}
+in {0} of {1} windows
+≈{0} more often than in general text
+Click to map “{0}”
+Collecting text about “{0}”…
+No text found for “{0}”. Check the spelling or try another language.
+Interface language
+Popular
+Tap to see the company it keeps
+Freq.
+With word
+Distinct.
+Ranked by distinctiveness (log₂ ratio vs. general Wikipedia text). Circle area still shows frequency.
+Ranked by frequency inside the context windows.
+{0} instances of “{1}” in {2} of {3} texts, giving {4} unique context windows and {5} distinct neighbor words.
+Showing the top {0} neighbors with {1} neighbor–neighbor lines.
+{0} texts
+Refresh with live data
+Precomputed on {0} with default settings.
+Automatic (map language)
+Machine-translated interface; corrections welcome.

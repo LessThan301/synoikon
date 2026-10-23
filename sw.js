@@ -1,7 +1,7 @@
 // Synoikon service worker.
 // VERSION / DATA_VERSION are content hashes written by tools/stamp-sw.mjs; when any app-shell
 // file (or data list) changes, the cache name changes and old caches are deleted on activate.
-const VERSION = '0f742039b666';
+const VERSION = 'eec9ac927965';
 const DATA_VERSION = 'f737ac5bcc52';
 const SHELL = `synoikon-shell-${VERSION}`;
 const DATA = `synoikon-data-${DATA_VERSION}`;       // stopword + background frequency lists (per language, on demand)
@@ -15,7 +15,7 @@ const SHELL_FILES = [
   './', 'index.html', 'about.html', 'offline.html', 'manifest.webmanifest',
   'css/style.css', 'css/page.css',
   'js/app.js', 'js/analysis.js', 'js/graph.js', 'js/languages.js', 'js/reference.js', 'js/sources.js', 'js/stopwords.js',
-  'js/words.js', 'js/precomputed.js', 'js/card.js', 'js/pwa.js', 'js/analytics.js', 'js/sidebar.js', 'js/legend.js',
+  'js/words.js', 'js/precomputed.js', 'js/card.js', 'js/pwa.js', 'js/analytics.js', 'js/sidebar.js', 'js/legend.js', 'js/i18n.js',
   'icons/favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',
   'js/vendor/d3.min.js',
 ];
@@ -82,6 +82,7 @@ self.addEventListener('fetch', (event) => {
   if (req.url.startsWith(SCOPE)) {
     const path = url.pathname.slice(new URL(SCOPE).pathname.length);
     if (path.startsWith('fonts/')) event.respondWith(cacheFirst(FONTS, req));
+    else if (path.startsWith('data/i18n/')) event.respondWith(staleWhileRevalidate(DATA, req, event));
     else if (path.startsWith('data/precomputed/')) event.respondWith(staleWhileRevalidate(PRE, req, event));
     else if (/^data\/(stop|freq)-[a-z]{2}\.txt$/.test(path)) event.respondWith(cacheFirst(DATA, req));
     else if (SHELL_FILES.includes(path) || path === '') event.respondWith(caches.match(req, { ignoreSearch: true }).then((hit) => hit || fetch(req)));

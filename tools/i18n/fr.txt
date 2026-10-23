@@ -1,0 +1,92 @@
+La compagnie d’un mot, tirée de vrais textes du web.
+Accueil
+Réduire les réglages
+Déplier les réglages
+Fermer les réglages
+Ouvrir les réglages
+Réglages
+Recherche et langue
+Classement
+Réseau
+Sources
+Mots vides
+Affichage et export
+Résultats
+Tapez un mot, p. ex. rivière
+Mot
+Langue
+Cartographier
+Distinctifs
+Fréquence
+Distinctifs : mots qui apparaissent près du vôtre bien plus souvent que dans un texte ordinaire. Fréquence : simplement les voisins les plus courants.
+Voisins affichés
+Fenêtre de contexte (± mots)
+Cooccurrence min. pour une ligne
+Lignes max. par mot
+Taille du corpus
+Petit (rapide)
+Moyen
+Grand
+Retirer les mots courants (
+Retirer aussi les mots anglais
+Ajuster à l’écran
+Télécharger le SVG
+Partager image / lien
+Installer l’app
+Cartographiez un mot pour voir ici le corpus, des phrases d’exemple et le tableau des voisins.
+Corpus
+Exemples
+Tableau des voisins
+À propos, méthode et sources
+Mot du jour
+Choisissez un mot
+Synoikon rassemble des centaines de vraies phrases contenant votre mot, regarde les mots autour et les dessine en réseau.
+Aire du cercle
+= fréquence d’un voisin près du mot
+Ligne courte et épaisse
+= les deux mots apparaissent souvent ensemble
+Ligne longue et pâle
+= ils apparaissent rarement ensemble
+Collecte des textes…
+Zoom avant
+Zoom arrière
+Partager la carte
+Ce que montre la carte
+Survolez un cercle pour voir ses voisins · cliquez pour cartographier ce mot · glissez, faites défiler ou pincez pour explorer
+Ce que vous voyez
+Taille du cercle
+Fréquence du mot près de votre mot recherché
+Longueur / épaisseur de ligne
+Fréquence à laquelle deux mots apparaissent ensemble : plus courte et épaisse = plus souvent
+Occurrences dans la fenêtre de mots autour de votre recherche (par défaut ±5)
+Nombre d’extraits contenant les deux mots
+Rang parmi les voisins
+Caractère distinctif
+Combien de fois plus souvent que dans un texte général (classement « distinctifs » uniquement)
+Souvent avec
+Autres voisins auxquels il est relié, avec les nombres communs
+Survolez un cercle pour voir ces chiffres · Ctrl/⌘+clic (tactile : appui long) les épingle · clic ou toucher cartographie le mot
+Épingler
+Détacher
+{0} occurrences trouvées · {1} fenêtres de contexte
+{0}× près de {1}
+dans {0} des {1} fenêtres
+≈{0} plus souvent que dans un texte général
+Cliquez pour cartographier « {0} »
+Collecte des textes sur « {0} »…
+Aucun texte trouvé pour « {0} ». Vérifiez l’orthographe ou essayez une autre langue.
+Langue de l’interface
+Populaires
+Touchez pour voir sa compagnie
+Fréq.
+Avec le mot
+Distinct.
+Classé par caractère distinctif (rapport log₂ par rapport au texte général de Wikipédia). L’aire du cercle montre toujours la fréquence.
+Classé par fréquence dans les fenêtres de contexte.
+{0} occurrences de « {1} » dans {2} des {3} textes, soit {4} fenêtres de contexte uniques et {5} mots voisins distincts.
+Affichage des {0} premiers voisins avec {1} lignes entre voisins.
+{0} textes
+Actualiser avec des données en direct
+Précalculé le {0} avec les réglages par défaut.
+Automatique (langue de la carte)
+Interface traduite automatiquement ; corrections bienvenues.

@@ -237,3 +237,11 @@ summary span { color: var(--accent); font-weight: 500; }
 .map-legend td { color: #c9cfe4; }
 .map-legend .legend-foot { margin: 6px 0 0; color: var(--muted); font-size: .72rem; }
 @media (max-width: 560px) { .map-legend { font-size: .72rem; padding: 8px 10px; max-width: min(270px, calc(100% - 64px)); } .map-legend .opt { display: none; } .map-legend th { white-space: normal; width: 40%; padding-right: 8px; } .map-legend th, .map-legend td { padding: 3px 0; } .map-legend .legend-foot { font-size: .68rem; } }
+
+/* pinned info panel (Ctrl/⌘+click or long-press) */
+.tooltip.pinned { z-index: 7; pointer-events: auto; border-color: var(--accent2); box-shadow: 0 6px 18px rgba(0,0,0,.45); padding-right: 30px; }
+.tooltip .tip-x { position: absolute; top: 4px; right: 4px; width: 24px; height: 24px; border: 0; border-radius: 6px; background: transparent; color: var(--ink); font-size: 1.1rem; line-height: 1; cursor: pointer; }
+.tooltip .tip-x:hover { background: rgba(255,255,255,.1); }
+.tooltip .tip-pin { font-size: .8rem; }
+.ui-lang { margin-top: 10px; }
+.mt-note { font-size: .72rem; color: var(--muted); margin: 4px 0 0; }

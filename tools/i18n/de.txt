@@ -1,0 +1,92 @@
+Die Gesellschaft eines Wortes, aus echten Texten im Web.
+Startseite
+Einstellungen einklappen
+Einstellungen ausklappen
+Einstellungen schließen
+Einstellungen öffnen
+Einstellungen
+Suche & Sprache
+Rangfolge
+Netz
+Quellen
+Stoppwörter
+Anzeige & Export
+Ergebnisse
+Wort eingeben, z. B. Fluss
+Wort
+Sprache
+Kartieren
+Typisch
+Häufigkeit
+Typisch: Wörter, die neben deinem Wort viel öfter vorkommen als in gewöhnlichem Text. Häufigkeit: einfach die häufigsten Nachbarn.
+Angezeigte Nachbarn
+Kontextfenster (± Wörter)
+Min. gemeinsames Vorkommen für eine Linie
+Max. Linien pro Wort
+Korpusgröße
+Klein (schnell)
+Mittel
+Groß
+Häufige Wörter entfernen (
+Auch englische entfernen
+An Bildschirm anpassen
+SVG herunterladen
+Bild / Link teilen
+App installieren
+Kartiere ein Wort, um hier Korpus, Beispielsätze und die Nachbartabelle zu sehen.
+Korpus
+Beispielstellen
+Nachbartabelle
+Über, Methode & Quellen
+Wort des Tages
+Wähle ein Wort
+Synoikon sammelt Hunderte echter Sätze mit deinem Wort, schaut sich die Wörter darum an und zeichnet sie als Netz.
+Kreisfläche
+= wie oft ein Nachbar nahe dem Wort vorkommt
+Kurze, dicke Linie
+= die beiden Wörter kommen oft zusammen vor
+Lange, blasse Linie
+= sie kommen selten zusammen vor
+Texte werden gesammelt…
+Vergrößern
+Verkleinern
+Karte teilen
+Was die Karte zeigt
+Fahre über einen Kreis, um seine Nachbarn hervorzuheben · Klick kartiert das Wort · ziehen, scrollen oder zoomen zum Erkunden
+Was du siehst
+Kreisgröße
+Wie oft das Wort in der Nähe deines Suchworts vorkommt
+Linienlänge / -stärke
+Wie oft zwei Wörter zusammen vorkommen: kürzer und kräftiger = häufiger
+So oft im Wortfenster um dein Suchwort gefunden (Standard ±5)
+In wie vielen Textausschnitten beide Wörter vorkommen
+Rang unter den Nachbarwörtern
+Typizität
+Wie viel häufiger als in allgemeinem Text (nur bei Rangfolge „Typisch“)
+Oft mit
+Andere Nachbarwörter, mit denen es verbunden ist, mit gemeinsamer Anzahl
+Über einen Kreis fahren zeigt diese Zahlen · Strg/⌘+Klick (Touch: lange drücken) heftet sie an · Klick oder Tippen kartiert das Wort
+Anheften
+Lösen
+{0} Vorkommen gefunden · {1} Kontextfenster
+{0}× bei {1}
+in {0} von {1} Fenstern
+≈{0} häufiger als in allgemeinem Text
+Klicken, um „{0}“ zu kartieren
+Texte zu „{0}“ werden gesammelt…
+Kein Text zu „{0}“ gefunden. Prüfe die Schreibweise oder versuche eine andere Sprache.
+Sprache der Oberfläche
+Beliebt
+Tippen, um seine Gesellschaft zu sehen
+Häuf.
+Mit Wort
+Typ.
+Sortiert nach Typizität (log₂-Verhältnis zu allgemeinem Wikipedia-Text). Die Kreisfläche zeigt weiterhin die Häufigkeit.
+Sortiert nach Häufigkeit in den Kontextfenstern.
+{0} Vorkommen von „{1}“ in {2} von {3} Texten, mit {4} eindeutigen Kontextfenstern und {5} verschiedenen Nachbarwörtern.
+Angezeigt: die {0} wichtigsten Nachbarn mit {1} Linien zwischen Nachbarn.
+{0} Texte
+Mit Live-Daten aktualisieren
+Vorberechnet am {0} mit Standardeinstellungen.
+Automatisch (Kartensprache)
+Maschinell übersetzte Oberfläche; Korrekturen willkommen.

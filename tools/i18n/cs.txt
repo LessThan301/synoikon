@@ -1,0 +1,92 @@
+Společnost slova, ze skutečných textů na webu.
+Úvodní stránka
+Sbalit nastavení
+Rozbalit nastavení
+Zavřít nastavení
+Otevřít nastavení
+Nastavení
+Hledání a jazyk
+Řazení
+Síť
+Zdroje
+Stop slova
+Zobrazení a export
+Výsledky
+Napište slovo, např. řeka
+Slovo
+Jazyk
+Zobrazit
+Typická
+Četnost
+Typická: slova, která se u vašeho slova vyskytují mnohem častěji než v běžném textu. Četnost: prostě nejčastější sousedé.
+Zobrazení sousedé
+Okno kontextu (± slov)
+Min. společný výskyt pro čáru
+Max. čar na slovo
+Velikost korpusu
+Malý (rychlý)
+Střední
+Velký
+Odstranit běžná slova (
+Odstranit i anglická
+Přizpůsobit obrazovce
+Stáhnout SVG
+Sdílet obrázek / odkaz
+Nainstalovat aplikaci
+Zobrazte slovo a uvidíte zde korpus, ukázkové věty a tabulku sousedů.
+Korpus
+Ukázky
+Tabulka sousedů
+O aplikaci, metoda a zdroje
+Slovo dne
+Vyberte slovo
+Synoikon sbírá stovky skutečných vět s vaším slovem, dívá se na slova kolem něj a kreslí je jako síť.
+Plocha kruhu
+= jak často se soused vyskytuje u slova
+Krátká, silná čára
+= obě slova se často vyskytují spolu
+Dlouhá, slabá čára
+= vyskytují se spolu zřídka
+Sbírám texty…
+Přiblížit
+Oddálit
+Sdílet mapu
+Co mapa ukazuje
+Najeďte na kruh a zvýrazní se jeho sousedé · kliknutím zobrazíte to slovo · táhněte, posouvejte nebo roztahujte
+Co vidíte
+Velikost kruhu
+Jak často se slovo vyskytuje u hledaného slova
+Délka / síla čáry
+Jak často se dvě slova vyskytují spolu: kratší a silnější = častěji
+Počet výskytů v okně slov kolem hledaného slova (výchozí ±5)
+Kolik úryvků textu obsahuje obě slova
+Pořadí mezi sousedy
+Typičnost
+Kolikrát častěji než v obecném textu (jen při řazení „typická“)
+Často s
+Další sousedé, se kterými je propojeno, se společnými počty
+Najeďte na kruh a uvidíte tato čísla · Ctrl/⌘+klik (dotyk: dlouhé podržení) je připne · klik nebo klepnutí zobrazí slovo
+Připnout
+Odepnout
+Nalezeno {0} výskytů · {1} oken kontextu
+{0}× u {1}
+v {0} z {1} oken
+≈{0} častěji než v obecném textu
+Kliknutím zobrazíte „{0}“
+Sbírám texty o „{0}“…
+Pro „{0}“ nebyl nalezen žádný text. Zkontrolujte pravopis nebo zkuste jiný jazyk.
+Jazyk rozhraní
+Oblíbená
+Klepněte a uvidíte jeho společnost
+Čet.
+Se slovem
+Typ.
+Řazeno podle typičnosti (poměr log₂ vůči obecnému textu Wikipedie). Plocha kruhu stále ukazuje četnost.
+Řazeno podle četnosti v oknech kontextu.
+{0} výskytů „{1}“ ve {2} z {3} textů, celkem {4} jedinečných oken kontextu a {5} různých sousedních slov.
+Zobrazeno {0} hlavních sousedů a {1} čar mezi sousedy.
+{0} textů
+Obnovit živými daty
+Předpočítáno {0} s výchozím nastavením.
+Automaticky (jazyk mapy)
+Strojově přeložené rozhraní; opravy vítány.

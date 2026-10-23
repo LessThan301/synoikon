@@ -1,0 +1,92 @@
+Towarzystwo słowa, z prawdziwych tekstów w sieci.
+Strona główna
+Zwiń ustawienia
+Rozwiń ustawienia
+Zamknij ustawienia
+Otwórz ustawienia
+Ustawienia
+Wyszukiwanie i język
+Ranking
+Sieć
+Źródła
+Słowa pomijane
+Widok i eksport
+Wyniki
+Wpisz słowo, np. rzeka
+Słowo
+Język
+Pokaż mapę
+Charakterystyczne
+Częstość
+Charakterystyczne: słowa, które pojawiają się obok twojego znacznie częściej niż w zwykłym tekście. Częstość: po prostu najczęstsi sąsiedzi.
+Pokazani sąsiedzi
+Okno kontekstu (± słów)
+Min. współwystąpień dla linii
+Maks. linii na słowo
+Rozmiar korpusu
+Mały (szybki)
+Średni
+Duży
+Usuń częste słowa (
+Usuń też angielskie
+Dopasuj do ekranu
+Pobierz SVG
+Udostępnij obraz / link
+Zainstaluj aplikację
+Zmapuj słowo, aby zobaczyć tu korpus, przykładowe zdania i tabelę sąsiadów.
+Korpus
+Przykłady
+Tabela sąsiadów
+O projekcie, metoda i źródła
+Słowo dnia
+Wybierz słowo
+Synoikon zbiera setki prawdziwych zdań z twoim słowem, patrzy na słowa wokół niego i rysuje je jako sieć.
+Pole koła
+= jak często sąsiad pojawia się obok słowa
+Krótka, gruba linia
+= oba słowa często występują razem
+Długa, blada linia
+= rzadko występują razem
+Zbieranie tekstów…
+Powiększ
+Pomniejsz
+Udostępnij mapę
+Co pokazuje mapa
+Najedź na koło, aby wyróżnić sąsiadów · kliknij, aby zmapować to słowo · przeciągaj, przewijaj lub szczypaj, aby eksplorować
+Co widzisz
+Rozmiar koła
+Jak często słowo pojawia się obok szukanego słowa
+Długość / grubość linii
+Jak często dwa słowa występują razem: krótsza i grubsza = częściej
+Liczba wystąpień w oknie słów wokół szukanego słowa (domyślnie ±5)
+Ile fragmentów tekstu zawiera oba słowa
+Miejsce wśród sąsiadów
+Charakterystyczność
+Ile razy częściej niż w ogólnym tekście (tylko w rankingu „charakterystyczne”)
+Często z
+Inni sąsiedzi, z którymi jest połączone, ze wspólnymi liczbami
+Najedź na koło, aby zobaczyć te liczby · Ctrl/⌘+klik (dotyk: długie przytrzymanie) przypina je · klik lub dotknięcie mapuje słowo
+Przypnij
+Odepnij
+Znaleziono {0} wystąpień · {1} okien kontekstu
+{0}× obok {1}
+w {0} z {1} okien
+≈{0} częściej niż w ogólnym tekście
+Kliknij, aby zmapować „{0}”
+Zbieranie tekstów o „{0}”…
+Nie znaleziono tekstu dla „{0}”. Sprawdź pisownię lub wybierz inny język.
+Język interfejsu
+Popularne
+Dotknij, aby zobaczyć jego towarzystwo
+Częst.
+Ze słowem
+Char.
+Według charakterystyczności (stosunek log₂ do ogólnego tekstu Wikipedii). Pole koła nadal pokazuje częstość.
+Według częstości w oknach kontekstu.
+{0} wystąpień „{1}” w {2} z {3} tekstów, co daje {4} unikalnych okien kontekstu i {5} różnych słów sąsiednich.
+Pokazano {0} najważniejszych sąsiadów i {1} linii między sąsiadami.
+{0} tekstów
+Odśwież danymi na żywo
+Obliczono wcześniej {0} z ustawieniami domyślnymi.
+Automatycznie (język mapy)
+Interfejs przetłumaczony maszynowo; poprawki mile widziane.

@@ -5,6 +5,7 @@
 // on hover. Here one draw call paints everything, draws are coalesced with
 // requestAnimationFrame, and nothing is drawn while the layout is at rest.
 /* global d3 */
+import { t as tr } from './i18n.js';
 
 const TARGET_ID = '__target__';
 const TARGET_COLOR = '#ff6b4a';
@@ -22,7 +23,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   let labelOrder = [];       // nodes grouped by font size
   let gapMax = 200, rMax = 30;
   let t = d3.zoomIdentity;   // world -> screen
-  let hovered = null, dragging = null;
+  let hovered = null, dragging = null, pinned = null, suppressClick = false, pressTimer = 0;
   let userMoved = false;     // the user zoomed/panned: don't auto-fit any more
   let frame = 0;
   let pointer = null, pointerFrame = 0;
@@ -128,7 +129,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     buckets = [...bmap.values()].sort((a, b) => a.width - b.width);
     labelOrder = [...nodes].sort((a, b) => a.font - b.font);
     hovered = hovered && byId.get(hovered.id) ? byId.get(hovered.id) : null;
-    if (!hovered) hideTip();
+    if (!hovered && !pinned) hideTip();
 
     sim.nodes(nodes)
       .force('link', d3.forceLink(links).id((d) => d.id).distance(dist)
@@ -331,32 +332,55 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     if (d === hovered) return;
     hovered = d;
     canvas.style.cursor = d ? (d.target ? 'grab' : 'pointer') : '';
-    if (d) { showTip(d); onFocus?.(d); } else hideTip();
+    if (d) { if (!pinned) showTip(d); onFocus?.(d); } else if (!pinned) hideTip();
     requestDraw();
   }
   canvas.addEventListener('click', (e) => {
+    if (suppressClick) { suppressClick = false; return; }
     if (e.defaultPrevented) return;
     const [x, y] = local(e);
     const d = hit(x, y);
+    if (d && (e.ctrlKey || e.metaKey)) { pointer = [x, y]; togglePin(d); return; } // Ctrl/⌘+click pins the info panel
     if (d && !d.target) onSelect?.(d.label);
   });
+  // touch: long-press a circle to pin its info panel
+  canvas.addEventListener('pointerdown', (e) => {
+    if (e.pointerType === 'mouse') return;
+    const p0 = local(e); clearTimeout(pressTimer);
+    const d = hit(p0[0], p0[1]); if (!d) return;
+    pressTimer = setTimeout(() => { pointer = p0; suppressClick = true; pin(d); }, 550);
+    const cancel = (ev) => { if (ev.type !== 'pointermove' || Math.hypot(local(ev)[0] - p0[0], local(ev)[1] - p0[1]) > 10) { clearTimeout(pressTimer); off(); } };
+    const off = () => { for (const t of ['pointermove', 'pointerup', 'pointercancel']) canvas.removeEventListener(t, cancel); };
+    for (const t of ['pointermove', 'pointerup', 'pointercancel']) canvas.addEventListener(t, cancel);
+  });
+  canvas.addEventListener('contextmenu', (e) => { if (pinned || suppressClick) e.preventDefault(); });
+  function pin(d) {
+    pinned = d; showTip(d, true); tooltip.classList.add('pinned');
+    const x = Math.max(4, Math.min((pointer?.[0] ?? 20) + 14, W - tooltip._w - 4)), y = Math.max(4, Math.min((pointer?.[1] ?? 20) + 14, H - tooltip._h - 4));
+    tooltip.style.transform = `translate(${x}px, ${y}px)`;
+  }
+  function unpin() { pinned = null; tooltip.classList.remove('pinned'); if (hovered) showTip(hovered); else hideTip(); }
+  function togglePin(d) { if (pinned && pinned.label === d.label) unpin(); else pin(d); }
+  tooltip.addEventListener('click', (e) => { if (e.target.closest('[data-unpin]')) unpin(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pinned && !e.defaultPrevented) unpin(); });
 
   // ---- tooltip -----------------------------------------------------------
-  function showTip(d) {
+  function showTip(d, isPinned = false) {
     const nb = [...adj.get(d.id).entries()].filter(([id]) => id !== TARGET_ID)
       .sort((a, b) => b[1] - a[1]).slice(0, 6)
       .map(([id, w]) => `${esc(byId.get(id).label)} <span class="muted">×${w}</span>`).join(', ');
-    tooltip.innerHTML = d.target
-      ? `<b>${esc(d.label)}</b><br><span class="muted">${d.freq} occurrences found · ${d.cooc} context windows${d.capped ? ' · circle capped for display' : ''}</span>`
-      : `<b>${esc(d.label)}</b> <span class="muted">#${d.rank}</span><br>${d.freq}× near <i>${esc(target.label)}</i> <span class="muted">(in ${d.cooc} of ${target.cooc} windows)</span>`
-        + (d.lr != null ? `<br>Distinctiveness <b>${d.lr.toFixed(1)}</b> <span class="muted">(≈${fmtX(d.lr)} more often than in general text; LL ${Math.round(d.g2)})</span>` : '')
-        + (nb ? `<br><span class="muted">Often with:</span> ${nb}` : '')
-        + `<br><span class="muted">Click to map “${esc(d.label)}”</span>`;
+    const head = isPinned ? `<button type="button" class="tip-x" data-unpin title="${esc(tr('Unpin'))}" aria-label="${esc(tr('Unpin'))}">×</button><span class="tip-pin" aria-hidden="true">📌</span> ` : '';
+    tooltip.innerHTML = head + (d.target
+      ? `<b>${esc(d.label)}</b><br><span class="muted">${esc(tr('{0} occurrences found · {1} context windows', d.freq, d.cooc))}${d.capped ? ' · circle capped for display' : ''}</span>`
+      : `<b>${esc(d.label)}</b> <span class="muted">#${d.rank}</span><br>${esc(tr('{0}× near {1}', d.freq, '\u0000')).replace('\u0000', `<i>${esc(target.label)}</i>`)} <span class="muted">(${esc(tr('in {0} of {1} windows', d.cooc, target.cooc))})</span>`
+        + (d.lr != null ? `<br>${esc(tr('Distinctiveness'))} <b>${d.lr.toFixed(1)}</b> <span class="muted">(${esc(tr('≈{0} more often than in general text', fmtX(d.lr)))}; LL ${Math.round(d.g2)})</span>` : '')
+        + (nb ? `<br><span class="muted">${esc(tr('Often with'))}:</span> ${nb}` : '')
+        + (d.target ? '' : `<br><span class="muted">${esc(tr('Click to map “{0}”', d.label))}</span>`));
     tooltip.classList.remove('hidden');
     tooltip._w = tooltip.offsetWidth; tooltip._h = tooltip.offsetHeight; // measure once per node
   }
   function moveTip() {
-    if (!hovered || !pointer) return;
+    if (!hovered || !pointer || pinned) return;
     const x = Math.max(4, Math.min(pointer[0] + 14, W - (tooltip._w || 260) - 4));
     const y = Math.max(4, Math.min(pointer[1] + 14, H - (tooltip._h || 120) - 4));
     tooltip.style.transform = `translate(${x}px, ${y}px)`;
@@ -389,7 +413,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   }
 
   function clear() {
-    sim.stop(); nodes = []; links = []; buckets = []; labelOrder = []; hovered = null; hideTip(); requestDraw();
+    sim.stop(); nodes = []; links = []; buckets = []; labelOrder = []; hovered = null; pinned = null; tooltip.classList.remove('pinned'); hideTip(); requestDraw();
   }
 
   return {
@@ -410,6 +434,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
       fontStack: () => fontStack,
       screenPos: (i) => { const d = nodes[i]; if (!d) return null; const r = canvas.getBoundingClientRect(); const [x, y] = t.apply([d.x, d.y]); return { x: r.left + x, y: r.top + y, label: d.label }; },
       hovered: () => hovered?.label ?? null,
+      pinned: () => pinned?.label ?? null,
       settled: () => sim.alpha() < sim.alphaMin(),
       benchDraw: (n = 20) => { const t0 = performance.now(); for (let i = 0; i < n; i++) draw(); return (performance.now() - t0) / n; },
       zoomTo: (k) => sel.call(zoom.scaleTo, k),

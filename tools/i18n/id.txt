@@ -1,0 +1,92 @@
+Teman sebuah kata, diambil dari teks nyata di web.
+Halaman awal
+Ciutkan pengaturan
+Bentangkan pengaturan
+Tutup pengaturan
+Buka pengaturan
+Pengaturan
+Pencarian & bahasa
+Peringkat
+Jaringan
+Sumber
+Kata henti
+Tampilan & ekspor
+Hasil
+Ketik kata, mis. sungai
+Kata
+Bahasa
+Petakan
+Khas
+Frekuensi
+Khas: kata yang muncul di dekat kata Anda jauh lebih sering daripada di teks biasa. Frekuensi: sekadar tetangga yang paling umum.
+Tetangga ditampilkan
+Jendela konteks (± kata)
+Min. kemunculan bersama untuk garis
+Maks. garis per kata
+Ukuran korpus
+Kecil (cepat)
+Sedang
+Besar
+Hapus kata umum (
+Hapus juga kata bahasa Inggris
+Paskan ke layar
+Unduh SVG
+Bagikan gambar / tautan
+Pasang aplikasi
+Petakan kata untuk melihat korpus, contoh kalimat, dan tabel tetangga di sini.
+Korpus
+Contoh
+Tabel tetangga
+Tentang, metode & atribusi
+Kata hari ini
+Pilih kata
+Synoikon mengumpulkan ratusan kalimat nyata berisi kata Anda, melihat kata-kata di sekitarnya, dan menggambarnya sebagai jaringan.
+Luas lingkaran
+= seberapa sering tetangga muncul di dekat kata
+Garis pendek dan tebal
+= kedua kata sering muncul bersama
+Garis panjang dan samar
+= keduanya jarang muncul bersama
+Mengumpulkan teks…
+Perbesar
+Perkecil
+Bagikan peta
+Apa yang ditunjukkan peta
+Arahkan ke lingkaran untuk menyorot tetangganya · klik untuk memetakan kata itu · seret, gulir, atau cubit untuk menjelajah
+Yang Anda lihat
+Ukuran lingkaran
+Seberapa sering kata muncul di dekat kata pencarian Anda
+Panjang / tebal garis
+Seberapa sering dua kata muncul bersama: lebih pendek dan tebal = lebih sering
+Jumlah ditemukan dalam jendela kata di sekitar kata pencarian (bawaan ±5)
+Berapa banyak potongan teks yang memuat kedua kata
+Peringkat di antara tetangga
+Kekhasan
+Berapa kali lebih sering daripada di teks umum (hanya dengan peringkat “khas”)
+Sering bersama
+Tetangga lain yang terhubung, dengan jumlah bersama
+Arahkan ke lingkaran untuk melihat angka ini · Ctrl/⌘+klik (sentuh: tekan lama) menyematkannya · klik atau ketuk memetakan kata
+Sematkan
+Lepas
+{0} kemunculan ditemukan · {1} jendela konteks
+{0}× dekat {1}
+dalam {0} dari {1} jendela
+≈{0} lebih sering daripada di teks umum
+Klik untuk memetakan “{0}”
+Mengumpulkan teks tentang “{0}”…
+Tidak ada teks untuk “{0}”. Periksa ejaan atau coba bahasa lain.
+Bahasa antarmuka
+Populer
+Ketuk untuk melihat temannya
+Frek.
+Dengan kata
+Khas
+Diurutkan menurut kekhasan (rasio log₂ terhadap teks umum Wikipedia). Luas lingkaran tetap menunjukkan frekuensi.
+Diurutkan menurut frekuensi di dalam jendela konteks.
+{0} kemunculan “{1}” dalam {2} dari {3} teks, menghasilkan {4} jendela konteks unik dan {5} kata tetangga berbeda.
+Menampilkan {0} tetangga teratas dengan {1} garis antar-tetangga.
+{0} teks
+Perbarui dengan data langsung
+Dihitung sebelumnya pada {0} dengan pengaturan bawaan.
+Otomatis (bahasa peta)
+Antarmuka diterjemahkan mesin; koreksi dipersilakan.

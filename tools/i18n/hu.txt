@@ -1,0 +1,92 @@
+Egy szó társasága, valódi webes szövegekből.
+Kezdőlap
+Beállítások összecsukása
+Beállítások kibontása
+Beállítások bezárása
+Beállítások megnyitása
+Beállítások
+Keresés és nyelv
+Rangsor
+Hálózat
+Források
+Töltelékszavak
+Megjelenítés és export
+Eredmények
+Írj be egy szót, pl. folyó
+Szó
+Nyelv
+Térkép
+Jellegzetes
+Gyakoriság
+Jellegzetes: szavak, amelyek a te szavad közelében sokkal gyakrabban fordulnak elő, mint a szokásos szövegben. Gyakoriság: egyszerűen a leggyakoribb szomszédok.
+Megjelenített szomszédok
+Kontextusablak (± szó)
+Min. együttes előfordulás egy vonalhoz
+Max. vonal szavanként
+Korpusz mérete
+Kicsi (gyors)
+Közepes
+Nagy
+Gyakori szavak eltávolítása (
+Az angolokat is távolítsa el
+Képernyőhöz igazítás
+SVG letöltése
+Kép / link megosztása
+Alkalmazás telepítése
+Térképezz fel egy szót, és itt látod a korpuszt, példamondatokat és a szomszédtáblát.
+Korpusz
+Példák
+Szomszédtábla
+Névjegy, módszer és források
+A nap szava
+Válassz egy szót
+A Synoikon több száz valódi mondatot gyűjt a szavaddal, megnézi a körülötte lévő szavakat, és hálózatként rajzolja meg őket.
+Kör területe
+= milyen gyakran fordul elő egy szomszéd a szó közelében
+Rövid, vastag vonal
+= a két szó gyakran fordul elő együtt
+Hosszú, halvány vonal
+= ritkán fordulnak elő együtt
+Szövegek gyűjtése…
+Nagyítás
+Kicsinyítés
+Térkép megosztása
+Mit mutat a térkép
+Vidd az egeret egy körre a szomszédok kiemeléséhez · kattints a szó feltérképezéséhez · húzd, görgesd vagy csippentsd a felfedezéshez
+Amit látsz
+Kör mérete
+Milyen gyakran fordul elő a szó a keresett szó közelében
+Vonal hossza / vastagsága
+Milyen gyakran fordul elő két szó együtt: rövidebb és vastagabb = gyakrabban
+Ennyiszer található a keresett szó körüli szóablakban (alapértelmezés ±5)
+Hány szövegrészlet tartalmazza mindkét szót
+Helyezés a szomszédok között
+Jellegzetesség
+Hányszor gyakrabban, mint általános szövegben (csak „jellegzetes” rangsornál)
+Gyakran ezzel
+Más szomszédok, amelyekhez kapcsolódik, közös számokkal
+Vidd az egeret egy körre a számokhoz · Ctrl/⌘+kattintás (érintés: hosszú nyomás) rögzíti őket · kattintás vagy koppintás feltérképezi a szót
+Rögzítés
+Feloldás
+{0} előfordulás · {1} kontextusablak
+{0}× {1} közelében
+{1} ablakból {0}-ben
+≈{0} gyakrabban, mint általános szövegben
+Kattints a(z) „{0}” feltérképezéséhez
+Szövegek gyűjtése erről: „{0}”…
+Nem található szöveg ehhez: „{0}”. Ellenőrizd a helyesírást, vagy próbálj másik nyelvet.
+Felület nyelve
+Népszerű
+Koppints, hogy lásd a társaságát
+Gyak.
+A szóval
+Jell.
+Jellegzetesség szerint rendezve (log₂ arány az általános Wikipédia-szöveghez képest). A kör területe továbbra is a gyakoriságot mutatja.
+A kontextusablakokon belüli gyakoriság szerint rendezve.
+„{1}” {0} előfordulása {3} szövegből {2}-ben, {4} egyedi kontextusablakkal és {5} különböző szomszéd szóval.
+Az első {0} szomszéd látható {1} szomszédok közötti vonallal.
+{0} szöveg
+Frissítés élő adatokkal
+Előre kiszámítva: {0}, alapbeállításokkal.
+Automatikus (a térkép nyelve)
+Gépi fordítású felület; a javításokat szívesen fogadjuk.

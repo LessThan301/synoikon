@@ -1,0 +1,92 @@
+La compañía de una palabra, a partir de textos reales de la web.
+Página de inicio
+Contraer ajustes
+Expandir ajustes
+Cerrar ajustes
+Abrir ajustes
+Ajustes
+Búsqueda e idioma
+Clasificación
+Red
+Fuentes
+Palabras vacías
+Vista y exportación
+Resultados
+Escribe una palabra, p. ej. río
+Palabra
+Idioma
+Mapear
+Distintivas
+Frecuencia
+Distintivas: palabras que aparecen cerca de la tuya mucho más que en un texto normal. Frecuencia: simplemente las vecinas más comunes.
+Vecinas mostradas
+Ventana de contexto (± palabras)
+Coocurrencia mín. para una línea
+Máx. líneas por palabra
+Tamaño del corpus
+Pequeño (rápido)
+Mediano
+Grande
+Quitar palabras comunes (
+Quitar también las inglesas
+Ajustar a la pantalla
+Descargar SVG
+Compartir imagen / enlace
+Instalar app
+Mapea una palabra para ver aquí el corpus, frases de ejemplo y la tabla de vecinas.
+Corpus
+Ejemplos
+Tabla de vecinas
+Acerca de, método y atribución
+Palabra del día
+Elige una palabra
+Synoikon reúne cientos de frases reales con tu palabra, mira las palabras de alrededor y las dibuja como una red.
+Área del círculo
+= cuántas veces aparece una vecina cerca de la palabra
+Línea corta y gruesa
+= las dos palabras aparecen juntas a menudo
+Línea larga y tenue
+= rara vez aparecen juntas
+Recopilando texto…
+Acercar
+Alejar
+Compartir mapa
+Qué muestra el mapa
+Pasa sobre un círculo para resaltar sus vecinas · clic para mapear esa palabra · arrastra, desplaza o pellizca para explorar
+Qué ves
+Tamaño del círculo
+Cuántas veces aparece la palabra cerca de tu búsqueda
+Longitud / grosor de línea
+Cuántas veces aparecen juntas dos palabras: más corta y gruesa = más a menudo
+Veces encontrada en la ventana de palabras alrededor de tu búsqueda (por defecto ±5)
+Cuántos fragmentos de texto contienen ambas palabras
+Puesto entre las vecinas
+Distintividad
+Cuántas veces más que en texto general (solo con clasificación «distintivas»)
+A menudo con
+Otras vecinas con las que está enlazada, con recuentos compartidos
+Pasa sobre un círculo para ver estas cifras · Ctrl/⌘+clic (táctil: pulsación larga) las fija · clic o toque mapea la palabra
+Fijar
+Soltar
+{0} apariciones encontradas · {1} ventanas de contexto
+{0}× cerca de {1}
+en {0} de {1} ventanas
+≈{0} más a menudo que en texto general
+Clic para mapear «{0}»
+Recopilando texto sobre «{0}»…
+No se encontró texto para «{0}». Revisa la ortografía o prueba otro idioma.
+Idioma de la interfaz
+Populares
+Toca para ver su compañía
+Frec.
+Con palabra
+Distint.
+Ordenado por distintividad (razón log₂ frente a texto general de Wikipedia). El área del círculo sigue mostrando la frecuencia.
+Ordenado por frecuencia dentro de las ventanas de contexto.
+{0} apariciones de «{1}» en {2} de {3} textos, con {4} ventanas de contexto únicas y {5} palabras vecinas distintas.
+Se muestran las {0} vecinas principales con {1} líneas entre vecinas.
+{0} textos
+Actualizar con datos en vivo
+Precalculado el {0} con ajustes por defecto.
+Automático (idioma del mapa)
+Interfaz traducida automáticamente; se agradecen correcciones.

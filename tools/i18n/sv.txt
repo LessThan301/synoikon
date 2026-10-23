@@ -1,0 +1,92 @@
+Ett ords sällskap, hämtat ur riktig text på webben.
+Startsida
+Fäll ihop inställningar
+Fäll ut inställningar
+Stäng inställningar
+Öppna inställningar
+Inställningar
+Sök & språk
+Rangordning
+Nätverk
+Källor
+Stoppord
+Visning & export
+Resultat
+Skriv ett ord, t.ex. flod
+Ord
+Språk
+Kartlägg
+Utmärkande
+Frekvens
+Utmärkande: ord som dyker upp nära ditt mycket oftare än i vanlig text. Frekvens: helt enkelt de vanligaste grannarna.
+Visade grannar
+Kontextfönster (± ord)
+Min. samförekomst för en linje
+Max. linjer per ord
+Korpusstorlek
+Liten (snabb)
+Mellan
+Stor
+Ta bort vanliga ord (
+Ta även bort engelska
+Anpassa till skärmen
+Ladda ner SVG
+Dela bild / länk
+Installera appen
+Kartlägg ett ord för att se korpus, exempelmeningar och granntabellen här.
+Korpus
+Exempel
+Granntabell
+Om, metod & källor
+Dagens ord
+Välj ett ord
+Synoikon samlar hundratals riktiga meningar med ditt ord, tittar på orden runt omkring och ritar dem som ett nätverk.
+Cirkelns yta
+= hur ofta en granne förekommer nära ordet
+Kort, tjock linje
+= de två orden förekommer ofta tillsammans
+Lång, svag linje
+= de förekommer sällan tillsammans
+Samlar text…
+Zooma in
+Zooma ut
+Dela kartan
+Vad kartan visar
+Hovra över en cirkel för att markera grannarna · klicka för att kartlägga ordet · dra, scrolla eller nyp för att utforska
+Vad du ser
+Cirkelstorlek
+Hur ofta ordet förekommer nära ditt sökord
+Linjelängd / -tjocklek
+Hur ofta två ord förekommer tillsammans: kortare och tjockare = oftare
+Antal träffar i ordfönstret runt ditt sökord (standard ±5)
+Hur många textutdrag som innehåller båda orden
+Plats bland grannarna
+Utmärkande grad
+Hur många gånger oftare än i allmän text (bara med rangordning ”utmärkande”)
+Ofta med
+Andra grannar det är länkat till, med gemensamma antal
+Hovra över en cirkel för att se siffrorna · Ctrl/⌘+klick (pekskärm: långt tryck) fäster dem · klick eller tryck kartlägger ordet
+Fäst
+Lossa
+{0} förekomster hittade · {1} kontextfönster
+{0}× nära {1}
+i {0} av {1} fönster
+≈{0} oftare än i allmän text
+Klicka för att kartlägga ”{0}”
+Samlar text om ”{0}”…
+Ingen text hittades för ”{0}”. Kontrollera stavningen eller prova ett annat språk.
+Gränssnittsspråk
+Populära
+Tryck för att se dess sällskap
+Frekv.
+Med ordet
+Utm.
+Rangordnat efter utmärkande grad (log₂-kvot mot allmän Wikipedia-text). Cirkelns yta visar fortfarande frekvensen.
+Rangordnat efter frekvens i kontextfönstren.
+{0} förekomster av ”{1}” i {2} av {3} texter, vilket ger {4} unika kontextfönster och {5} olika grannord.
+Visar de {0} främsta grannarna med {1} linjer mellan grannar.
+{0} texter
+Uppdatera med livedata
+Förberäknat {0} med standardinställningar.
+Automatiskt (kartans språk)
+Maskinöversatt gränssnitt; rättelser välkomnas.

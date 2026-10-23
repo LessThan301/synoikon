@@ -1,0 +1,92 @@
+La compagnia di una parola, da testi reali del web.
+Pagina iniziale
+Comprimi impostazioni
+Espandi impostazioni
+Chiudi impostazioni
+Apri impostazioni
+Impostazioni
+Ricerca e lingua
+Classifica
+Rete
+Fonti
+Parole vuote
+Visualizza ed esporta
+Risultati
+Scrivi una parola, ad es. fiume
+Parola
+Lingua
+Mappa
+Distintive
+Frequenza
+Distintive: parole che compaiono vicino alla tua molto più spesso che in un testo comune. Frequenza: semplicemente le vicine più comuni.
+Vicine mostrate
+Finestra di contesto (± parole)
+Co-occorrenza min. per una linea
+Max. linee per parola
+Dimensione del corpus
+Piccolo (veloce)
+Medio
+Grande
+Rimuovi parole comuni (
+Rimuovi anche quelle inglesi
+Adatta allo schermo
+Scarica SVG
+Condividi immagine / link
+Installa app
+Mappa una parola per vedere qui il corpus, frasi di esempio e la tabella delle vicine.
+Corpus
+Esempi
+Tabella delle vicine
+Informazioni, metodo e fonti
+Parola del giorno
+Scegli una parola
+Synoikon raccoglie centinaia di frasi reali con la tua parola, guarda le parole intorno e le disegna come una rete.
+Area del cerchio
+= quanto spesso una vicina compare vicino alla parola
+Linea corta e spessa
+= le due parole compaiono spesso insieme
+Linea lunga e tenue
+= compaiono raramente insieme
+Raccolta dei testi…
+Ingrandisci
+Riduci
+Condividi mappa
+Cosa mostra la mappa
+Passa sopra un cerchio per evidenziarne le vicine · clic per mappare la parola · trascina, scorri o pizzica per esplorare
+Cosa vedi
+Dimensione del cerchio
+Quanto spesso la parola compare vicino alla tua ricerca
+Lunghezza / spessore della linea
+Quanto spesso due parole compaiono insieme: più corta e spessa = più spesso
+Volte trovata nella finestra di parole intorno alla ricerca (predefinito ±5)
+Quanti frammenti di testo contengono entrambe le parole
+Posizione tra le vicine
+Distintività
+Quante volte più spesso che in un testo generale (solo con classifica «distintive»)
+Spesso con
+Altre vicine a cui è collegata, con conteggi comuni
+Passa sopra un cerchio per vedere questi numeri · Ctrl/⌘+clic (touch: pressione lunga) li fissa · clic o tocco mappa la parola
+Fissa
+Sblocca
+{0} occorrenze trovate · {1} finestre di contesto
+{0}× vicino a {1}
+in {0} di {1} finestre
+≈{0} più spesso che in un testo generale
+Clic per mappare «{0}»
+Raccolta dei testi su «{0}»…
+Nessun testo trovato per «{0}». Controlla l’ortografia o prova un’altra lingua.
+Lingua dell’interfaccia
+Popolari
+Tocca per vedere la sua compagnia
+Freq.
+Con parola
+Distint.
+Ordinato per distintività (rapporto log₂ rispetto al testo generale di Wikipedia). L’area del cerchio mostra sempre la frequenza.
+Ordinato per frequenza nelle finestre di contesto.
+{0} occorrenze di «{1}» in {2} di {3} testi, con {4} finestre di contesto uniche e {5} parole vicine distinte.
+Mostrate le prime {0} vicine con {1} linee tra vicine.
+{0} testi
+Aggiorna con dati in tempo reale
+Precalcolato il {0} con impostazioni predefinite.
+Automatica (lingua della mappa)
+Interfaccia tradotta automaticamente; correzioni benvenute.

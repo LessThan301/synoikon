@@ -1,0 +1,92 @@
+Compania unui cuvânt, din texte reale de pe web.
+Pagina de start
+Restrânge setările
+Extinde setările
+Închide setările
+Deschide setările
+Setări
+Căutare și limbă
+Clasament
+Rețea
+Surse
+Cuvinte de umplutură
+Afișare și export
+Rezultate
+Scrie un cuvânt, de ex. râu
+Cuvânt
+Limbă
+Hartă
+Distinctive
+Frecvență
+Distinctive: cuvinte care apar lângă al tău mult mai des decât în textul obișnuit. Frecvență: pur și simplu vecinii cei mai comuni.
+Vecini afișați
+Fereastră de context (± cuvinte)
+Coocurență min. pentru o linie
+Max. linii pe cuvânt
+Mărimea corpusului
+Mic (rapid)
+Mediu
+Mare
+Elimină cuvintele comune (
+Elimină și pe cele englezești
+Potrivește pe ecran
+Descarcă SVG
+Distribuie imagine / link
+Instalează aplicația
+Fă harta unui cuvânt ca să vezi aici corpusul, propoziții exemplu și tabelul vecinilor.
+Corpus
+Exemple
+Tabelul vecinilor
+Despre, metodă și surse
+Cuvântul zilei
+Alege un cuvânt
+Synoikon adună sute de propoziții reale cu cuvântul tău, se uită la cuvintele din jur și le desenează ca rețea.
+Aria cercului
+= cât de des apare un vecin lângă cuvânt
+Linie scurtă și groasă
+= cele două cuvinte apar des împreună
+Linie lungă și slabă
+= apar rar împreună
+Se adună texte…
+Mărește
+Micșorează
+Distribuie harta
+Ce arată harta
+Treci peste un cerc ca să-i evidențiezi vecinii · clic pentru harta acelui cuvânt · trage, derulează sau ciupește pentru a explora
+Ce vezi
+Mărimea cercului
+Cât de des apare cuvântul lângă cuvântul căutat
+Lungimea / grosimea liniei
+Cât de des apar două cuvinte împreună: mai scurtă și groasă = mai des
+De câte ori a fost găsit în fereastra de cuvinte din jurul căutării (implicit ±5)
+Câte fragmente de text conțin ambele cuvinte
+Locul printre vecini
+Distinctivitate
+De câte ori mai des decât în textul general (doar la clasamentul „distinctive”)
+Adesea cu
+Alți vecini de care este legat, cu numărători comune
+Treci peste un cerc ca să vezi aceste cifre · Ctrl/⌘+clic (tactil: apăsare lungă) le fixează · clic sau atingere face harta cuvântului
+Fixează
+Eliberează
+{0} apariții găsite · {1} ferestre de context
+{0}× lângă {1}
+în {0} din {1} ferestre
+≈{0} mai des decât în textul general
+Clic pentru harta „{0}”
+Se adună texte despre „{0}”…
+Nu s-a găsit text pentru „{0}”. Verifică ortografia sau încearcă altă limbă.
+Limba interfeței
+Populare
+Atinge ca să-i vezi compania
+Frecv.
+Cu cuvântul
+Dist.
+Ordonat după distinctivitate (raport log₂ față de textul general Wikipedia). Aria cercului arată în continuare frecvența.
+Ordonat după frecvența din ferestrele de context.
+{0} apariții ale „{1}” în {2} din {3} texte, cu {4} ferestre de context unice și {5} cuvinte vecine distincte.
+Se afișează primii {0} vecini cu {1} linii între vecini.
+{0} texte
+Actualizează cu date live
+Precalculat pe {0} cu setările implicite.
+Automat (limba hărții)
+Interfață tradusă automat; corecturile sunt binevenite.
