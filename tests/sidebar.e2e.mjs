@@ -131,7 +131,7 @@ const rtl = await G(() => {
   return { li: getComputedStyle(li).direction, td: getComputedStyle(td).direction, ui: getComputedStyle(document.getElementById('secNetwork')).direction,
     inside: lr.left >= body.left && lr.right <= body.right - 10, sbX: document.getElementById('sidebar').getBoundingClientRect().x };
 });
-ok(rtl.li === 'rtl' && rtl.td === 'rtl' && rtl.ui === 'ltr' && rtl.sbX === 0, `Arabic: samples/table render RTL inside the LTR settings UI (${JSON.stringify(rtl)})`);
+ok(rtl.li === 'rtl' && rtl.td === 'rtl' && rtl.ui === 'rtl' && rtl.sbX > 0, `Arabic: samples/table and the (auto-Arabic) settings UI render RTL, sidebar on the right (${JSON.stringify(rtl)})`);
 ok(rtl.inside, 'Arabic sample lines (incl. list markers) stay inside the sidebar');
 await page.screenshot({ path: `./sidebar-ar-${width}.png` });
 ok(await G(() => document.documentElement.scrollWidth <= innerWidth + 1), 'no horizontal overflow');

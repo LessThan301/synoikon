@@ -91,3 +91,87 @@ Obliczono wcześniej {0} z ustawieniami domyślnymi.
 Automatycznie (język mapy)
 Interfejs przetłumaczony maszynowo; poprawki mile widziane.
 Maks. 3 naraz, najpierw odepnij jedno
+Wybierz w Ustawieniach co najmniej jedno źródło.
+Wygląda na to, że jesteś offline: źródła tekstów są nieosiągalne. Nowe słowa wymagają połączenia, ale popularne słowa i ostatnie wyszukiwania nadal działają:
+Offline
+Jesteś offline, a dla tego języka nic nie zapisano jeszcze w pamięci podręcznej. Połącz się ponownie i spróbuj jeszcze raz.
+Nie udało się wczytać biblioteki wykresów (D3). Sprawdź połączenie lub bloker reklam i odśwież.
+Hmm.
+Niedostępne w języku: {0}
+Zbieranie tekstów o „{0}”… {1}/{2} źródeł ({3} gotowe)
+Nie udało się połączyć ze źródłami tekstów ({0}). Sprawdź połączenie i spróbuj ponownie.
+Nie udało się wczytać listy referencyjnej dla {0} ({1}); sortowanie według częstości.
+Wszystkie źródła zawiodły: {0}
+Znaleziono {0} wystąpień „{1}”, ale za mało powtarzających się sąsiadów, by narysować sieć. Spróbuj większego korpusu, szerszego okna lub innego słowa.
+{0}: błąd ({1})
+Udostępnij tę mapę
+Zamknij
+Format obrazu
+Poziomy
+Kwadrat
+Podgląd obrazu do udostępnienia
+Udostępnij obraz…
+Pobierz PNG
+Kopiuj link
+Link do udostępnienia
+Udostępnianie nie powiodło się ({0}); zamiast tego pobieranie.
+Pobrano {0}.
+Udostępnij mapę (obraz, link)
+Słowo dnia
+Słowa, które występują przy Twoim słowie znacznie częściej niż w ogólnym tekście Wikipedii
+Po prostu najczęstsze słowa przy Twoim słowie
+Zainstaluj Synoikon jako aplikację
+Wystąpienia w oknach kontekstu (pole koła)
+Okna wspólne ze słowem wyszukiwanym
+Charakterystyczność: log2 tego, ile razy częściej niż oczekiwano na podstawie ogólnego tekstu Wikipedii
+Wszystkie słowa
+O stronie
+Tekst: Wikipedia/Wikiquote, CC BY-SA 4.0 (fragmenty z linkami do stron źródłowych); komentarze Hacker News © ich autorzy.
+Stworzone w
+O stronie i źródła
+Kod źródłowy na GitHubie
+{0}: słowa, które mu towarzyszą · Synoikon
+Jakie słowa występują wokół „{0}” w Wikipedii? Najbardziej charakterystyczne: {1}. Interaktywna sieć z {2} rzeczywistych wystąpień w {3} tekstach.
+Słowa wokół niego w {0} wystąpieniach z Wikipedii{1}.
+Otwórz interaktywną mapę →
+Według częstości
+Sieć słów wokół „{0}”: {1}
+Pole koła = jak często słowo występuje przy „{0}”; krótsze, grubsze linie = słowa, które często występują razem.
+Najbardziej charakterystyczni sąsiedzi
+× = ile razy częściej niż w ogólnym tekście Wikipedii.
+Najczęstsi sąsiedzi
+W kontekście
+Więcej słów
+Obliczone wcześniej {0} z ustawieniami domyślnymi (±{1} słów, średni korpus). Interaktywna mapa może odświeżyć dane na żywo.
+{0} wcześniej obliczonych słów.
+Każde inne słowo działa na żywo w aplikacji.
+lista słów dnia
+popularne słowo
+Otwórz aplikację
+O Synoikon
+Działa w 21 językach:
+Słowo dnia i popularne słowa
+Źródła danych i licencje
+Co
+Źródło
+Licencja
+Fragmenty tekstów i wstępy artykułów
+Komentarze po angielsku (źródło opcjonalne)
+Referencyjne częstości słów
+Listy słów pomijanych
+Czcionki
+Biblioteka wykresów
+Udostępniane obrazy zawierają oznaczenie „Text: Wikipedia/Wikiquote, CC BY-SA”.
+Prywatność
+Instalacja
+„Poznasz słowo po towarzystwie, w jakim przebywa” (J. R. Firth, 1957).
+Wpisz słowo, a Synoikon zbierze setki prawdziwych zdań, które je zawierają, przyjrzy się słowom wokół każdego wystąpienia i narysuje je jako sieć:
+<b>Pole koła</b> = jak często sąsiad występuje przy Twoim słowie (domyślnie w oknie ± 5 słów).
+<b>Długość linii</b>: im częściej dwa słowa występują w tym samym oknie kontekstu, tym <b>krótsza</b> (i grubsza) linia między nimi.
+Sortowanie <b>Charakterystyczne</b> (domyślne) premiuje słowa, które występują przy Twoim słowie znacznie częściej niż w ogólnym tekście danego języka (log-iloraz względem listy referencyjnej z Wikipedii, z filtrem istotności log-likelihood). Sortowanie <b>Częstość</b> pokazuje po prostu najczęstszych sąsiadów.
+Codziennie o 00:00 UTC pojawia się nowe słowo dnia, takie samo dla wszystkich. Pochodzi z wybranej listy 66 sugestywnych pojęć przetłumaczonych na każdy język (<a href="./#wotd">dzisiejsze słowo</a>). Słowa z dziś i dwóch kolejnych dni oraz codzienny zestaw popularnych słów są <b>obliczane wcześniej</b> przez zadanie GitHub Actions, więc otwierają się natychmiast i działają offline. Każde inne słowo przeglądarka pobiera na żywo.
+Twoje wyszukiwania trafiają bezpośrednio z przeglądarki do API Wikimedia i Algolia (identyfikowane jako „LessThan301 synoikon”). Synoikon nie ma serwera i nie przechowuje żadnych danych o Tobie.
+Aplikacja zapisuje na urządzeniu własne pliki, używane dane językowe i ostatnie wyniki (service worker), aby działać offline. Wyczyść dane witryny, aby je usunąć.
+Odwiedziny są liczone przez <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, bez plików cookie i bez fingerprintingu.
+Synoikon to instalowalna aplikacja webowa: użyj „Zainstaluj aplikację” w sekcji <em>Wyświetlanie i eksport</em> w panelu ustawień (Chrome, Edge, Android) lub „Do ekranu początkowego” w menu udostępniania Safari (iOS).
+Otwarte źródło na <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Zgłoszenia i pomysły są tam mile widziane.

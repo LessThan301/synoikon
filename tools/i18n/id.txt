@@ -91,3 +91,87 @@ Dihitung sebelumnya pada {0} dengan pengaturan bawaan.
 Otomatis (bahasa peta)
 Antarmuka diterjemahkan mesin; koreksi dipersilakan.
 Maks. 3 sekaligus, lepas satu dulu
+Pilih setidaknya satu sumber di Pengaturan.
+Sepertinya Anda sedang offline: sumber teks tidak dapat dijangkau. Kata baru memerlukan koneksi, tetapi kata populer dan pencarian terakhir Anda tetap berfungsi:
+Offline
+Anda sedang offline dan belum ada yang tersimpan untuk bahasa ini. Sambungkan kembali dan coba lagi.
+Pustaka grafik (D3) tidak dapat dimuat. Periksa koneksi atau pemblokir iklan Anda lalu muat ulang.
+Hmm.
+Tidak tersedia dalam {0}
+Mengumpulkan teks tentang “{0}”… {1}/{2} sumber ({3} selesai)
+Tidak dapat menjangkau sumber teks ({0}). Periksa koneksi Anda dan coba lagi.
+Daftar kata latar untuk {0} tidak dapat dimuat ({1}); diurutkan menurut frekuensi.
+Semua sumber gagal: {0}
+Ditemukan {0} kemunculan “{1}”, tetapi tidak cukup tetangga berulang untuk menggambar jaringan. Coba korpus lebih besar, jendela lebih lebar, atau kata lain.
+{0}: gagal ({1})
+Bagikan peta ini
+Tutup
+Format gambar
+Lanskap
+Persegi
+Pratinjau gambar
+Bagikan gambar…
+Unduh PNG
+Salin tautan
+Tautan untuk dibagikan
+Gagal membagikan ({0}); mengunduh sebagai gantinya.
+{0} diunduh.
+Bagikan peta (gambar, tautan)
+Kata hari ini
+Kata yang muncul di dekat kata Anda jauh lebih sering daripada di teks Wikipedia umum
+Cukup kata-kata paling sering di dekat kata Anda
+Pasang Synoikon sebagai aplikasi
+Kemunculan dalam jendela konteks (luas lingkaran)
+Jendela yang sama dengan kata pencarian
+Kekhasan: log2 dari berapa kali lebih sering dari yang diharapkan menurut teks Wikipedia umum
+Semua kata
+Tentang
+Teks: Wikipedia/Wikikutip, CC BY-SA 4.0 (kutipan, dengan tautan ke halaman sumber); komentar Hacker News © penulisnya.
+Dibuat dengan
+Tentang & atribusi
+Kode sumber di GitHub
+{0}: kata-kata yang menemaninya · Synoikon
+Kata apa yang muncul di sekitar “{0}” di Wikipedia? Paling khas: {1}. Jaringan interaktif dari {2} kemunculan nyata dalam {3} teks.
+Kata-kata di sekitarnya dalam {0} kemunculan dari Wikipedia{1}.
+Buka peta interaktif →
+Menurut frekuensi
+Jaringan kata di sekitar “{0}”: {1}
+Luas lingkaran = seberapa sering sebuah kata muncul di dekat “{0}”; garis lebih pendek dan tebal = kata yang sering muncul bersama.
+Tetangga paling khas
+× = berapa kali lebih sering daripada di teks Wikipedia umum.
+Tetangga paling sering
+Dalam konteks
+Kata lainnya
+Dihitung sebelumnya pada {0} dengan pengaturan bawaan (±{1} kata, korpus sedang). Peta interaktif dapat memperbaruinya dengan data langsung.
+{0} kata yang dihitung sebelumnya.
+Kata lain apa pun berfungsi langsung di aplikasi.
+daftar kata hari ini
+kata populer
+Buka aplikasi
+Tentang Synoikon
+Tersedia dalam 21 bahasa:
+Kata hari ini & kata populer
+Sumber data & lisensi
+Apa
+Sumber
+Lisensi
+Cuplikan teks & pengantar artikel
+Komentar bahasa Inggris (sumber opsional)
+Frekuensi kata latar
+Daftar kata henti
+Fon
+Pustaka grafik
+Gambar yang dibagikan memuat atribusi “Text: Wikipedia/Wikiquote, CC BY-SA”.
+Privasi
+Pasang
+“Kenali sebuah kata dari teman-temannya” (J. R. Firth, 1957).
+Ketik sebuah kata dan Synoikon mengumpulkan ratusan kalimat nyata yang memuatnya, melihat kata-kata di sekitar setiap kemunculan, lalu menggambarnya sebagai jaringan:
+<b>Luas lingkaran</b> = seberapa sering sebuah tetangga muncul di dekat kata Anda (bawaan dalam jendela ± 5 kata).
+<b>Panjang garis</b>: makin sering dua kata muncul dalam jendela konteks yang sama, makin <b>pendek</b> (dan tebal) garis di antaranya.
+Urutan <b>Khas</b> (bawaan) mengutamakan kata yang muncul di dekat kata Anda jauh lebih sering daripada di teks umum bahasa itu (log-rasio terhadap daftar latar berbasis Wikipedia, dengan filter signifikansi log-likelihood). Urutan <b>Frekuensi</b> cukup menampilkan tetangga paling umum.
+Setiap hari pukul 00:00 UTC ada kata hari ini yang baru, sama untuk semua orang. Kata itu berasal dari daftar pilihan 66 konsep yang menggugah, diterjemahkan ke setiap bahasa (<a href="./#wotd">kata hari ini</a>). Kata hari ini dan dua hari berikutnya, serta rotasi harian kata populer, <b>dihitung sebelumnya</b> oleh tugas GitHub Actions, sehingga langsung terbuka dan berfungsi offline. Kata lain diambil langsung oleh peramban Anda.
+Pencarian Anda langsung dikirim dari peramban ke API Wikimedia dan Algolia (teridentifikasi sebagai “LessThan301 synoikon”). Synoikon tidak punya server dan tidak menyimpan apa pun tentang Anda.
+Aplikasi menyimpan berkasnya sendiri, data bahasa yang Anda pakai, dan hasil pencarian terakhir di perangkat Anda (service worker) agar berfungsi offline. Hapus data situs untuk menghapusnya.
+Kunjungan dihitung dengan <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, tanpa cookie dan tanpa sidik jari.
+Synoikon adalah aplikasi web yang dapat dipasang: gunakan “Pasang aplikasi” di <em>Tampilan &amp; ekspor</em> pada bilah pengaturan (Chrome, Edge, Android) atau “Tambahkan ke Layar Utama” di menu bagikan Safari (iOS).
+Kode sumber terbuka di <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Laporan dan ide disambut di sana.

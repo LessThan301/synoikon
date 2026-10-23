@@ -91,3 +91,87 @@ Vooraf berekend op {0} met standaardinstellingen.
 Automatisch (kaarttaal)
 Machinaal vertaalde interface; correcties welkom.
 Max. 3 tegelijk, maak er eerst één los
+Selecteer ten minste één bron in Instellingen.
+Je lijkt offline te zijn: de tekstbronnen zijn niet bereikbaar. Nieuwe woorden hebben een verbinding nodig, maar populaire woorden en je recente zoekopdrachten werken nog:
+Offline
+Je bent offline en voor deze taal is nog niets in de cache opgeslagen. Maak opnieuw verbinding en probeer het nog eens.
+De grafiekbibliotheek (D3) kon niet worden geladen. Controleer je verbinding of adblocker en herlaad.
+Hm.
+Niet beschikbaar in {0}
+Tekst verzamelen over ‘{0}’… {1}/{2} bronnen ({3} klaar)
+De tekstbronnen waren niet bereikbaar ({0}). Controleer je verbinding en probeer het opnieuw.
+De achtergrondwoordenlijst voor {0} kon niet worden geladen ({1}); in plaats daarvan gerangschikt op frequentie.
+Alle bronnen zijn mislukt: {0}
+{0} keer ‘{1}’ gevonden, maar niet genoeg terugkerende buren om een netwerk te tekenen. Probeer een groter corpus, een breder venster of een ander woord.
+{0}: mislukt ({1})
+Deze kaart delen
+Sluiten
+Afbeeldingsformaat
+Liggend
+Vierkant
+Voorbeeld van de deelafbeelding
+Afbeelding delen…
+PNG downloaden
+Link kopiëren
+Deelbare link
+Delen mislukt ({0}); in plaats daarvan downloaden.
+{0} gedownload.
+Kaart delen (afbeelding, link)
+Woord van de dag
+Woorden die veel vaker bij je woord voorkomen dan in gewone Wikipedia-tekst
+Gewoon de meest voorkomende woorden bij je woord
+Synoikon als app installeren
+Voorkomens binnen contextvensters (cirkeloppervlak)
+Vensters gedeeld met het zoekwoord
+Kenmerkendheid: log2 van hoeveel keer vaker dan verwacht op basis van gewone Wikipedia-tekst
+Alle woorden
+Over
+Tekst: Wikipedia/Wikiquote, CC BY-SA 4.0 (fragmenten, met links naar de bronpagina’s); Hacker News-reacties © hun auteurs.
+Gemaakt met
+Over & bronvermelding
+Broncode op GitHub
+{0}: de woorden die het gezelschap houden · Synoikon
+Welke woorden staan rond ‘{0}’ op Wikipedia? Meest kenmerkend: {1}. Een interactief netwerk uit {2} echte voorkomens in {3} teksten.
+De woorden rond dit woord in {0} voorkomens uit Wikipedia{1}.
+Interactieve kaart openen →
+Op frequentie
+Netwerk van de woorden rond ‘{0}’: {1}
+Cirkeloppervlak = hoe vaak een woord bij ‘{0}’ voorkomt; kortere, dikkere lijnen = woorden die vaak samen voorkomen.
+Meest kenmerkende buren
+× = hoeveel keer vaker dan in gewone Wikipedia-tekst.
+Meest voorkomende buren
+In context
+Meer woorden
+Vooraf berekend op {0} met standaardinstellingen (±{1} woorden, middelgroot corpus). De interactieve kaart kan het met live gegevens vernieuwen.
+{0} vooraf berekende woorden.
+Elk ander woord werkt live in de app.
+lijst met woorden van de dag
+populair woord
+App openen
+Over Synoikon
+Het werkt in 21 talen:
+Woord van de dag & populaire woorden
+Gegevensbronnen & licenties
+Wat
+Bron
+Licentie
+Tekstfragmenten & artikelinleidingen
+Engelse reacties (optionele bron)
+Achtergrondwoordfrequenties
+Stopwoordlijsten
+Lettertypen
+Grafiekbibliotheek
+Gedeelde afbeeldingen bevatten de vermelding ‘Text: Wikipedia/Wikiquote, CC BY-SA’.
+Privacy
+Installeren
+‘Je herkent een woord aan het gezelschap dat het houdt’ (J. R. Firth, 1957).
+Typ een woord en Synoikon verzamelt honderden echte zinnen waarin het voorkomt, bekijkt de woorden rond elk voorkomen en tekent ze als een netwerk:
+<b>Cirkeloppervlak</b> = hoe vaak een buur bij je woord voorkomt (standaard binnen een venster van ± 5 woorden).
+<b>Lijnlengte</b>: hoe vaker twee woorden in hetzelfde contextvenster voorkomen, hoe <b>korter</b> (en dikker) de lijn ertussen.
+De rangschikking <b>Kenmerkend</b> (standaard) geeft voorrang aan woorden die veel vaker bij je woord voorkomen dan in gewone tekst van die taal (log-ratio tegen een op Wikipedia gebaseerde achtergrondlijst, met een log-likelihood-significantiefilter). De rangschikking <b>Frequentie</b> toont gewoon de meest voorkomende buren.
+Elke dag om 00:00 UTC is er een nieuw woord van de dag, voor iedereen hetzelfde. Het komt uit een samengestelde lijst van 66 sprekende begrippen, vertaald in elke taal (<a href="./#wotd">woord van vandaag</a>). De woorden van vandaag en de komende twee dagen, plus een dagelijkse selectie populaire woorden, worden door een GitHub Actions-taak <b>vooraf berekend</b>, zodat ze direct openen en offline werken. Elk ander woord haalt je browser live op.
+Je zoekopdrachten gaan rechtstreeks van je browser naar de API’s van Wikimedia en Algolia (geïdentificeerd als ‘LessThan301 synoikon’). Synoikon heeft geen server en slaat niets over je op.
+De app bewaart zijn eigen bestanden, de taalgegevens die je gebruikt en je recente resultaten op je apparaat (service worker), zodat hij offline werkt. Wis de sitegegevens om ze te verwijderen.
+Bezoeken worden geteld met <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, zonder cookies en zonder fingerprinting.
+Synoikon is een installeerbare web-app: gebruik ‘App installeren’ onder <em>Weergave &amp; export</em> in de instellingenbalk (Chrome, Edge, Android) of ‘Zet op beginscherm’ in het deelmenu van Safari (iOS).
+Open source op <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Meldingen en ideeën zijn daar welkom.

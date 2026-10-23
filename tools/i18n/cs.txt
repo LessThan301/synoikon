@@ -91,3 +91,87 @@ Předpočítáno {0} s výchozím nastavením.
 Automaticky (jazyk mapy)
 Strojově přeložené rozhraní; opravy vítány.
 Max. 3 najednou, nejprve jeden odepněte
+V Nastavení vyberte alespoň jeden zdroj.
+Zdá se, že jste offline: textové zdroje nejsou dostupné. Nová slova vyžadují připojení, ale oblíbená slova a vaše nedávná hledání stále fungují:
+Offline
+Jste offline a pro tento jazyk zatím nic není v mezipaměti. Připojte se znovu a zkuste to znovu.
+Knihovnu grafů (D3) se nepodařilo načíst. Zkontrolujte připojení nebo blokátor reklam a obnovte stránku.
+Hmm.
+Není k dispozici v jazyce {0}
+Sbírám texty o „{0}“… {1}/{2} zdrojů ({3} hotovo)
+Textové zdroje nejsou dostupné ({0}). Zkontrolujte připojení a zkuste to znovu.
+Referenční seznam slov pro {0} se nepodařilo načíst ({1}); řadím podle četnosti.
+Všechny zdroje selhaly: {0}
+Nalezeno {0} výskytů „{1}“, ale málo opakujících se sousedů pro vykreslení sítě. Zkuste větší korpus, širší okno nebo jiné slovo.
+{0}: selhalo ({1})
+Sdílet tuto mapu
+Zavřít
+Formát obrázku
+Na šířku
+Čtverec
+Náhled obrázku ke sdílení
+Sdílet obrázek…
+Stáhnout PNG
+Kopírovat odkaz
+Odkaz ke sdílení
+Sdílení selhalo ({0}); místo toho stahuji.
+Staženo: {0}.
+Sdílet mapu (obrázek, odkaz)
+Slovo dne
+Slova, která se vyskytují u vašeho slova mnohem častěji než v běžném textu Wikipedie
+Prostě nejčastější slova u vašeho slova
+Nainstalovat Synoikon jako aplikaci
+Výskyty v kontextových oknech (plocha kruhu)
+Okna společná s hledaným slovem
+Typičnost: log2 toho, kolikrát častěji, než se čeká podle běžného textu Wikipedie
+Všechna slova
+O projektu
+Text: Wikipedie/Wikicitáty, CC BY-SA 4.0 (úryvky s odkazy na zdrojové stránky); komentáře z Hacker News © jejich autoři.
+Vytvořeno v
+O projektu a zdroje
+Zdrojový kód na GitHubu
+{0}: slova, která ho doprovázejí · Synoikon
+Která slova se objevují kolem „{0}“ na Wikipedii? Nejtypičtější: {1}. Interaktivní síť z {2} skutečných výskytů v {3} textech.
+Slova v jeho okolí z {0} výskytů na Wikipedii{1}.
+Otevřít interaktivní mapu →
+Podle četnosti
+Síť slov kolem „{0}“: {1}
+Plocha kruhu = jak často se slovo vyskytuje u „{0}“; kratší, silnější čáry = slova, která se často vyskytují spolu.
+Nejtypičtější sousedé
+× = kolikrát častěji než v běžném textu Wikipedie.
+Nejčastější sousedé
+V kontextu
+Další slova
+Předpočítáno {0} s výchozím nastavením (±{1} slov, střední korpus). Interaktivní mapa ho může obnovit živými daty.
+{0} předpočítaných slov.
+Jakékoli jiné slovo funguje živě v aplikaci.
+seznam slov dne
+oblíbené slovo
+Otevřít aplikaci
+O Synoikonu
+Funguje v 21 jazycích:
+Slovo dne a oblíbená slova
+Zdroje dat a licence
+Co
+Zdroj
+Licence
+Úryvky textů a úvody článků
+Anglické komentáře (volitelný zdroj)
+Referenční četnosti slov
+Seznamy stop slov
+Písma
+Knihovna grafů
+Sdílené obrázky nesou označení „Text: Wikipedia/Wikiquote, CC BY-SA“.
+Soukromí
+Instalace
+„Slovo poznáš podle společnosti, v níž se pohybuje“ (J. R. Firth, 1957).
+Zadejte slovo a Synoikon shromáždí stovky skutečných vět, které ho obsahují, prohlédne si slova kolem každého výskytu a vykreslí je jako síť:
+<b>Plocha kruhu</b> = jak často se soused vyskytuje u vašeho slova (ve výchozím okně ± 5 slov).
+<b>Délka čáry</b>: čím častěji se dvě slova vyskytují ve stejném kontextovém okně, tím <b>kratší</b> (a silnější) je čára mezi nimi.
+Řazení <b>Typické</b> (výchozí) upřednostňuje slova, která se u vašeho slova vyskytují mnohem častěji než v běžném textu daného jazyka (log-poměr vůči referenčnímu seznamu z Wikipedie, s filtrem významnosti log-likelihood). Řazení <b>Četnost</b> jednoduše ukazuje nejčastější sousedy.
+Každý den v 00:00 UTC je nové slovo dne, stejné pro všechny. Pochází z vybraného seznamu 66 výrazných pojmů přeložených do každého jazyka (<a href="./#wotd">dnešní slovo</a>). Slova na dnešek a další dva dny a také denní výběr oblíbených slov <b>předpočítává</b> úloha GitHub Actions, takže se otevřou okamžitě a fungují offline. Jakékoli jiné slovo načte váš prohlížeč živě.
+Vaše hledání jdou přímo z prohlížeče do API Wikimedie a Algolie (s identifikací „LessThan301 synoikon“). Synoikon nemá server a nic o vás neukládá.
+Aplikace ukládá do mezipaměti zařízení vlastní soubory, používaná jazyková data a vaše nedávné výsledky (service worker), aby fungovala offline. Smažte data webu, chcete-li je odstranit.
+Návštěvy počítá <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a> bez cookies a bez fingerprintingu.
+Synoikon je instalovatelná webová aplikace: použijte „Nainstalovat aplikaci“ v části <em>Zobrazení a export</em> v panelu nastavení (Chrome, Edge, Android) nebo „Přidat na plochu“ v nabídce sdílení Safari (iOS).
+Otevřený zdrojový kód na <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Hlášení chyb a nápady jsou tam vítány.

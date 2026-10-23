@@ -91,3 +91,87 @@ Pré-calculado em {0} com as definições padrão.
 Automático (idioma do mapa)
 Interface traduzida automaticamente; correções são bem-vindas.
 Máx. 3 de cada vez, solte um primeiro
+Selecione pelo menos uma fonte nas Configurações.
+Parece que você está offline: as fontes de texto não podem ser acessadas. Palavras novas precisam de conexão, mas as palavras populares e suas buscas recentes continuam funcionando:
+Offline
+Você está offline e ainda não há nada em cache para este idioma. Reconecte-se e tente novamente.
+Não foi possível carregar a biblioteca gráfica (D3). Verifique sua conexão ou o bloqueador de anúncios e recarregue.
+Hum.
+Indisponível em {0}
+Coletando textos sobre “{0}”… {1}/{2} fontes ({3} concluídas)
+Não foi possível acessar as fontes de texto ({0}). Verifique sua conexão e tente novamente.
+Não foi possível carregar a lista de referência para {0} ({1}); ordenando por frequência.
+Todas as fontes falharam: {0}
+Foram encontradas {0} ocorrências de “{1}”, mas não há vizinhos recorrentes suficientes para desenhar uma rede. Tente um corpus maior, uma janela mais ampla ou outra palavra.
+{0}: falhou ({1})
+Compartilhar este mapa
+Fechar
+Formato da imagem
+Paisagem
+Quadrado
+Pré-visualização da imagem
+Compartilhar imagem…
+Baixar PNG
+Copiar link
+Link compartilhável
+Falha ao compartilhar ({0}); baixando em vez disso.
+{0} baixado.
+Compartilhar mapa (imagem, link)
+Palavra do dia
+Palavras que aparecem perto da sua palavra muito mais do que no texto geral da Wikipédia
+Simplesmente as palavras mais frequentes perto da sua palavra
+Instalar o Synoikon como app
+Ocorrências nas janelas de contexto (área do círculo)
+Janelas compartilhadas com a palavra buscada
+Especificidade: log2 de quantas vezes mais do que o esperado pelo texto geral da Wikipédia
+Todas as palavras
+Sobre
+Texto: Wikipédia/Wikiquote, CC BY-SA 4.0 (trechos, com links para as páginas de origem); comentários do Hacker News © seus autores.
+Feito com
+Sobre e atribuição
+Código no GitHub
+{0}: as palavras que o acompanham · Synoikon
+Quais palavras aparecem em torno de “{0}” na Wikipédia? As mais características: {1}. Uma rede interativa a partir de {2} ocorrências reais em {3} textos.
+As palavras encontradas ao seu redor em {0} ocorrências da Wikipédia{1}.
+Abrir o mapa interativo →
+Por frequência
+Rede das palavras em torno de “{0}”: {1}
+Área do círculo = com que frequência uma palavra aparece perto de “{0}”; linhas mais curtas e grossas = palavras que costumam aparecer juntas.
+Vizinhos mais característicos
+× = quantas vezes mais do que no texto geral da Wikipédia.
+Vizinhos mais frequentes
+Em contexto
+Mais palavras
+Pré-calculado em {0} com as configurações padrão (±{1} palavras, corpus médio). O mapa interativo pode atualizá-lo com dados ao vivo.
+{0} palavras pré-calculadas.
+Qualquer outra palavra funciona ao vivo no app.
+lista de palavras do dia
+palavra popular
+Abrir o app
+Sobre o Synoikon
+Funciona em 21 idiomas:
+Palavra do dia e palavras populares
+Fontes de dados e licenças
+O quê
+Fonte
+Licença
+Trechos de texto e introduções de artigos
+Comentários em inglês (fonte opcional)
+Frequências de referência
+Listas de stopwords
+Fontes tipográficas
+Biblioteca gráfica
+As imagens compartilhadas levam a atribuição “Text: Wikipedia/Wikiquote, CC BY-SA”.
+Privacidade
+Instalar
+“Conhecerás uma palavra pela companhia que ela mantém” (J. R. Firth, 1957).
+Digite uma palavra e o Synoikon reúne centenas de frases reais que a contêm, analisa as palavras em torno de cada ocorrência e as desenha como uma rede:
+<b>Área do círculo</b> = com que frequência um vizinho aparece perto da sua palavra (numa janela de ± 5 palavras por padrão).
+<b>Comprimento da linha</b>: quanto mais duas palavras aparecem na mesma janela de contexto, mais <b>curta</b> (e grossa) é a linha entre elas.
+A ordenação <b>Característica</b> (padrão) favorece palavras que aparecem perto da sua muito mais do que no texto geral do idioma (log-ratio contra uma lista de referência baseada na Wikipédia, com filtro de significância log-likelihood). A ordenação <b>Frequência</b> mostra simplesmente os vizinhos mais comuns.
+Todos os dias às 00:00 UTC há uma nova palavra do dia, a mesma para todos. Ela vem de uma lista selecionada de 66 conceitos evocativos traduzidos para cada idioma (<a href="./#wotd">a palavra de hoje</a>). As palavras de hoje e dos próximos dois dias, além de um rodízio diário de palavras populares, são <b>pré-calculadas</b> por um job do GitHub Actions, então abrem na hora e funcionam offline. Qualquer outra palavra é buscada ao vivo pelo seu navegador.
+Suas buscas vão direto do seu navegador para as APIs da Wikimedia e da Algolia (identificadas como “LessThan301 synoikon”). O Synoikon não tem servidor e não guarda nada sobre você.
+O app guarda em cache no seu dispositivo os próprios arquivos, os dados de idioma que você usa e seus resultados recentes (service worker) para funcionar offline. Limpe os dados do site para removê-los.
+As visitas são contadas com o <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, sem cookies e sem fingerprinting.
+O Synoikon é um app web instalável: use “Instalar app” em <em>Exibição e exportação</em> na barra de configurações (Chrome, Edge, Android) ou “Adicionar à Tela de Início” no menu de compartilhamento do Safari (iOS).
+Código aberto em <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Relatos e ideias são bem-vindos lá.

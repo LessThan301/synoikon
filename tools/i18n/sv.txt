@@ -91,3 +91,87 @@ Förberäknat {0} med standardinställningar.
 Automatiskt (kartans språk)
 Maskinöversatt gränssnitt; rättelser välkomnas.
 Max. 3 åt gången, lossa en först
+Välj minst en källa i Inställningar.
+Du verkar vara offline: textkällorna går inte att nå. Nya ord kräver en anslutning, men populära ord och dina senaste sökningar fungerar fortfarande:
+Offline
+Du är offline och inget är cachat för det här språket ännu. Anslut igen och försök på nytt.
+Grafbiblioteket (D3) kunde inte laddas. Kontrollera anslutningen eller annonsblockeraren och ladda om.
+Hmm.
+Inte tillgängligt på {0}
+Samlar text om ”{0}”… {1}/{2} källor ({3} klara)
+Textkällorna gick inte att nå ({0}). Kontrollera anslutningen och försök igen.
+Bakgrundsordlistan för {0} kunde inte laddas ({1}); rangordnar efter frekvens i stället.
+Alla källor misslyckades: {0}
+Hittade {0} förekomster av ”{1}”, men inte tillräckligt många återkommande grannar för ett nätverk. Prova en större korpus, ett bredare fönster eller ett annat ord.
+{0}: misslyckades ({1})
+Dela den här kartan
+Stäng
+Bildformat
+Liggande
+Kvadrat
+Förhandsvisning av delningsbilden
+Dela bild…
+Ladda ner PNG
+Kopiera länk
+Delbar länk
+Delning misslyckades ({0}); laddar ner i stället.
+{0} nedladdad.
+Dela karta (bild, länk)
+Dagens ord
+Ord som förekommer nära ditt ord mycket oftare än i allmän Wikipedia-text
+Helt enkelt de vanligaste orden nära ditt ord
+Installera Synoikon som app
+Förekomster i kontextfönster (cirkelns yta)
+Fönster gemensamma med sökordet
+Särprägel: log2 av hur många gånger oftare än väntat utifrån allmän Wikipedia-text
+Alla ord
+Om
+Text: Wikipedia/Wikiquote, CC BY-SA 4.0 (utdrag, med länkar till källsidorna); Hacker News-kommentarer © deras författare.
+Gjord med
+Om & källor
+Källkod på GitHub
+{0}: orden som håller det sällskap · Synoikon
+Vilka ord förekommer runt ”{0}” på Wikipedia? Mest utmärkande: {1}. Ett interaktivt nätverk från {2} verkliga förekomster i {3} texter.
+Orden runt det i {0} förekomster från Wikipedia{1}.
+Öppna den interaktiva kartan →
+Efter frekvens
+Nätverk av orden runt ”{0}”: {1}
+Cirkelns yta = hur ofta ett ord förekommer nära ”{0}”; kortare, tjockare linjer = ord som ofta förekommer tillsammans.
+Mest utmärkande grannar
+× = hur många gånger oftare än i allmän Wikipedia-text.
+Vanligaste grannar
+I sitt sammanhang
+Fler ord
+Förberäknat {0} med standardinställningar (±{1} ord, medelstor korpus). Den interaktiva kartan kan uppdatera med livedata.
+{0} förberäknade ord.
+Alla andra ord fungerar live i appen.
+lista över dagens ord
+populärt ord
+Öppna appen
+Om Synoikon
+Den fungerar på 21 språk:
+Dagens ord & populära ord
+Datakällor & licenser
+Vad
+Källa
+Licens
+Textutdrag & artikelinledningar
+Engelska kommentarer (valfri källa)
+Bakgrundsordfrekvenser
+Stoppordslistor
+Typsnitt
+Grafbibliotek
+Delade bilder bär källangivelsen ”Text: Wikipedia/Wikiquote, CC BY-SA”.
+Integritet
+Installera
+”Du ska känna ett ord på sällskapet det håller” (J. R. Firth, 1957).
+Skriv ett ord så samlar Synoikon hundratals verkliga meningar som innehåller det, tittar på orden runt varje förekomst och ritar dem som ett nätverk:
+<b>Cirkelns yta</b> = hur ofta en granne förekommer nära ditt ord (inom ett fönster på ± 5 ord som standard).
+<b>Linjelängd</b>: ju oftare två ord förekommer i samma kontextfönster, desto <b>kortare</b> (och tjockare) linje mellan dem.
+Rangordningen <b>Utmärkande</b> (standard) gynnar ord som förekommer nära ditt ord mycket oftare än i allmän text på språket (log-kvot mot en Wikipedia-baserad bakgrundslista, med ett log-likelihood-signifikansfilter). Rangordningen <b>Frekvens</b> visar helt enkelt de vanligaste grannarna.
+Varje dag kl. 00:00 UTC kommer ett nytt dagens ord, samma för alla. Det kommer från en kurerad lista med 66 uttrycksfulla begrepp översatta till varje språk (<a href="./#wotd">dagens ord</a>). Dagens och de två kommande dagarnas ord, plus ett dagligt urval populära ord, <b>förberäknas</b> av ett GitHub Actions-jobb, så de öppnas direkt och fungerar offline. Alla andra ord hämtas live av din webbläsare.
+Dina sökningar går direkt från din webbläsare till Wikimedias och Algolias API:er (identifierade som ”LessThan301 synoikon”). Synoikon har ingen server och lagrar inget om dig.
+Appen cachar sina egna filer, språkdata du använder och dina senaste resultat på din enhet (service worker) så att den fungerar offline. Rensa webbplatsdata för att ta bort dem.
+Besök räknas med <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, utan cookies och utan fingeravtryck.
+Synoikon är en installerbar webbapp: använd ”Installera app” under <em>Visning &amp; export</em> i inställningspanelen (Chrome, Edge, Android) eller ”Lägg till på hemskärmen” i Safaris delningsmeny (iOS).
+Öppen källkod på <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Felrapporter och idéer är välkomna där.

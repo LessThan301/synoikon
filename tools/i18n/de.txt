@@ -91,3 +91,87 @@ Vorberechnet am {0} mit Standardeinstellungen.
 Automatisch (Kartensprache)
 Maschinell übersetzte Oberfläche; Korrekturen willkommen.
 Max. 3 gleichzeitig, zuerst eins lösen
+Wähle in den Einstellungen mindestens eine Quelle aus.
+Du scheinst offline zu sein: Die Textquellen sind nicht erreichbar. Neue Wörter brauchen eine Verbindung, aber beliebte Wörter und deine letzten Suchen funktionieren weiterhin:
+Offline
+Du bist offline und für diese Sprache ist noch nichts zwischengespeichert. Verbinde dich erneut und versuche es noch einmal.
+Die Graphbibliothek (D3) konnte nicht geladen werden. Prüfe deine Verbindung oder deinen Werbeblocker und lade neu.
+Hm.
+Nicht verfügbar auf {0}
+Sammle Text zu „{0}“… {1}/{2} Quellen ({3} fertig)
+Die Textquellen waren nicht erreichbar ({0}). Prüfe deine Verbindung und versuche es erneut.
+Die Hintergrund-Wortliste für {0} konnte nicht geladen werden ({1}); stattdessen nach Häufigkeit sortiert.
+Alle Quellen sind fehlgeschlagen: {0}
+{0} Vorkommen von „{1}“ gefunden, aber nicht genug wiederkehrende Nachbarn für ein Netzwerk. Versuche einen größeren Korpus, ein breiteres Fenster oder ein anderes Wort.
+{0}: fehlgeschlagen ({1})
+Diese Karte teilen
+Schließen
+Bildformat
+Querformat
+Quadrat
+Vorschau des Teilen-Bildes
+Bild teilen…
+PNG herunterladen
+Link kopieren
+Teilbarer Link
+Teilen fehlgeschlagen ({0}); stattdessen wird heruntergeladen.
+{0} heruntergeladen.
+Karte teilen (Bild, Link)
+Wort des Tages
+Wörter, die viel häufiger in der Nähe deines Wortes vorkommen als in allgemeinem Wikipedia-Text
+Einfach die häufigsten Wörter in der Nähe deines Wortes
+Synoikon als App installieren
+Vorkommen in Kontextfenstern (Kreisfläche)
+Gemeinsame Fenster mit dem Suchwort
+Spezifität: log2 des Faktors, um den ein Wort häufiger vorkommt als aus allgemeinem Wikipedia-Text erwartet
+Alle Wörter
+Über
+Text: Wikipedia/Wikiquote, CC BY-SA 4.0 (Auszüge mit Links zu den Quellseiten); Hacker-News-Kommentare © ihre Autoren.
+Erstellt mit
+Über & Quellen
+Quellcode auf GitHub
+{0}: die Wörter, die es begleiten · Synoikon
+Welche Wörter stehen auf Wikipedia rund um „{0}“? Am typischsten: {1}. Ein interaktives Netzwerk aus {2} echten Vorkommen in {3} Texten.
+Die Wörter in seinem Umfeld aus {0} Vorkommen in Wikipedia{1}.
+Interaktive Karte öffnen →
+Nach Häufigkeit
+Netzwerk der Wörter rund um „{0}“: {1}
+Kreisfläche = wie oft ein Wort in der Nähe von „{0}“ vorkommt; kürzere, dickere Linien = Wörter, die oft zusammen vorkommen.
+Typischste Nachbarn
+× = wie viel häufiger als in allgemeinem Wikipedia-Text.
+Häufigste Nachbarn
+Im Kontext
+Weitere Wörter
+Vorberechnet am {0} mit Standardeinstellungen (±{1} Wörter, mittlerer Korpus). Die interaktive Karte kann mit Live-Daten aktualisieren.
+{0} vorberechnete Wörter.
+Jedes andere Wort funktioniert live in der App.
+Liste der Wörter des Tages
+beliebtes Wort
+App öffnen
+Über Synoikon
+Es funktioniert in 21 Sprachen:
+Wort des Tages & beliebte Wörter
+Datenquellen & Lizenzen
+Was
+Quelle
+Lizenz
+Textausschnitte & Artikeleinleitungen
+Englische Kommentare (optionale Quelle)
+Hintergrund-Worthäufigkeiten
+Stoppwortlisten
+Schriften
+Graphbibliothek
+Geteilte Bilder tragen die Quellenangabe „Text: Wikipedia/Wikiquote, CC BY-SA“.
+Datenschutz
+Installieren
+„An seiner Gesellschaft sollst du ein Wort erkennen“ (J. R. Firth, 1957).
+Gib ein Wort ein, und Synoikon sammelt Hunderte echter Sätze, die es enthalten, betrachtet die Wörter um jedes Vorkommen herum und zeichnet sie als Netzwerk:
+<b>Kreisfläche</b> = wie oft ein Nachbar in der Nähe deines Wortes vorkommt (standardmäßig in einem Fenster von ± 5 Wörtern).
+<b>Linienlänge</b>: Je öfter zwei Wörter im selben Kontextfenster vorkommen, desto <b>kürzer</b> (und dicker) ist die Linie zwischen ihnen.
+Die Sortierung <b>Typisch</b> (Standard) bevorzugt Wörter, die viel häufiger in der Nähe deines Wortes vorkommen als in allgemeinem Text der Sprache (Log-Ratio gegenüber einer Wikipedia-basierten Hintergrundliste, mit Log-Likelihood-Signifikanzfilter). Die Sortierung <b>Häufigkeit</b> zeigt einfach die häufigsten Nachbarn.
+Jeden Tag um 00:00 UTC gibt es ein neues Wort des Tages, für alle dasselbe. Es stammt aus einer kuratierten Liste von 66 ausdrucksstarken Begriffen, übersetzt in jede Sprache (<a href="./#wotd">heutiges Wort</a>). Die Wörter von heute und den nächsten zwei Tagen sowie eine tägliche Auswahl beliebter Wörter werden von einem GitHub-Actions-Job <b>vorberechnet</b>, sodass sie sofort öffnen und offline funktionieren. Jedes andere Wort lädt dein Browser live.
+Deine Suchen gehen direkt von deinem Browser an die APIs von Wikimedia und Algolia (identifiziert als „LessThan301 synoikon“). Synoikon hat keinen Server und speichert nichts über dich.
+Die App speichert ihre eigenen Dateien, die genutzten Sprachdaten und deine letzten Suchergebnisse auf deinem Gerät (Service Worker), damit sie offline funktioniert. Lösche die Websitedaten, um sie zu entfernen.
+Besuche werden mit <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a> gezählt, ohne Cookies und ohne Fingerprinting.
+Synoikon ist eine installierbare Web-App: Nutze „App installieren“ unter <em>Anzeige &amp; Export</em> in der Einstellungsleiste (Chrome, Edge, Android) oder „Zum Home-Bildschirm“ im Teilen-Menü von Safari (iOS).
+Open Source unter <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Fehlerberichte und Ideen sind dort willkommen.

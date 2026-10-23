@@ -91,3 +91,87 @@ Precalculat pe {0} cu setările implicite.
 Automat (limba hărții)
 Interfață tradusă automat; corecturile sunt binevenite.
 Max. 3 deodată, eliberează mai întâi unul
+Selectează cel puțin o sursă în Setări.
+Se pare că ești offline: sursele de text nu pot fi accesate. Cuvintele noi au nevoie de conexiune, dar cuvintele populare și căutările recente funcționează în continuare:
+Offline
+Ești offline și nimic nu este încă salvat în cache pentru această limbă. Reconectează-te și încearcă din nou.
+Biblioteca grafică (D3) nu a putut fi încărcată. Verifică conexiunea sau blocantul de reclame și reîncarcă.
+Hmm.
+Indisponibil în {0}
+Se colectează text despre „{0}”… {1}/{2} surse ({3} gata)
+Sursele de text nu au putut fi accesate ({0}). Verifică conexiunea și încearcă din nou.
+Lista de referință pentru {0} nu a putut fi încărcată ({1}); se ordonează după frecvență.
+Toate sursele au eșuat: {0}
+Am găsit {0} apariții ale lui „{1}”, dar nu destui vecini recurenți pentru a desena o rețea. Încearcă un corpus mai mare, o fereastră mai largă sau alt cuvânt.
+{0}: eșuat ({1})
+Distribuie această hartă
+Închide
+Format imagine
+Peisaj
+Pătrat
+Previzualizarea imaginii
+Distribuie imaginea…
+Descarcă PNG
+Copiază linkul
+Link de distribuit
+Distribuirea a eșuat ({0}); se descarcă în schimb.
+{0} descărcat.
+Distribuie harta (imagine, link)
+Cuvântul zilei
+Cuvinte care apar lângă cuvântul tău mult mai des decât în textul general de pe Wikipedia
+Pur și simplu cele mai frecvente cuvinte lângă cuvântul tău
+Instalează Synoikon ca aplicație
+Apariții în ferestrele de context (aria cercului)
+Ferestre comune cu cuvântul căutat
+Specificitate: log2 din de câte ori mai des decât s-ar aștepta după textul general de pe Wikipedia
+Toate cuvintele
+Despre
+Text: Wikipedia/Wikiquote, CC BY-SA 4.0 (fragmente, cu linkuri spre paginile sursă); comentarii Hacker News © autorii lor.
+Realizat cu
+Despre & atribuire
+Cod sursă pe GitHub
+{0}: cuvintele care îl însoțesc · Synoikon
+Ce cuvinte apar în jurul lui „{0}” pe Wikipedia? Cele mai specifice: {1}. O rețea interactivă din {2} apariții reale în {3} texte.
+Cuvintele găsite în jurul lui în {0} apariții de pe Wikipedia{1}.
+Deschide harta interactivă →
+După frecvență
+Rețeaua cuvintelor din jurul lui „{0}”: {1}
+Aria cercului = cât de des apare un cuvânt lângă „{0}”; linii mai scurte și mai groase = cuvinte care apar des împreună.
+Cei mai specifici vecini
+× = de câte ori mai des decât în textul general de pe Wikipedia.
+Cei mai frecvenți vecini
+În context
+Mai multe cuvinte
+Precalculat la {0} cu setările implicite (±{1} cuvinte, corpus mediu). Harta interactivă îl poate actualiza cu date live.
+{0} cuvinte precalculate.
+Orice alt cuvânt funcționează live în aplicație.
+lista cuvintelor zilei
+cuvânt popular
+Deschide aplicația
+Despre Synoikon
+Funcționează în 21 de limbi:
+Cuvântul zilei & cuvinte populare
+Surse de date & licențe
+Ce
+Sursă
+Licență
+Fragmente de text & introduceri de articole
+Comentarii în engleză (sursă opțională)
+Frecvențe de referință
+Liste de cuvinte de umplutură
+Fonturi
+Bibliotecă grafică
+Imaginile distribuite poartă atribuirea „Text: Wikipedia/Wikiquote, CC BY-SA”.
+Confidențialitate
+Instalare
+„Vei cunoaște un cuvânt după compania pe care o ține” (J. R. Firth, 1957).
+Scrie un cuvânt, iar Synoikon adună sute de propoziții reale care îl conțin, analizează cuvintele din jurul fiecărei apariții și le desenează ca o rețea:
+<b>Aria cercului</b> = cât de des apare un vecin lângă cuvântul tău (implicit într-o fereastră de ± 5 cuvinte).
+<b>Lungimea liniei</b>: cu cât două cuvinte apar mai des în aceeași fereastră de context, cu atât linia dintre ele este mai <b>scurtă</b> (și mai groasă).
+Ordonarea <b>Specific</b> (implicită) favorizează cuvintele care apar lângă cuvântul tău mult mai des decât în textul general al limbii (log-raport față de o listă de referință bazată pe Wikipedia, cu filtru de semnificație log-likelihood). Ordonarea <b>Frecvență</b> arată pur și simplu vecinii cei mai comuni.
+În fiecare zi la 00:00 UTC apare un nou cuvânt al zilei, același pentru toți. Provine dintr-o listă selectată de 66 de concepte evocatoare traduse în fiecare limbă (<a href="./#wotd">cuvântul de azi</a>). Cuvintele de azi și din următoarele două zile, plus o selecție zilnică de cuvinte populare, sunt <b>precalculate</b> de un job GitHub Actions, așa că se deschid instant și funcționează offline. Orice alt cuvânt este preluat live de browserul tău.
+Căutările tale merg direct din browser la API-urile Wikimedia și Algolia (identificate ca „LessThan301 synoikon”). Synoikon nu are server și nu stochează nimic despre tine.
+Aplicația păstrează în cache pe dispozitiv propriile fișiere, datele lingvistice folosite și rezultatele recente (service worker), ca să funcționeze offline. Șterge datele site-ului pentru a le elimina.
+Vizitele sunt numărate cu <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, fără cookie-uri și fără amprentare.
+Synoikon este o aplicație web instalabilă: folosește „Instalează aplicația” la <em>Afișare &amp; export</em> în bara de setări (Chrome, Edge, Android) sau „Adaugă pe ecranul principal” în meniul de partajare din Safari (iOS).
+Cod sursă deschis la <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Problemele și ideile sunt binevenite acolo.

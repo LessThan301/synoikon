@@ -91,3 +91,87 @@ Előre kiszámítva: {0}, alapbeállításokkal.
 Automatikus (a térkép nyelve)
 Gépi fordítású felület; a javításokat szívesen fogadjuk.
 Egyszerre legfeljebb 3, előbb oldj fel egyet
+Válassz legalább egy forrást a Beállításokban.
+Úgy tűnik, offline vagy: a szövegforrások nem érhetők el. Új szavakhoz kapcsolat kell, de a népszerű szavak és a legutóbbi kereséseid továbbra is működnek:
+Offline
+Offline vagy, és ehhez a nyelvhez még semmi sincs gyorsítótárazva. Csatlakozz újra, és próbáld meg ismét.
+A grafikonkönyvtár (D3) nem tölthető be. Ellenőrizd a kapcsolatot vagy a reklámblokkolót, és töltsd újra az oldalt.
+Hmm.
+Nem érhető el ezen a nyelven: {0}
+Szövegek gyűjtése erről: „{0}”… {1}/{2} forrás ({3} kész)
+A szövegforrások nem érhetők el ({0}). Ellenőrizd a kapcsolatot, és próbáld újra.
+A(z) {0} háttér-szólistája nem tölthető be ({1}); helyette gyakoriság szerinti rendezés.
+Minden forrás sikertelen: {0}
+{0} előfordulás található ebből: „{1}”, de nincs elég ismétlődő szomszéd egy hálózathoz. Próbálj nagyobb korpuszt, szélesebb ablakot vagy másik szót.
+{0}: sikertelen ({1})
+Térkép megosztása
+Bezárás
+Képformátum
+Fekvő
+Négyzet
+A megosztandó kép előnézete
+Kép megosztása…
+PNG letöltése
+Hivatkozás másolása
+Megosztható hivatkozás
+A megosztás nem sikerült ({0}); letöltés helyette.
+Letöltve: {0}.
+Térkép megosztása (kép, hivatkozás)
+A nap szava
+Szavak, amelyek a szavad közelében sokkal gyakoribbak, mint az általános wikipédiás szövegben
+Egyszerűen a szavad közelében leggyakoribb szavak
+A Synoikon telepítése alkalmazásként
+Előfordulások a kontextusablakokban (kör területe)
+A keresett szóval közös ablakok
+Jellegzetesség: log2-je annak, hányszor gyakoribb a vártnál az általános wikipédiás szöveg alapján
+Minden szó
+Névjegy
+Szöveg: Wikipédia/Wikidézet, CC BY-SA 4.0 (részletek a forrásoldalakra mutató hivatkozásokkal); Hacker News-hozzászólások © szerzőik.
+Készült:
+Névjegy és források
+Forráskód a GitHubon
+{0}: a szavak, amelyek társaságában áll · Synoikon
+Milyen szavak állnak a(z) „{0}” körül a Wikipédián? A legjellegzetesebbek: {1}. Interaktív hálózat {2} valódi előfordulásból, {3} szövegből.
+A körülötte talált szavak {0} wikipédiás előfordulásból{1}.
+Interaktív térkép megnyitása →
+Gyakoriság szerint
+A(z) „{0}” körüli szavak hálózata: {1}
+Kör területe = milyen gyakran fordul elő egy szó a(z) „{0}” közelében; rövidebb, vastagabb vonal = gyakran együtt előforduló szavak.
+Legjellegzetesebb szomszédok
+× = hányszor gyakoribb, mint az általános wikipédiás szövegben.
+Leggyakoribb szomszédok
+Szövegkörnyezetben
+További szavak
+Előre kiszámítva: {0}, alapbeállításokkal (±{1} szó, közepes korpusz). Az interaktív térkép élő adatokkal frissítheti.
+{0} előre kiszámított szó.
+Bármely más szó élőben működik az alkalmazásban.
+a nap szavainak listája
+népszerű szó
+Alkalmazás megnyitása
+A Synoikonról
+21 nyelven működik:
+A nap szava és népszerű szavak
+Adatforrások és licencek
+Mi
+Forrás
+Licenc
+Szövegrészletek és cikkbevezetők
+Angol hozzászólások (opcionális forrás)
+Háttér-szógyakoriságok
+Töltelékszó-listák
+Betűtípusok
+Grafikonkönyvtár
+A megosztott képeken szerepel a forrásmegjelölés: „Text: Wikipedia/Wikiquote, CC BY-SA”.
+Adatvédelem
+Telepítés
+„A szót a társaságáról ismered meg” (J. R. Firth, 1957).
+Írj be egy szót, és a Synoikon több száz valódi mondatot gyűjt, amelyben szerepel, megvizsgálja az egyes előfordulások körüli szavakat, és hálózatként rajzolja meg őket:
+<b>Kör területe</b> = milyen gyakran fordul elő egy szomszéd a szavad közelében (alapból ± 5 szavas ablakban).
+<b>Vonalhossz</b>: minél gyakrabban fordul elő két szó ugyanabban a kontextusablakban, annál <b>rövidebb</b> (és vastagabb) a köztük lévő vonal.
+A <b>Jellegzetes</b> rendezés (alapértelmezett) azokat a szavakat részesíti előnyben, amelyek a szavad közelében sokkal gyakoribbak, mint az adott nyelv általános szövegében (log-arány egy Wikipédia-alapú háttérlistához képest, log-likelihood szignifikanciaszűrővel). A <b>Gyakoriság</b> rendezés egyszerűen a leggyakoribb szomszédokat mutatja.
+Minden nap 00:00 UTC-kor új nap szava érkezik, mindenkinek ugyanaz. Egy 66 kifejező fogalomból álló, minden nyelvre lefordított válogatott listából származik (<a href="./#wotd">a mai szó</a>). A mai és a következő két nap szavait, valamint a népszerű szavak napi válogatását egy GitHub Actions-feladat <b>előre kiszámítja</b>, így azonnal megnyílnak és offline is működnek. Minden más szót a böngésződ élőben tölt le.
+A kereséseid közvetlenül a böngésződből jutnak a Wikimedia és az Algolia API-jához („LessThan301 synoikon” azonosítóval). A Synoikonnak nincs szervere, és semmit sem tárol rólad.
+Az alkalmazás a saját fájljait, a használt nyelvi adatokat és a legutóbbi találatokat az eszközödön tárolja (service worker), hogy offline is működjön. Törlésükhöz töröld a webhely adatait.
+A látogatásokat a <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a> számolja, sütik és ujjlenyomat-azonosítás nélkül.
+A Synoikon telepíthető webalkalmazás: használd az „Alkalmazás telepítése” gombot a beállítássáv <em>Megjelenítés és exportálás</em> részében (Chrome, Edge, Android), vagy a „Hozzáadás a Főképernyőhöz” lehetőséget a Safari megosztás menüjében (iOS).
+Nyílt forráskód: <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Hibajelentéseket és ötleteket szívesen fogadunk.

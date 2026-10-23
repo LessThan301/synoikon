@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-title-key="About & attribution">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -25,17 +25,17 @@
   </header>
   <main class="page narrow">
     <h1>About Synoikon</h1>
-    <p class="sub">“You shall know a word by the company it keeps” (J. R. Firth, 1957).</p>
-    <p>Type a word and Synoikon collects hundreds of real sentences that contain it, looks at the words around each occurrence, and draws them as a network:</p>
+    <p class="sub" data-i18n="@about.sub">“You shall know a word by the company it keeps” (J. R. Firth, 1957).</p>
+    <p data-i18n="@about.p1">Type a word and Synoikon collects hundreds of real sentences that contain it, looks at the words around each occurrence, and draws them as a network:</p>
     <ul>
-      <li><b>Circle area</b> = how often a neighbour appears near your word (inside a window of ± 5 words by default).</li>
-      <li><b>Line length</b>: the more often two words appear in the same context window, the <b>shorter</b> (and thicker) the line between them.</li>
-      <li><b>Distinctive</b> ranking (default) favours words that occur near your word far more often than in general text of that language (log-ratio against a Wikipedia-based background list, with a log-likelihood significance filter). <b>Frequency</b> ranking simply shows the most common neighbours.</li>
+      <li data-i18n="@about.li1"><b>Circle area</b> = how often a neighbour appears near your word (inside a window of ± 5 words by default).</li>
+      <li data-i18n="@about.li2"><b>Line length</b>: the more often two words appear in the same context window, the <b>shorter</b> (and thicker) the line between them.</li>
+      <li data-i18n="@about.li3"><b>Distinctive</b> ranking (default) favours words that occur near your word far more often than in general text of that language (log-ratio against a Wikipedia-based background list, with a log-likelihood significance filter). <b>Frequency</b> ranking simply shows the most common neighbours.</li>
     </ul>
-    <p>It works in 21 languages: English, 中文, हिन्दी, Español, العربية, Français, বাংলা, Português, Русский, Bahasa Indonesia, اردو, Deutsch, Italiano, Polski, Українська, Nederlands, Română, Ελληνικά, Magyar, Čeština and Svenska.</p>
+    <p><span>It works in 21 languages:</span> <span data-no-i18n>English, 中文, हिन्दी, Español, العربية, Français, বাংলা, Português, Русский, Bahasa Indonesia, اردو, Deutsch, Italiano, Polski, Українська, Nederlands, Română, Ελληνικά, Magyar, Čeština, Svenska.</span></p>
 
     <h2>Word of the day & popular words</h2>
-    <p>Every day at 00:00 UTC there is a new word of the day, the same for everyone. It comes from a curated list of 66 evocative concepts translated into every language (<a href="./#wotd">today’s word</a>). Today’s and the next two days’ words, plus a daily rotation of popular words, are <b>precomputed</b> by a GitHub Actions job, so they open instantly and work offline. Any other word is fetched live by your browser.</p>
+    <p data-i18n="@about.wotd">Every day at 00:00 UTC there is a new word of the day, the same for everyone. It comes from a curated list of 66 evocative concepts translated into every language (<a href="./#wotd">today’s word</a>). Today’s and the next two days’ words, plus a daily rotation of popular words, are <b>precomputed</b> by a GitHub Actions job, so they open instantly and work offline. Any other word is fetched live by your browser.</p>
 
     <h2>Data sources & licences</h2>
     <table class="credits">
@@ -51,20 +51,23 @@
 
     <h2>Privacy</h2>
     <ul>
-      <li>Your searches go straight from your browser to the Wikimedia and Algolia APIs (identified as “LessThan301 synoikon”). Synoikon has no server and stores nothing about you.</li>
-      <li>The app caches its own files, the language data you use and your recent search results on your device (service worker) so it works offline. Clear site data to remove them.</li>
-      <li>Visits are counted with <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, which uses no cookies and no fingerprinting.</li>
+      <li data-i18n="@about.priv1">Your searches go straight from your browser to the Wikimedia and Algolia APIs (identified as “LessThan301 synoikon”). Synoikon has no server and stores nothing about you.</li>
+      <li data-i18n="@about.priv2">The app caches its own files, the language data you use and your recent search results on your device (service worker) so it works offline. Clear site data to remove them.</li>
+      <li data-i18n="@about.priv3">Visits are counted with <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, which uses no cookies and no fingerprinting.</li>
     </ul>
 
     <h2>Install</h2>
-    <p>Synoikon is an installable web app: use “Install app” under <em>Display &amp; export</em> in the settings sidebar (Chrome, Edge, Android) or “Add to Home Screen” in Safari’s share menu (iOS).</p>
+    <p data-i18n="@about.install">Synoikon is an installable web app: use “Install app” under <em>Display &amp; export</em> in the settings sidebar (Chrome, Edge, Android) or “Add to Home Screen” in Safari’s share menu (iOS).</p>
 
     <h2>Source</h2>
-    <p>Open source at <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Issues and ideas are welcome there.</p>
+    <p data-i18n="@about.source">Open source at <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Issues and ideas are welcome there.</p>
   </main>
   <footer class="foot">Text: Wikipedia/Wikiquote, CC BY-SA 4.0 · <a href="./">Synoikon</a> · <a href="../impressum/">Impressum</a> · <a href="../datenschutz/">Datenschutz / Privacy</a></footer>
   <script type="module">
     import { loadAnalytics } from './js/analytics.js';
+    import { setUiLang, pageLang } from './js/i18n.js';
+    import { LANGS } from './js/languages.js';
+    setUiLang(pageLang(LANGS.map((l) => l.code)));
     loadAnalytics();
     if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(() => {});
   </script>

@@ -258,3 +258,19 @@ summary span { color: var(--accent); font-weight: 500; }
   .map-legend { max-height: calc(52% - 20px); }
   .stage:has(.pins.has) .map-legend { max-height: calc(100% - 48% - 70px); }
 }
+
+/* ---- right-to-left interface (Arabic, Urdu): html[dir=rtl] set by js/i18n.js; the map canvas stays LTR ---- */
+[dir="rtl"] .sidebar { border-right: 0; border-left: 1px solid var(--line); }
+[dir="rtl"] #stats ul { padding-left: 0; padding-right: 18px; }
+[dir="rtl"] .table th, [dir="rtl"] .table td, [dir="rtl"] .legend-list,
+[dir="rtl"] .map-legend caption, [dir="rtl"] .map-legend th, [dir="rtl"] .map-legend td { text-align: right; }
+[dir="rtl"] .map-legend th { padding-right: 0; padding-left: 10px; }
+[dir="rtl"] .graph-tools { left: auto; right: 12px; }
+[dir="rtl"] .map-legend { left: auto; right: 56px; }
+[dir="rtl"] .pins { right: auto; left: 12px; }
+[dir="rtl"] .tooltip.pinned { padding-right: 10px; padding-left: 30px; }
+[dir="rtl"] .tooltip .tip-x { right: auto; left: 4px; }
+[dir="rtl"] .sb-toggle svg:first-child { transform: scaleX(-1); }
+#graph { direction: ltr; }
+@media (max-width: 767.98px) { [dir="rtl"] .sidebar { inset: 0 0 0 auto; transform: translateX(100%); } [dir="rtl"].sb-open .sidebar { transform: none; } }
+@media (max-width: 560px) { [dir="rtl"] .pins { left: 8px; right: 56px; } }

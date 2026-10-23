@@ -42,6 +42,12 @@ for (const [kind, lists] of [['wotd', WOTD], ['popular', POPULAR]]) {
 const has = (code, word) => recs.get(code)?.has(slug(word));
 
 // ---- shared chrome ---------------------------------------------------------------
+// UI chrome in the page's language (data/i18n/<code>.json, machine-translated; English keys)
+const I18N = new Map();
+const T = (code, str, ...a) => {
+  if (!I18N.has(code)) { const f = path.join(ROOT, 'data', 'i18n', `${code}.json`); I18N.set(code, code !== 'en' && fs.existsSync(f) ? JSON.parse(fs.readFileSync(f, 'utf8')) : {}); }
+  return (I18N.get(code)[str] ?? str).replace(/\{(\d)\}/g, (m, i) => (a[i] ?? m));
+};
 const head = ({ title, desc, canonical, og, lang = 'en', dir = 'ltr', rel, alternates = '', extra = '' }) => `<!doctype html>
 <html lang="${lang}" dir="${dir}">
 <head>
@@ -66,13 +72,13 @@ ${alternates}  <meta property="og:type" content="article">
   <link rel="stylesheet" href="${rel}css/page.css">
 ${extra}</head>
 <body>
-  <header class="top" dir="ltr">
+  <header class="top">
     <a class="brand" href="${rel}"><img src="${rel}icons/favicon.svg" alt="" width="30" height="30">Synoikon</a>
-    <nav><a href="${rel}w/">All words</a><a href="${rel}about.html">About</a></nav>
+    <nav><a href="${rel}w/">${esc(T(lang, 'All words'))}</a><a href="${rel}about.html">${esc(T(lang, 'About'))}</a></nav>
   </header>
 `;
-const foot = (rel) => `  <footer class="foot" dir="ltr">${esc(ATTRIBUTION)} 4.0 (excerpts, with links to the source pages); Hacker News comments © their authors.
-    Made with <a href="${rel}">Synoikon</a> · <a href="${rel}about.html">About &amp; attribution</a> · <a href="https://github.com/LessThan301/synoikon">Source on GitHub</a> · <a href="${rel}../impressum/">Impressum</a> · <a href="${rel}../datenschutz/">Datenschutz / Privacy</a></footer>
+const foot = (rel, code = 'en') => `  <footer class="foot">${esc(T(code, 'Text: Wikipedia/Wikiquote, CC BY-SA 4.0 (excerpts, with links to the source pages); Hacker News comments © their authors.'))}
+    ${esc(T(code, 'Made with'))} <a href="${rel}">Synoikon</a> · <a href="${rel}about.html">${esc(T(code, 'About & attribution'))}</a> · <a href="https://github.com/LessThan301/synoikon">${esc(T(code, 'Source on GitHub'))}</a> · <a href="${rel}../impressum/">Impressum</a> · <a href="${rel}../datenschutz/">Datenschutz / Privacy</a></footer>
   <script type="module">
     import { loadAnalytics } from '${rel}js/analytics.js';
     loadAnalytics();
@@ -96,8 +102,8 @@ for (const [code, m] of recs) {
     const freq = decode(rec, { rank: 'frequency', topN: 20 }).nodes.slice(1);
     const top5 = dist.slice(0, 6).map((n) => n.label).join(', ');
     const gloss = code !== 'en' && info ? ` (“${info.gloss}”)` : '';
-    const title = `${rec.word}${gloss}: the words that keep it company in ${lang.english} · Synoikon`;
-    const desc = `Which words appear around “${rec.word}” in ${lang.english} Wikipedia? Most distinctive: ${top5}. An interactive network drawn from ${rec.stats.occurrences} real instances in ${rec.stats.docsWithHits} texts.`;
+    const title = T(code, '{0}: the words that keep it company · Synoikon', `${rec.word}${gloss}`);
+    const desc = T(code, 'Which words appear around “{0}” on Wikipedia? Most distinctive: {1}. An interactive network drawn from {2} real instances in {3} texts.', rec.word, top5, rec.stats.occurrences, rec.stats.docsWithHits);
     const ogFile = path.join(dir, 'og.png');
     const og = fs.existsSync(ogFile) ? `${pageUrl(code, rec.word)}og.png` : `${SITE}og.png`;
     let alternates = '';
@@ -116,23 +122,24 @@ for (const [code, m] of recs) {
     const html = head({ title, desc, canonical: pageUrl(code, rec.word), og, lang: code, dir: lang.dir, rel, alternates,
       extra: `  <script type="application/ld+json">${JSON.stringify(jsonld).replace(/</g, '\\u003c')}</script>\n` })
       + `  <main class="page">
-    <p class="sub" dir="ltr">${esc(lang.native)}${lang.native !== lang.english ? ` · ${esc(lang.english)}` : ''}${info ? ` · ${info.kind === 'wotd' ? 'word of the day list' : 'popular word'}` : ''}</p>
+    <p class="sub">${esc(lang.native)}${info ? ` · ${esc(T(code, info.kind === 'wotd' ? 'word of the day list' : 'popular word'))}` : ''}</p>
     <h1 dir="auto">${esc(rec.word)}</h1>
-    <p class="sub" dir="ltr">${code !== 'en' && info ? `“${esc(info.gloss)}” · ` : ''}The words found around it in ${rec.stats.occurrences} instances from ${esc(lang.english)} Wikipedia${rec.report.some((r) => r.key === 'wikiquote' && r.count) ? ', Wikiquote' : ''}${rec.report.some((r) => r.key === 'hackerNews' && r.count) ? ' and Hacker News' : ''}.</p>
-    <div class="actions" dir="ltr"><a class="btn" href="${app}">Open the interactive map →</a><a class="btn secondary" href="${app}&amp;rank=frequency">Ranked by frequency</a></div>
-    <figure><img src="${fs.existsSync(ogFile) ? 'og.png' : `${rel}og.png`}" width="1200" height="630" alt="Network of the words around “${esc(rec.word)}”: ${esc(top5)}"><figcaption dir="ltr">Circle area = how often a word appears near “${esc(rec.word)}”; shorter, thicker lines = words that often appear together.</figcaption></figure>
+    <p class="sub">${code !== 'en' && info ? `“<span dir="ltr">${esc(info.gloss)}</span>” · ` : ''}${esc(T(code, 'The words found around it in {0} instances from Wikipedia{1}.', rec.stats.occurrences, `${rec.report.some((r) => r.key === 'wikiquote' && r.count) ? ', Wikiquote' : ''}${rec.report.some((r) => r.key === 'hackerNews' && r.count) ? ', Hacker News' : ''}`))}</p>
+    <div class="actions"><a class="btn" href="${app}">${esc(T(code, 'Open the interactive map →'))}</a><a class="btn secondary" href="${app}&amp;rank=frequency">${esc(T(code, 'Ranked by frequency'))}</a></div>
+    <figure><img src="${fs.existsSync(ogFile) ? 'og.png' : `${rel}og.png`}" width="1200" height="630" alt="${esc(T(code, 'Network of the words around “{0}”: {1}', rec.word, top5))}"><figcaption>${esc(T(code, 'Circle area = how often a word appears near “{0}”; shorter, thicker lines = words that often appear together.', rec.word))}</figcaption></figure>
     <div class="cols">
-      <section><h2 dir="ltr">Most distinctive neighbours</h2><ol class="words">${dist.map((n) => li(n, (d) => (d.lr != null ? fmtX(d.lr) : ''))).join('')}</ol>
-        <p class="muted" dir="ltr"><small>× = how many times more often than in general ${esc(lang.english)} Wikipedia text.</small></p></section>
-      <section><h2 dir="ltr">Most frequent neighbours</h2><ol class="words">${freq.map((n) => li(n, (d) => `${d.freq}`)).join('')}</ol></section>
+      <section><h2>${esc(T(code, 'Most distinctive neighbours'))}</h2><ol class="words">${dist.map((n) => li(n, (d) => (d.lr != null ? fmtX(d.lr) : ''))).join('')}</ol>
+        <p class="muted"><small>${esc(T(code, '× = how many times more often than in general Wikipedia text.'))}</small></p></section>
+      <section><h2>${esc(T(code, 'Most frequent neighbours'))}</h2><ol class="words">${freq.map((n) => li(n, (d) => `${d.freq}`)).join('')}</ol></section>
     </div>
-    <h2 dir="ltr">In context</h2>
+    <h2>${esc(T(code, 'In context'))}</h2>
     <ul class="samples">${rec.docs.slice(0, 8).map(([source, t, url, text]) => `<li dir="auto">${mark(text)} <a href="${esc(url)}" rel="nofollow noopener" dir="auto">${esc(source)} · ${esc(t)}</a></li>`).join('')}</ul>
-    <h2 dir="ltr">More ${esc(lang.english)} words</h2>
+    <h2>${esc(T(code, 'More words'))}</h2>
     <ul class="chips">${others}</ul>
-    <p class="muted" dir="ltr"><small>Precomputed on ${rec.generated.slice(0, 10)} with default settings (±${rec.settings.window} words, medium corpus). The interactive map can refresh it with live data.</small></p>
+    <p class="muted"><small>${esc(T(code, 'Precomputed on {0} with default settings (±{1} words, medium corpus). The interactive map can refresh it with live data.', rec.generated.slice(0, 10), rec.settings.window))}</small></p>
+    ${code !== 'en' ? `<p class="muted"><small>${esc(T(code, 'Machine-translated interface; corrections welcome.'))}</small></p>` : ''}
   </main>
-` + foot(rel);
+` + foot(rel, code);
     fs.writeFileSync(path.join(dir, 'index.html'), html);
     written.push(`${code}/${s}`);
     sitemap.push({ loc: pageUrl(code, rec.word), lastmod: rec.generated.slice(0, 10), alts: alternates });
@@ -144,11 +151,11 @@ for (const [code, m] of recs) {
   const lang = getLang(code);
   const rel = '../../';
   const list = [...m.values()].sort((a, b) => a.word.localeCompare(b.word, code));
-  const html = head({ title: `${lang.english} words · Synoikon`, desc: `Word networks for ${list.length} ${lang.english} words, drawn from real Wikipedia text: ${list.slice(0, 12).map((r) => r.word).join(', ')}…`,
+  const html = head({ title: `${lang.native} · ${T(code, 'All words')} · Synoikon`, desc: `Word networks for ${list.length} ${lang.english} words, drawn from real Wikipedia text: ${list.slice(0, 12).map((r) => r.word).join(', ')}…`,
     canonical: `${SITE}w/${code}/`, og: `${SITE}og.png`, lang: code, dir: lang.dir, rel })
-    + `  <main class="page"><h1 dir="auto">${esc(lang.native)}</h1><p class="sub" dir="ltr">${list.length} precomputed ${esc(lang.english)} words. Any other word works live in the <a href="${rel}#lang=${code}">app</a>.</p>
+    + `  <main class="page"><h1 dir="auto">${esc(lang.native)}</h1><p class="sub">${esc(T(code, '{0} precomputed words.', list.length))} <a href="${rel}#lang=${code}">${esc(T(code, 'Any other word works live in the app.'))}</a></p>
     <ul class="chips">${list.map((r) => `<li><a href="${enc(r.word)}/" dir="auto">${esc(r.word)}</a></li>`).join('')}</ul></main>
-` + foot(rel);
+` + foot(rel, code);
   fs.writeFileSync(path.join(ROOT, 'w', code, 'index.html'), html);
   sitemap.push({ loc: `${SITE}w/${code}/`, lastmod: list.map((r) => r.generated.slice(0, 10)).sort().pop() });
 }

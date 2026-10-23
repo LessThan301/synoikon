@@ -91,3 +91,87 @@ Precomputed on {0} with default settings.
 Automatic (map language)
 Machine-translated interface; corrections welcome.
 Max. 3 at once, unpin one first
+Select at least one source in Settings.
+You seem to be offline: the text sources can’t be reached. New words need a connection, but popular words and your recent searches still work:
+Offline
+You’re offline and nothing is cached for this language yet. Reconnect and try again.
+The graph library (D3) could not be loaded. Check your connection or ad-blocker and reload.
+Hmm.
+Not available in {0}
+Collecting text about “{0}”… {1}/{2} sources ({3} done)
+Could not reach the text sources ({0}). Check your connection and try again.
+Background word list for {0} could not be loaded ({1}); ranking by frequency instead.
+All sources failed: {0}
+Found {0} occurrence(s) of “{1}”, but not enough recurring neighbors to draw a network. Try a larger corpus, a wider window, or another word.
+{0}: failed ({1})
+Share this map
+Close
+Image format
+Landscape
+Square
+Preview of the share image
+Share image…
+Download PNG
+Copy link
+Shareable link
+Sharing failed ({0}); downloading instead.
+Downloaded {0}.
+Share map (image, link)
+Today's word
+Words that occur near your word much more often than in general Wikipedia text
+Simply the most frequent words near your word
+Install Synoikon as an app
+Occurrences inside context windows (circle area)
+Windows shared with the search word
+Distinctiveness: log2 of how many times more often than expected from general Wikipedia text
+All words
+About
+Text: Wikipedia/Wikiquote, CC BY-SA 4.0 (excerpts, with links to the source pages); Hacker News comments © their authors.
+Made with
+About & attribution
+Source on GitHub
+{0}: the words that keep it company · Synoikon
+Which words appear around “{0}” on Wikipedia? Most distinctive: {1}. An interactive network drawn from {2} real instances in {3} texts.
+The words found around it in {0} instances from Wikipedia{1}.
+Open the interactive map →
+Ranked by frequency
+Network of the words around “{0}”: {1}
+Circle area = how often a word appears near “{0}”; shorter, thicker lines = words that often appear together.
+Most distinctive neighbours
+× = how many times more often than in general Wikipedia text.
+Most frequent neighbours
+In context
+More words
+Precomputed on {0} with default settings (±{1} words, medium corpus). The interactive map can refresh it with live data.
+{0} precomputed words.
+Any other word works live in the app.
+word of the day list
+popular word
+Open the app
+About Synoikon
+It works in 21 languages:
+Word of the day & popular words
+Data sources & licences
+What
+Source
+Licence
+Text snippets & article intros
+English comments (optional source)
+Background word frequencies
+Stopword lists
+Fonts
+Graph library
+Shared images carry the attribution “Text: Wikipedia/Wikiquote, CC BY-SA”.
+Privacy
+Install
+@about.sub
+@about.p1
+@about.li1
+@about.li2
+@about.li3
+@about.wotd
+@about.priv1
+@about.priv2
+@about.priv3
+@about.install
+@about.source

@@ -91,3 +91,87 @@ Précalculé le {0} avec les réglages par défaut.
 Automatique (langue de la carte)
 Interface traduite automatiquement ; corrections bienvenues.
 3 au maximum, détachez-en un d’abord
+Sélectionnez au moins une source dans les paramètres.
+Vous semblez être hors ligne : les sources de texte sont inaccessibles. Les nouveaux mots nécessitent une connexion, mais les mots populaires et vos recherches récentes fonctionnent toujours :
+Hors ligne
+Vous êtes hors ligne et rien n’est encore en cache pour cette langue. Reconnectez-vous et réessayez.
+La bibliothèque graphique (D3) n’a pas pu être chargée. Vérifiez votre connexion ou votre bloqueur de publicités et rechargez.
+Hum.
+Indisponible en {0}
+Collecte de textes sur « {0} »… {1}/{2} sources ({3} terminées)
+Impossible d’atteindre les sources de texte ({0}). Vérifiez votre connexion et réessayez.
+La liste de fréquences de référence pour {0} n’a pas pu être chargée ({1}) ; classement par fréquence à la place.
+Toutes les sources ont échoué : {0}
+{0} occurrence(s) de « {1} » trouvée(s), mais pas assez de voisins récurrents pour dessiner un réseau. Essayez un corpus plus grand, une fenêtre plus large ou un autre mot.
+{0} : échec ({1})
+Partager cette carte
+Fermer
+Format d’image
+Paysage
+Carré
+Aperçu de l’image à partager
+Partager l’image…
+Télécharger le PNG
+Copier le lien
+Lien partageable
+Échec du partage ({0}) ; téléchargement à la place.
+{0} téléchargé.
+Partager la carte (image, lien)
+Mot du jour
+Mots qui apparaissent près de votre mot beaucoup plus souvent que dans le texte général de Wikipédia
+Simplement les mots les plus fréquents près de votre mot
+Installer Synoikon comme application
+Occurrences dans les fenêtres de contexte (surface du cercle)
+Fenêtres partagées avec le mot recherché
+Spécificité : log2 du nombre de fois où le mot est plus fréquent que prévu d’après le texte général de Wikipédia
+Tous les mots
+À propos
+Texte : Wikipédia/Wikiquote, CC BY-SA 4.0 (extraits, avec liens vers les pages sources) ; commentaires Hacker News © leurs auteurs.
+Réalisé avec
+À propos & attributions
+Code source sur GitHub
+{0} : les mots qui l’accompagnent · Synoikon
+Quels mots apparaissent autour de « {0} » sur Wikipédia ? Les plus spécifiques : {1}. Un réseau interactif issu de {2} occurrences réelles dans {3} textes.
+Les mots trouvés autour de lui dans {0} occurrences issues de Wikipédia{1}.
+Ouvrir la carte interactive →
+Classé par fréquence
+Réseau des mots autour de « {0} » : {1}
+Surface du cercle = fréquence d’un mot près de « {0} » ; lignes plus courtes et plus épaisses = mots souvent présents ensemble.
+Voisins les plus spécifiques
+× = combien de fois plus souvent que dans le texte général de Wikipédia.
+Voisins les plus fréquents
+En contexte
+Autres mots
+Précalculé le {0} avec les paramètres par défaut (±{1} mots, corpus moyen). La carte interactive peut l’actualiser avec des données en direct.
+{0} mots précalculés.
+Tout autre mot fonctionne en direct dans l’application.
+liste des mots du jour
+mot populaire
+Ouvrir l’application
+À propos de Synoikon
+Il fonctionne en 21 langues :
+Mot du jour & mots populaires
+Sources de données & licences
+Quoi
+Source
+Licence
+Extraits de texte & introductions d’articles
+Commentaires en anglais (source facultative)
+Fréquences de référence des mots
+Listes de mots vides
+Polices
+Bibliothèque graphique
+Les images partagées portent la mention « Text: Wikipedia/Wikiquote, CC BY-SA ».
+Confidentialité
+Installer
+« On reconnaît un mot à la compagnie qu’il fréquente » (J. R. Firth, 1957).
+Saisissez un mot : Synoikon rassemble des centaines de phrases réelles qui le contiennent, examine les mots autour de chaque occurrence et les dessine sous forme de réseau :
+<b>Surface du cercle</b> = fréquence d’un voisin près de votre mot (dans une fenêtre de ± 5 mots par défaut).
+<b>Longueur des lignes</b> : plus deux mots apparaissent souvent dans la même fenêtre de contexte, plus la ligne qui les relie est <b>courte</b> (et épaisse).
+Le classement <b>Spécifique</b> (par défaut) favorise les mots bien plus fréquents près de votre mot que dans le texte général de la langue (log-ratio par rapport à une liste de référence issue de Wikipédia, avec un filtre de significativité log-vraisemblance). Le classement <b>Fréquence</b> montre simplement les voisins les plus courants.
+Chaque jour à 00:00 UTC, un nouveau mot du jour, le même pour tout le monde. Il provient d’une liste de 66 concepts évocateurs traduits dans chaque langue (<a href="./#wotd">mot du jour</a>). Les mots d’aujourd’hui et des deux jours suivants, ainsi qu’une sélection quotidienne de mots populaires, sont <b>précalculés</b> par une tâche GitHub Actions : ils s’ouvrent instantanément et fonctionnent hors ligne. Tout autre mot est récupéré en direct par votre navigateur.
+Vos recherches vont directement de votre navigateur aux API de Wikimedia et d’Algolia (identifiées comme « LessThan301 synoikon »). Synoikon n’a pas de serveur et ne stocke rien sur vous.
+L’application met en cache ses propres fichiers, les données linguistiques utilisées et vos résultats récents sur votre appareil (service worker) pour fonctionner hors ligne. Effacez les données du site pour les supprimer.
+Les visites sont comptées avec <a href="https://www.cloudflare.com/web-analytics/">Cloudflare Web Analytics</a>, sans cookies ni empreinte numérique.
+Synoikon est une application web installable : utilisez « Installer l’application » sous <em>Affichage &amp; export</em> dans le panneau des paramètres (Chrome, Edge, Android) ou « Sur l’écran d’accueil » dans le menu de partage de Safari (iOS).
+Code source ouvert sur <a href="https://github.com/LessThan301/synoikon">github.com/LessThan301/synoikon</a>. Signalements et idées y sont les bienvenus.
