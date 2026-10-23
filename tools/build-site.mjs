@@ -72,6 +72,13 @@ let home = fs.readFileSync(path.join(HOME, 'index.html'), 'utf8').split(PROD_SIT
 if (PREVIEW) home = home.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  <meta name="robots" content="noindex,nofollow">`)
   .replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
 fs.writeFileSync(path.join(OUT, 'index.html'), home);
+// shared Impressum + Datenschutz (synoikon.com, The Record, Listen); noindex, DE/EN
+for (const f of ['legal.css', 'legal.js']) fs.copyFileSync(path.join(HOME, 'legal', f), path.join(OUT, f));
+for (const slug of ['impressum', 'datenschutz']) {
+  let pg = fs.readFileSync(path.join(HOME, 'legal', slug + '.html'), 'utf8').replace('CONTACT_ENDPOINT', cfg.contactEndpoint || '');
+  if (PREVIEW) pg = pg.replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
+  fs.mkdirSync(path.join(OUT, slug), { recursive: true }); fs.writeFileSync(path.join(OUT, slug, 'index.html'), pg);
+}
 const esc = (u) => u.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
 const redirect = (to) => `<!doctype html><html><head><meta charset="utf-8"><meta name="robots" content="noindex"><title>Moved</title>` +
   `<link rel="canonical" href="${esc(to)}"><meta http-equiv="refresh" content="0; url=${esc(to)}">` +

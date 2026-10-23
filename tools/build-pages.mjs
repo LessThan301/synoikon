@@ -72,7 +72,7 @@ ${extra}</head>
   </header>
 `;
 const foot = (rel) => `  <footer class="foot" dir="ltr">${esc(ATTRIBUTION)} 4.0 (excerpts, with links to the source pages); Hacker News comments © their authors.
-    Made with <a href="${rel}">Synoikon</a> · <a href="${rel}about.html">About &amp; attribution</a> · <a href="https://github.com/LessThan301/synoikon">Source on GitHub</a></footer>
+    Made with <a href="${rel}">Synoikon</a> · <a href="${rel}about.html">About &amp; attribution</a> · <a href="https://github.com/LessThan301/synoikon">Source on GitHub</a> · <a href="${rel}../impressum/">Impressum</a> · <a href="${rel}../datenschutz/">Datenschutz / Privacy</a></footer>
   <script type="module">
     import { loadAnalytics } from '${rel}js/analytics.js';
     loadAnalytics();
