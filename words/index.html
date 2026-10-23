@@ -185,7 +185,23 @@
           <button id="zoomOut" title="Zoom out" aria-label="Zoom out">−</button>
           <button id="zoomFit" title="Fit to screen" aria-label="Fit to screen">⤢</button>
           <button id="download" title="Download SVG" aria-label="Download SVG">⤓</button>
+          <button id="legendBtn" title="What the map shows" aria-label="What the map shows" aria-expanded="false" aria-controls="legend">?</button>
           <button id="share" title="Share map (image, link)" aria-label="Share map"><svg viewBox="0 0 24 24" width="17" height="17" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/></g></svg></button>
+        </div>
+        <div id="legend" class="map-legend" hidden>
+          <table>
+            <caption data-l="cap">What you see</caption>
+            <tbody>
+              <tr><th data-l="k1">Circle size</th><td data-l="v1">How often the word appears near your search word</td></tr>
+              <tr><th data-l="k2">Line length / thickness</th><td data-l="v2">How often two words appear together: shorter and bolder = more often</td></tr>
+              <tr><th data-l="k3">“12× near …”</th><td data-l="v3">Times found within the word window around your search word (default ±5)</td></tr>
+              <tr class="opt"><th data-l="k4">“in 8 of 120 windows”</th><td data-l="v4">How many of the text snippets contain both words</td></tr>
+              <tr class="opt"><th data-l="k5">#3</th><td data-l="v5">Rank among the neighbours</td></tr>
+              <tr><th data-l="k6">Distinctiveness</th><td data-l="v6">How much more often than in general text (only with “distinctive” ranking)</td></tr>
+              <tr class="opt"><th data-l="k7">Often with</th><td data-l="v7">Other neighbours it is linked to, with shared counts</td></tr>
+            </tbody>
+          </table>
+          <p class="legend-foot" data-l="foot">Hover a circle to see these numbers (on touch screens: press and drag it) · click or tap to map that word</p>
         </div>
         <div id="tooltip" class="tooltip hidden"></div>
         <div class="hint">Hover a circle to highlight its neighbors · click to map that word · drag, scroll or pinch to explore</div>
@@ -211,7 +227,8 @@
     </form>
   </dialog>
 
-  <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js" integrity="sha384-CjloA8y00+1SDAUkjs099PVfnY2KmDC2BZnws9kh8D/lX1s46w6EPhpXdqMfjK6i" crossorigin="anonymous"></script>
+  <script src="js/vendor/d3.min.js"></script>
   <script type="module" src="js/app.js"></script>
+  <script src="js/legend.js" defer></script>
 </body>
 </html>

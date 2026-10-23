@@ -223,3 +223,17 @@ summary span { color: var(--accent); font-weight: 500; }
 #shareUrl { font: inherit; font-size: .8rem; width: 100%; color: var(--muted); background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 7px 9px; }
 .pre-note { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
 .pre-note button { font: inherit; font-size: .78rem; color: var(--ink); background: var(--panel); border: 1px solid var(--accent2); border-radius: 8px; padding: 3px 8px; cursor: pointer; }
+
+/* map legend ("?" in the graph tools) */
+.graph-tools button[aria-expanded="true"] { border-color: var(--accent2); background: rgba(91,141,239,.25); }
+.map-legend { position: absolute; top: 12px; left: 56px; z-index: 6; max-width: min(340px, calc(100% - 68px)); max-height: calc(100% - 24px); overflow: auto;
+  background: rgba(15,18,32,.78); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); border: 1px solid var(--line); border-radius: 12px;
+  padding: 10px 12px; font-size: .78rem; line-height: 1.4; color: var(--ink); box-shadow: 0 6px 18px rgba(0,0,0,.35); }
+.map-legend[hidden] { display: none; }
+.map-legend table { border-collapse: collapse; width: 100%; }
+.map-legend caption { text-align: left; font-weight: 700; font-size: .85rem; padding-bottom: 6px; }
+.map-legend th, .map-legend td { text-align: left; vertical-align: top; padding: 4px 0; border-top: 1px solid rgba(255,255,255,.08); }
+.map-legend th { font-weight: 600; padding-right: 10px; white-space: nowrap; }
+.map-legend td { color: #c9cfe4; }
+.map-legend .legend-foot { margin: 6px 0 0; color: var(--muted); font-size: .72rem; }
+@media (max-width: 560px) { .map-legend { font-size: .72rem; padding: 8px 10px; max-width: min(270px, calc(100% - 64px)); } .map-legend .opt { display: none; } .map-legend th { white-space: normal; width: 40%; padding-right: 8px; } .map-legend th, .map-legend td { padding: 3px 0; } .map-legend .legend-foot { font-size: .68rem; } }
