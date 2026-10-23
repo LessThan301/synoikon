@@ -10,6 +10,7 @@ import { renderCard, cardBlob, FORMATS } from './card.js';
 import { setupPWA } from './pwa.js';
 import { setupSidebar } from './sidebar.js';
 import { loadAnalytics } from './analytics.js';
+import { t, setUiLang, onUiLang, uiLang } from './i18n.js';
 
 const $ = (id) => document.getElementById(id);
 const els = {
@@ -50,7 +51,7 @@ for (const group of [...new Set(LANGS.map((l) => l.group))]) {
 els.lang.value = 'en';
 function renderExamples(code) {
   const lang = getLang(code);
-  els.examplesLabel.textContent = `Popular in ${lang.english} · open instantly`;
+  els.examplesLabel.textContent = `${t('Popular')} · ${lang.native}`;
   els.examples.innerHTML = '';
   for (const { word, gloss } of POPULAR[code].slice(0, 8)) {
     const b = document.createElement('button');
@@ -64,7 +65,7 @@ function renderWotd(code) {
   const w = wordOfDay(code);
   $('wotdWord').textContent = w.word;
   $('wotdWord').onclick = () => search(w.word);
-  $('wotdGloss').textContent = code === 'en' ? 'Tap to see the company it keeps' : `“${w.gloss}” in ${getLang(code).english}`;
+  $('wotdGloss').textContent = code === 'en' ? t('Tap to see the company it keeps') : `“${w.gloss}” in ${getLang(code).english}`;
   const d = $('wotdDate');
   d.dateTime = w.date;
   d.textContent = new Date(w.date + 'T12:00:00Z').toLocaleDateString(undefined, { month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -135,7 +136,35 @@ function onLangChange() {
   renderExamples(lang.code);
   renderWotd(lang.code);
   store.set('synoikon.lang', lang.code);
+  applyUiLang();
 }
+// ---- interface language: 'auto' follows the map language (browser language while the map language is English) ----
+const UI_CODES = LANGS.map((l) => l.code);
+function autoUi() {
+  if (els.lang.value !== 'en') return els.lang.value;
+  const b = (navigator.languages || [navigator.language || 'en']).map((x) => x.slice(0, 2)).find((x) => UI_CODES.includes(x));
+  return b || 'en';
+}
+function applyUiLang() {
+  const pick = store.get('synoikon.uilang') || 'auto';
+  const code = pick === 'auto' || !UI_CODES.includes(pick) ? autoUi() : pick;
+  if (code !== uiLang() || !applyUiLang.done) { applyUiLang.done = true; setUiLang(code); }
+}
+{
+  const sel = $('uiLang');
+  sel.innerHTML = `<option value="auto"></option>` + LANGS.map((l) => `<option value="${l.code}" lang="${l.code}">${l.native}</option>`).join('');
+  sel.value = store.get('synoikon.uilang') || 'auto';
+  sel.addEventListener('change', () => { store.set('synoikon.uilang', sel.value); applyUiLang(); });
+}
+onUiLang((code) => {
+  $('uiLang').options[0].textContent = t('Automatic (map language)');
+  $('mtNote').hidden = code === 'en';
+  $('lgNear').textContent = `“${t('{0}× near {1}', 12, '…')}”`;
+  $('lgWin').textContent = `“${t('in {0} of {1} windows', 8, 120)}”`;
+  const lang = getLang(els.lang.value);
+  renderExamples(lang.code); renderWotd(lang.code);
+  if (state.net) { renderStats(state.net); renderTable(state.net); }
+});
 const params = () => ({
   topN: +els.topN.value, window: +els.window.value, minCooc: +els.minCooc.value, maxLinksPerNode: +els.maxLinks.value,
 });
@@ -200,7 +229,7 @@ async function search(term, { live = false } = {}) {
   }
   // 2) live text from the APIs
   if (state.corpusKey !== key) {
-    show('loading', `Collecting text about “${term}”…`);
+    show('loading', t('Collecting text about “{0}”…', term));
     els.go.disabled = true;
     try {
       const corpus = await collectCorpus(term, {
@@ -274,7 +303,7 @@ async function analyse() {
       const errs = corpus.report.filter((r) => r.error);
       show('error', errs.length === corpus.report.length
         ? `All sources failed: ${errs.map((e) => `${e.label}: ${e.error}`).join('; ')}`
-        : `No text found for “${term}”. Check the spelling or try another language.`);
+        : t('No text found for “{0}”. Check the spelling or try another language.', term));
       state.graph?.clear(); state.drawnTerm = '';
       renderStats(null);
       return;
@@ -303,16 +332,19 @@ function renderStats(net) {
   $('resultsEmpty').hidden = true;
   const report = state.pre ? state.pre.report : state.corpus.report;
   const preNote = state.pre
-    ? `<p class="pre-note">⚡ Precomputed on ${esc(state.pre.generated.slice(0, 10))} with default settings. <button type="button" id="refreshLive">Refresh with live data</button></p>` : '';
+    ? `<p class="pre-note">⚡ ${esc(t('Precomputed on {0} with default settings.', state.pre.generated.slice(0, 10)))} <button type="button" id="refreshLive">${esc(t('Refresh with live data'))}</button></p>` : '';
   const rep = report.map((r) => r.error
     ? `<li class="err">${r.label}: failed (${esc(r.error)})</li>`
-    : `<li>${r.label}: <b>${r.count}</b> texts</li>`).join('');
+    : `<li>${r.label}: ${esc(t('{0} texts', r.count))}</li>`).join('');
   els.stats.innerHTML = net
-    ? `<p><b>${net.stats.occurrences}</b> instances of “<bdi>${esc(state.term)}</bdi>” (${esc(getLang(state.lang).english)}) in <b>${net.stats.docsWithHits}</b> of ${net.stats.docs} texts,
+    ? (uiLang() === 'en' ? `<p><b>${net.stats.occurrences}</b> instances of “<bdi>${esc(state.term)}</bdi>” (${esc(getLang(state.lang).english)}) in <b>${net.stats.docsWithHits}</b> of ${net.stats.docs} texts,
        giving <b>${net.stats.windows}</b> unique context windows and <b>${net.stats.vocabulary}</b> distinct neighbor words.
        Showing the top <b>${net.nodes.length - 1}</b> ${net.stats.rank === 'distinctive'
          ? `<b>most distinctive</b> neighbors (of ${net.stats.eligible} that pass the significance test)`
-         : 'most <b>frequent</b> neighbors'} with <b>${net.stats.pairLinks}</b> neighbor–neighbor lines.</p>
+         : 'most <b>frequent</b> neighbors'} with <b>${net.stats.pairLinks}</b> neighbor–neighbor lines.</p>`
+       : `<p>${esc(t('{0} instances of “{1}” in {2} of {3} texts, giving {4} unique context windows and {5} distinct neighbor words.', net.stats.occurrences, state.term, net.stats.docsWithHits, net.stats.docs, net.stats.windows, net.stats.vocabulary))}
+       ${esc(t('Showing the top {0} neighbors with {1} neighbor–neighbor lines.', net.nodes.length - 1, net.stats.pairLinks))}</p>`)
+     + `
        ${[state.refError, state.stopError].filter(Boolean).map((e) => `<p class="err">${esc(e)}</p>`).join('')}${preNote}<ul>${rep}</ul>`
     : `<ul>${rep}</ul>`;
   $('refreshLive')?.addEventListener('click', () => search(state.term, { live: true }));
@@ -396,13 +428,13 @@ const escRe = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
 // ---- events --------------------------------------------------------------
 els.form.addEventListener('submit', (e) => { e.preventDefault(); search(els.term.value); });
-let t;
+let debounceTimer;
 for (const id of ['topN', 'window', 'minCooc', 'maxLinks']) {
   const input = els[id];
   const out = $(`${id}Out`);
   input.addEventListener('input', () => {
     out.textContent = input.value;
-    clearTimeout(t); t = setTimeout(analyse, 150);
+    clearTimeout(debounceTimer); debounceTimer = setTimeout(analyse, 150);
   });
 }
 for (const el of [els.stopLang, els.stopEn]) el.addEventListener('change', analyse);
