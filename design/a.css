@@ -1,0 +1,40 @@
+/* Concept A · "Broadsheet": editorial print. Off-white paper, serif type, ink hairlines, generous whitespace. */
+:root { --bg:#f4efe4; --bg2:#fbf8f1; --panel:#fbf8f1; --ink:#1c1a17; --muted:#6b6457; --line:#d9cfbb; --accent:#b3261e; --accent2:#1f3a5f; --radius:2px;
+  --map-target:#b3261e; --map-ramp:#1f3a5f,#3d5a80,#7a6c4f,#a8763e; --map-link-target:179,38,30; --map-link:60,55,48;
+  --map-label:#1c1a17; --map-halo:rgba(244,239,228,0.92); --map-pin:#1f3a5f; --map-font:"Iowan Old Style","Palatino Linotype",Palatino,Georgia;
+  font-family:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Times New Roman",var(--font-scripts,serif),serif; color-scheme:light; }
+html, body { background:var(--bg) !important; color:var(--ink); }
+h1, h2, .brand-name, .wotd-word { font-family:inherit; font-weight:600 !important; letter-spacing:-.01em; }
+/* home */
+.topnav { background:rgba(244,239,228,.94) !important; border-bottom:1px solid var(--ink) !important; }
+.logo { border-radius:0 !important; background:none !important; border:1.5px solid var(--ink); box-shadow: inset 0 0 0 6px var(--bg), inset 0 0 0 30px var(--accent); }
+.logo.sm { box-shadow: inset 0 0 0 4px var(--bg), inset 0 0 0 20px var(--accent); }
+.wrap { width:min(860px,100% - 48px) !important; padding-top:12vh !important; }
+.hero { text-align:left !important; border-bottom:3px double var(--ink); padding-bottom:28px; }
+.hero h1 { font-size:clamp(3rem,9vw,6rem) !important; font-weight:500 !important; font-style:italic; margin:18px 0 10px !important; }
+.tag { font-size:1.45rem !important; } .sub { margin:0 !important; font-style:italic; }
+.tiles { grid-template-columns:1fr 1fr !important; gap:0 !important; }
+.tile { background:transparent !important; border:0 !important; border-radius:0 !important; padding:26px 28px 30px 0 !important; }
+.tile + .tile { border-left:1px solid var(--line) !important; padding-left:28px !important; }
+.tile:hover { transform:none !important; } .tile:hover h2 { text-decoration:underline; text-underline-offset:4px; }
+.tile h2 { font-size:1.8rem !important; } .t-icon { border-radius:0 !important; background:var(--ink) !important; color:var(--bg) !important; }
+.go { color:var(--accent) !important; font-variant:small-caps; letter-spacing:.06em; }
+.menu-btn, .menu-list { background:var(--bg2) !important; border-radius:0 !important; border-color:var(--ink) !important; box-shadow:none !important; }
+.menu-list a:hover { background:#ece4d3 !important; }
+.badge { background:none !important; color:var(--accent) !important; border-color:var(--accent) !important; border-radius:0 !important; font-variant:small-caps; }
+.foot { border-top:1px solid var(--ink) !important; font-style:italic; }
+/* word app */
+.sidebar { background:var(--bg2) !important; border-color:var(--ink) !important; }
+.sb-sec { border-bottom:1px solid var(--line); } .sb-sec h2 { font-variant:small-caps; letter-spacing:.08em; font-size:1rem; text-transform:none; color:var(--ink); }
+.btn, .icon-btn, input[type=text], input[type=search], select, .seg { border-radius:0 !important; background:var(--bg) !important; color:var(--ink) !important; border-color:var(--ink) !important; }
+.btn.primary, #go, .seg input:checked + span { background:var(--ink) !important; color:var(--bg) !important; }
+.wotd { background:none !important; border:0 !important; border-top:3px double var(--ink) !important; border-bottom:1px solid var(--ink) !important; border-radius:0 !important; }
+.wotd-word { color:var(--accent) !important; font-style:italic; }
+.stage { background:var(--bg) !important; }
+.tooltip, .map-legend, .share-dlg, .card { background:var(--bg2) !important; border-radius:0 !important; border-color:var(--ink) !important; box-shadow:4px 4px 0 rgba(28,26,23,.12) !important; color:var(--ink); }
+.hint { background:rgba(251,248,241,.9) !important; font-style:italic; }
+a { color:var(--accent2); }
+input[type=range] { accent-color:var(--ink); }
+.graph-tools button { background:var(--bg2) !important; color:var(--ink) !important; border:1px solid var(--ink) !important; border-radius:0 !important; }
+.slider output { color:var(--ink) !important; background:transparent !important; border:0 !important; font-style:italic; }
+.t-icon.words { background:var(--accent) !important; }

@@ -29,6 +29,7 @@ jobs:
       - name: Build preview
         run: |
           node tools/build-site.mjs --out _site --site https://lessthan301.github.io/synoikon-preview/ --preview
+          node tools/build-designs.mjs _site   # design concepts at /design/a, /b, /c (preview only, noindex)
           node tests/words.test.mjs
           node tools/stamp-sw.mjs --check --root _site/words
           grep -q 'name="robots" content="noindex,nofollow"' _site/index.html

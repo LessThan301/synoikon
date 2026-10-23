@@ -1,0 +1,36 @@
+/* Concept B · "Nebula": dark cosmic neon. Deep-space gradient, glowing nodes, frosted-glass panels. */
+:root { --bg:#05030f; --bg2:rgba(20,14,48,.55); --panel:rgba(30,22,70,.38); --ink:#efeaff; --muted:#a59bd6; --line:rgba(170,140,255,.22); --accent:#ff3df2; --accent2:#3df5ff; --radius:22px;
+  --map-target:#ff3df2; --map-ramp:#6c5cff,#3d8bff,#3df5ff,#b6ff5c; --map-link-target:255,61,242; --map-link:120,140,255;
+  --map-label:#ffffff; --map-halo:rgba(5,3,15,0.9); --map-pin:#3df5ff;
+  font-family:"Avenir Next","Segoe UI",Inter,system-ui,var(--font-scripts,sans-serif),sans-serif; color-scheme:dark; }
+html, body { background:
+  radial-gradient(1200px 700px at 80% -10%, rgba(255,61,242,.22), transparent 60%),
+  radial-gradient(900px 600px at 0% 110%, rgba(61,245,255,.18), transparent 60%),
+  radial-gradient(1px 1px at 20% 30%, #fff 50%, transparent 51%) 0 0/140px 140px,
+  radial-gradient(1px 1px at 70% 60%, #cfc8ff 50%, transparent 51%) 0 0/190px 190px,
+  #05030f fixed !important; color:var(--ink); }
+.logo { box-shadow:0 0 18px rgba(255,61,242,.7), 0 0 40px rgba(61,245,255,.35); }
+.topnav, .sidebar, .tile, .menu-list, .tooltip, .map-legend, .share-dlg, .card, .btn, .icon-btn, .menu-btn, input[type=text], input[type=search], select, .seg, .wotd {
+  background:var(--panel) !important; backdrop-filter:blur(16px) saturate(140%); -webkit-backdrop-filter:blur(16px) saturate(140%); border:1px solid var(--line) !important; }
+.topnav { background:rgba(5,3,15,.45) !important; }
+.hero h1 { font-size:clamp(3rem,9vw,5.6rem) !important; font-weight:200 !important; letter-spacing:.18em !important; text-transform:uppercase;
+  background:linear-gradient(90deg,#3df5ff,#ff3df2); -webkit-background-clip:text; background-clip:text; color:transparent; filter:drop-shadow(0 0 20px rgba(255,61,242,.4)); }
+.tag { letter-spacing:.05em; }
+.tile { border-radius:var(--radius) !important; box-shadow:0 0 0 1px rgba(61,245,255,.05), 0 20px 60px rgba(0,0,0,.5); }
+.tile:hover { border-color:var(--accent2) !important; box-shadow:0 0 30px rgba(61,245,255,.35), 0 0 80px rgba(255,61,242,.2) !important; transform:translateY(-5px) scale(1.01) !important; }
+.t-icon { border-radius:50% !important; box-shadow:0 0 22px rgba(255,61,242,.6); }
+.go, .sb-body a, .foot a { color:var(--accent2) !important; text-shadow:0 0 10px rgba(61,245,255,.6); }
+.badge { background:rgba(255,61,242,.15) !important; color:#ff9df8 !important; border-color:rgba(255,61,242,.5) !important; box-shadow:0 0 12px rgba(255,61,242,.4); }
+.btn, .icon-btn, .menu-btn, input[type=text], input[type=search], select { border-radius:999px !important; }
+.btn.primary, #go { background:linear-gradient(90deg,#ff3df2,#7a5cff) !important; color:#fff !important; border:0 !important; box-shadow:0 0 20px rgba(255,61,242,.6); }
+.seg { border-radius:999px !important; } .seg button { border-radius:999px !important; }
+.sidebar { border-width:0 1px 0 0 !important; }
+.stage { background:radial-gradient(circle at 50% 45%, rgba(122,92,255,.18), transparent 65%) !important; }
+#graph { filter:drop-shadow(0 0 6px rgba(61,245,255,.35)); }
+.wotd { border-radius:18px !important; } .wotd-word { color:#fff !important; text-shadow:0 0 16px rgba(255,61,242,.8); }
+.tooltip, .map-legend, .share-dlg, .card { border-radius:18px !important; background:rgba(16,10,40,.72) !important; }
+.hint { background:rgba(16,10,40,.6) !important; backdrop-filter:blur(8px); }
+input[type=range] { accent-color:#ff3df2; }
+.foot { border-top:1px solid var(--line) !important; }
+.graph-tools button { background:rgba(30,22,70,.45) !important; backdrop-filter:blur(12px); border:1px solid var(--line) !important; border-radius:50% !important; color:#fff !important; }
+.slider output { color:#fff !important; text-shadow:0 0 8px rgba(255,61,242,.8); }

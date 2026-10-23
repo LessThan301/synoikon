@@ -8,7 +8,13 @@
 import { t as tr } from './i18n.js';
 
 const TARGET_ID = '__target__';
-const TARGET_COLOR = '#ff6b4a';
+// map colours can be themed with CSS custom properties on :root (defaults = the standard dark theme)
+const cssVar = (n, d) => (typeof document !== 'undefined' && getComputedStyle(document.documentElement).getPropertyValue(n).trim()) || d;
+const TARGET_COLOR = cssVar('--map-target', '#ff6b4a');
+const MAP_RAMP = cssVar('--map-ramp', '#7f8fd6,#5b8def,#38c6a8,#9be15d').split(',').map((c) => c.trim());
+const LINK_T = cssVar('--map-link-target', '255,154,128'), LINK_N = cssVar('--map-link', '143,163,224');
+const LABEL = cssVar('--map-label', '#e9ecf7'), HALO = cssVar('--map-halo', 'rgba(15,18,32,0.85)'), PIN = cssVar('--map-pin', '#5b8def');
+const MAP_FONT = cssVar('--map-font', 'Inter');
 const MAX_DPR = 2;          // sharper than this costs fill-rate without visible gain
 const LABEL_MIN_PX = 7;     // labels smaller than this on screen are skipped (level of detail)
 const SCRIPT_FONTS = '"Noto Sans SC", "Noto Sans Devanagari", "Noto Sans Bengali", "Noto Naskh Arabic", "Noto Nastaliq Urdu"';
@@ -29,7 +35,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   let userMoved = false;     // the user zoomed/panned: don't auto-fit any more
   let frame = 0;
   let pointer = null, pointerFrame = 0;
-  let fontStack = `Inter, ui-sans-serif, system-ui, ${SCRIPT_FONTS}, sans-serif`;
+  let fontStack = `${MAP_FONT}, ui-sans-serif, system-ui, ${SCRIPT_FONTS}, sans-serif`;
 
   const sim = d3.forceSimulation()
     .alphaMin(0.004)
@@ -92,7 +98,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
       return a.r + b.r + gapMin + (gapMax - gapMin) * (1 - l.s);
     };
 
-    const tColor = d3.scaleSequential(d3.interpolateRgbBasis(['#7f8fd6', '#5b8def', '#38c6a8', '#9be15d'])).domain([0, 1]);
+    const tColor = d3.scaleSequential(d3.interpolateRgbBasis(MAP_RAMP)).domain([0, 1]);
     const share = new Map(links.filter((l) => l.kind === 'target').map((l) => [l.target, l]));
     for (const d of nodes) {
       d.color = d.target ? TARGET_COLOR : tColor(share.get(d.id)?.s ?? 0);
@@ -124,7 +130,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
       const key = `${l.kind}|${q}`;
       if (!bmap.has(key)) {
         const s = q / 12;
-        bmap.set(key, { color: l.kind === 'target' ? '255,154,128' : '143,163,224', width: 0.5 + 5 * s ** 1.6, alpha: 0.12 + 0.6 * s, links: [] });
+        bmap.set(key, { color: l.kind === 'target' ? LINK_T : LINK_N, width: 0.5 + 5 * s ** 1.6, alpha: 0.12 + 0.6 * s, links: [] });
       }
       bmap.get(key).links.push(l);
     }
@@ -165,10 +171,10 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
       pins.forEach((p, i) => {
         const d = byLabel.get(p.label); if (!d) return;
         const [x, y] = t.apply([d.x, d.y]), r = d.r * t.k + 4;
-        ctx.globalAlpha = 1; ctx.lineWidth = 2.5; ctx.strokeStyle = '#5b8def';
+        ctx.globalAlpha = 1; ctx.lineWidth = 2.5; ctx.strokeStyle = PIN;
         ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.stroke();
         const bx = x + r * 0.72, by = y - r * 0.72;
-        ctx.fillStyle = '#5b8def'; ctx.beginPath(); ctx.arc(bx, by, 9, 0, 2 * Math.PI); ctx.fill();
+        ctx.fillStyle = PIN; ctx.beginPath(); ctx.arc(bx, by, 9, 0, 2 * Math.PI); ctx.fill();
         ctx.fillStyle = '#fff'; ctx.font = 'bold 11px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(i + 1), bx, by + 0.5);
       });
     }
@@ -225,8 +231,8 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     ctx.textBaseline = 'middle';
     ctx.lineJoin = 'round';
     ctx.lineWidth = 3;
-    ctx.strokeStyle = 'rgba(15,18,32,0.85)';
-    ctx.fillStyle = '#e9ecf7';
+    ctx.strokeStyle = HALO;
+    ctx.fillStyle = LABEL;
     let font = 0;
     for (const d of labelOrder) {
       const focus = d.target || d === hovered || (nb && nb.has(d.id));
@@ -455,7 +461,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     /** Prefer the language's own web font (e.g. Nastaliq for Urdu) ahead of the generic stack. */
     setLanguage: (lang) => {
       const own = lang.font ? `"${lang.font.family}", ` : '';
-      fontStack = `Inter, ${own}ui-sans-serif, system-ui, ${SCRIPT_FONTS}, sans-serif`;
+      fontStack = `${MAP_FONT}, ${own}ui-sans-serif, system-ui, ${SCRIPT_FONTS}, sans-serif`;
     },
     zoomBy: (f) => { userMoved = true; sel.transition().duration(250).call(zoom.scaleBy, f); },
     // small read-only hooks used by the automated tests
