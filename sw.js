@@ -1,10 +1,7 @@
-// Placeholder period: replaces the app's service worker on returning devices. It deletes every cache,
-// unregisters itself and reloads open windows so they show the current page from the network.
+// Retired: the word app moved to ./words/ (its own service worker). This removes the old root worker.
 self.addEventListener('install', () => self.skipWaiting());
-self.addEventListener('activate', (event) => {
-  event.waitUntil((async () => {
-    for (const key of await caches.keys()) await caches.delete(key);
-    await self.registration.unregister();
-    for (const client of await self.clients.matchAll({ type: 'window', includeUncontrolled: true })) client.navigate(client.url).catch(() => {});
-  })());
-});
+self.addEventListener('activate', (e) => e.waitUntil((async () => {
+  for (const k of await caches.keys()) if (/^synoikon-/.test(k)) await caches.delete(k);
+  await self.registration.unregister();
+  for (const c of await self.clients.matchAll({ type: 'window' })) c.navigate(c.url);
+})()));

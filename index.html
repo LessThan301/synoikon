@@ -2,28 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex">
-  <meta name="color-scheme" content="dark">
-  <title>Synoikon — coming soon</title>
-  <link rel="icon" href="data:,">
-  <style>
-    html, body { height: 100%; margin: 0; }
-    body { display: grid; place-items: center; background: #0f1220; color: #e9ecf7;
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; text-align: center; }
-    h1 { margin: 0; font-size: clamp(2.2rem, 7vw, 4rem); font-weight: 750; letter-spacing: -0.03em; }
-    p { margin: .6rem 0 0; color: #9aa3c2; font-size: clamp(1rem, 2.6vw, 1.25rem); letter-spacing: .02em; }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Synoikon: small tools that show context</title>
+  <meta name="description" content="Synoikon is a home for small, free tools that show context: the words around a word, the facts around a claim.">
+  <link rel="canonical" href="https://synoikon.com/">
+  <meta property="og:title" content="Synoikon">
+  <meta property="og:description" content="Small, free tools that show context.">
+  <meta property="og:url" content="https://synoikon.com/">
+  <meta property="og:image" content="https://synoikon.com/words/og.png">
+  <meta name="theme-color" content="#0f1220">
+  <link rel="icon" href="words/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="words/icons/apple-touch-icon.png">
+  <script>
+    // Old links to the word app (synoikon.com/#q=…, #wotd, installed app ?source=pwa) go to /words/.
+    (function () { var h = location.hash, s = location.search;
+      if (/^#(q=|wotd)/.test(h) || /source=pwa/.test(s)) location.replace('words/' + s + h); })();
+  </script>
+  <link rel="stylesheet" href="home.css">
 </head>
 <body>
-  <main>
-    <h1>Synoikon</h1>
-    <p>coming soon</p>
+  <nav class="topnav" aria-label="Main">
+    <a class="brand" href="./"><span class="logo sm" aria-hidden="true"></span>Synoikon</a>
+    <div class="menu">
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menuList"><span data-i18n="other">Other projects by Synoikon</span> <span aria-hidden="true">▾</span></button>
+      <ul class="menu-list" id="menuList" hidden>
+        <li><a href="https://record.synoikon.com/"><strong>The Record</strong><small data-i18n="rShort">Fact checks on tech claims</small></a></li>
+      </ul>
+    </div>
+  </nav>
+  <main class="wrap">
+    <header class="hero">
+      <span class="logo" aria-hidden="true"></span>
+      <h1>Synoikon</h1>
+      <p class="tag" data-i18n="tag">Small, free tools that show context.</p>
+      <p class="sub" data-i18n="sub">The words around a word. From the Greek for “living together”.</p>
+    </header>
+    <section class="tiles">
+      <a class="tile" href="words/">
+        <span class="t-icon words" aria-hidden="true"></span>
+        <h2 data-i18n="wTitle">Word Network</h2>
+        <p data-i18n="wText">Type a word in any of 21 languages and see the network of words that keep it company, drawn from real text on Wikipedia.</p>
+        <span class="go" data-i18n="open">Open →</span>
+      </a>
+      <a class="tile" href="https://listen.synoikon.com/">
+        <span class="t-icon listen" aria-hidden="true">♪</span>
+        <h2><span data-i18n="lTitle">Listen</span> <span class="badge" data-i18n="invite">Invite only</span></h2>
+        <p data-i18n="lText">Private listening rooms: play YouTube links or your own music in sync with friends. Invite only.</p>
+        <span class="go" data-i18n="open">Open →</span>
+      </a>
+    </section>
   </main>
-  <script>
-    // Remove the service worker and caches of the app that used to live here.
-    if ('serviceWorker' in navigator) navigator.serviceWorker.getRegistrations().then((rs) => rs.forEach((r) => r.unregister())).catch(() => {});
-    if (window.caches) caches.keys().then((ks) => ks.forEach((k) => caches.delete(k))).catch(() => {});
-  </script>
+  <footer class="foot">
+    <span>© Synoikon</span>
+    <a id="impressum" data-i18n="imp" href="impressum/">Impressum</a>
+    <a id="privacy" data-i18n="priv" href="datenschutz/">Privacy</a>
+  </footer>
+  <script src="home.js"></script>
 </body>
 </html>
