@@ -129,7 +129,7 @@ function onLangChange() {
     const ok = SOURCES[input.value].langs.includes(lang.code);
     input.disabled = !ok;
     input.parentElement.classList.toggle('na', !ok);
-    input.parentElement.title = ok ? '' : `Not available in ${lang.english}`;
+    input.parentElement.title = ok ? '' : t('Not available in {0}', lang.native);
   }
   els.term.placeholder = lang.code === 'en' ? 'Type a word, e.g. river' : `${lang.native}: ${lang.sample}`;
   ensureFont(lang);
@@ -234,7 +234,7 @@ async function search(term, { live = false } = {}) {
     try {
       const corpus = await collectCorpus(term, {
         lang, size, enabled,
-        onProgress: (d, t, label) => { if (id === state.requestId) els.loadingText.textContent = `Collecting text about “${term}”… ${d}/${t} sources (${label} done)`; },
+        onProgress: (d, tot, label) => { if (id === state.requestId) els.loadingText.textContent = t('Collecting text about “{0}”… {1}/{2} sources ({3} done)', term, d, tot, label); },
       });
       if (id !== state.requestId) return; // a newer search has started
       // every source unreachable (not just empty) → treat as offline
@@ -256,7 +256,7 @@ async function search(term, { live = false } = {}) {
 /** Network failure: explain, and when offline offer the words that work without a connection. */
 async function showFetchError(err) {
   if (navigator.onLine && err.message !== 'offline') {
-    show('error', `Could not reach the text sources (${err.message}). Check your connection and try again.`);
+    show('error', t('Could not reach the text sources ({0}). Check your connection and try again.', err.message));
     return;
   }
   show('error', 'You seem to be offline: the text sources can’t be reached. New words need a connection, but popular words and your recent searches still work:');
@@ -296,13 +296,13 @@ async function analyse() {
     if (aid !== state.analyseId) return;
     if (rankMode() === 'distinctive') {
       try { reference = await loadReference(state.lang); }
-      catch (err) { state.refError = `Background word list for ${lang.english} could not be loaded (${err.message}); ranking by frequency instead.`; }
+      catch (err) { state.refError = t('Background word list for {0} could not be loaded ({1}); ranking by frequency instead.', lang.native, err.message); }
       if (aid !== state.analyseId) return; // superseded
     }
     if (!corpus.docs.length) {
       const errs = corpus.report.filter((r) => r.error);
       show('error', errs.length === corpus.report.length
-        ? `All sources failed: ${errs.map((e) => `${e.label}: ${e.error}`).join('; ')}`
+        ? t('All sources failed: {0}', errs.map((e) => `${e.label}: ${e.error}`).join('; '))
         : t('No text found for “{0}”. Check the spelling or try another language.', term));
       state.graph?.clear(); state.drawnTerm = '';
       renderStats(null);
@@ -313,7 +313,7 @@ async function analyse() {
   state.net = net;
   renderStats(net);
   if (net.nodes.length < 2) {
-    show('error', `Found ${net.stats.occurrences} occurrence(s) of “${term}”, but not enough recurring neighbors to draw a network. Try a larger corpus, a wider window, or another word.`);
+    show('error', t('Found {0} occurrence(s) of “{1}”, but not enough recurring neighbors to draw a network. Try a larger corpus, a wider window, or another word.', net.stats.occurrences, term));
     state.graph?.clear(); state.drawnTerm = '';
     return;
   }
@@ -334,8 +334,8 @@ function renderStats(net) {
   const preNote = state.pre
     ? `<p class="pre-note">⚡ ${esc(t('Precomputed on {0} with default settings.', state.pre.generated.slice(0, 10)))} <button type="button" id="refreshLive">${esc(t('Refresh with live data'))}</button></p>` : '';
   const rep = report.map((r) => r.error
-    ? `<li class="err">${r.label}: failed (${esc(r.error)})</li>`
-    : `<li>${r.label}: ${esc(t('{0} texts', r.count))}</li>`).join('');
+    ? `<li class="err">${esc(t('{0}: failed ({1})', t(r.label), r.error))}</li>`
+    : `<li>${esc(t(r.label))}: ${esc(t('{0} texts', r.count))}</li>`).join('');
   els.stats.innerHTML = net
     ? (uiLang() === 'en' ? `<p><b>${net.stats.occurrences}</b> instances of “<bdi>${esc(state.term)}</bdi>” (${esc(getLang(state.lang).english)}) in <b>${net.stats.docsWithHits}</b> of ${net.stats.docs} texts,
        giving <b>${net.stats.windows}</b> unique context windows and <b>${net.stats.vocabulary}</b> distinct neighbor words.
@@ -503,13 +503,13 @@ async function openShare() {
     try {
       await navigator.share({ files: [file()], title: `${state.term} · Synoikon`, text: `The company “${state.term}” keeps`, url: share.url });
       $('shareStatus').textContent = 'Shared.';
-    } catch (err) { if (err.name !== 'AbortError') { $('shareStatus').textContent = `Sharing failed (${err.message}); downloading instead.`; download(); } }
+    } catch (err) { if (err.name !== 'AbortError') { $('shareStatus').textContent = t('Sharing failed ({0}); downloading instead.', err.message); download(); } }
   };
   const download = () => {
     const a = document.createElement('a');
     a.href = URL.createObjectURL(share.blob); a.download = file().name; a.click();
     setTimeout(() => URL.revokeObjectURL(a.href), 2000);
-    $('shareStatus').textContent = `Downloaded ${a.download}.`;
+    $('shareStatus').textContent = t('Downloaded {0}.', a.download);
   };
   $('downloadPng').onclick = download;
   $('copyLink').onclick = async () => {

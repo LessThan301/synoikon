@@ -130,12 +130,12 @@
           </details>
           <details id="samplesBox" class="hidden">
             <summary>Sample instances <span id="sampleFor"></span></summary>
-            <ol id="samples" class="samples"></ol>
+            <ol id="samples" class="samples" data-no-i18n></ol>
           </details>
           <details id="tableBox" class="hidden">
             <summary>Neighbor table</summary>
             <p class="note" id="tableNote"></p>
-            <table class="table"><thead><tr><th>Word</th><th title="Occurrences inside context windows (circle area)">Freq.</th><th title="Windows shared with the search word">With word</th><th title="Distinctiveness: log2 of how many times more often than expected from general Wikipedia text">Distinct.</th></tr></thead><tbody id="tableBody"></tbody></table>
+            <table class="table"><thead><tr><th>Word</th><th title="Occurrences inside context windows (circle area)">Freq.</th><th title="Windows shared with the search word">With word</th><th title="Distinctiveness: log2 of how many times more often than expected from general Wikipedia text">Distinct.</th></tr></thead><tbody id="tableBody" data-no-i18n></tbody></table>
           </details>
         </section>
 
@@ -161,7 +161,7 @@
           <div class="card">
             <section class="wotd" id="wotdCard" aria-label="Today's word">
               <div class="wotd-head"><span>Today’s word</span> <time id="wotdDate"></time></div>
-              <button type="button" id="wotdWord" class="wotd-word" dir="auto"></button>
+              <button type="button" id="wotdWord" class="wotd-word" dir="auto" data-no-i18n></button>
               <div id="wotdGloss" class="wotd-gloss"></div>
               <a id="wotdLink" href="#wotd" class="wotd-link">Link to today’s word</a>
             </section>
@@ -173,14 +173,14 @@
               <li><span class="line long"></span><b>Long, faint line</b> = they rarely do</li>
             </ul>
             <p class="chips-label" id="examplesLabel">Popular</p>
-            <div class="chips" id="examples"></div>
+            <div class="chips" id="examples" data-no-i18n></div>
           </div>
         </div>
         <div id="loading" class="overlay hidden" aria-live="polite">
           <div class="card"><div class="spinner"></div><p id="loadingText">Collecting text…</p></div>
         </div>
         <div id="error" class="overlay hidden" role="alert">
-          <div class="card error"><h2 id="errorTitle">Hmm.</h2><p id="errorText"></p><div id="offlineWords" class="chips hidden"></div></div>
+          <div class="card error"><h2 id="errorTitle">Hmm.</h2><p id="errorText"></p><div id="offlineWords" class="chips hidden" data-no-i18n></div></div>
         </div>
         <div class="graph-tools">
           <button id="zoomIn" title="Zoom in" aria-label="Zoom in">+</button>
