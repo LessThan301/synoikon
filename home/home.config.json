@@ -4,5 +4,5 @@
   "impressumUrl": "impressum/",
   "privacyUrl": "datenschutz/",
   "listenUrl": "https://listen.synoikon.com/",
-  "contactEndpoint": ""
+  "contactEndpoint": "https://contact.synoikon.com/send"
 }
