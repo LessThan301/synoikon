@@ -1,7 +1,7 @@
 // Synoikon service worker.
 // VERSION / DATA_VERSION are content hashes written by tools/stamp-sw.mjs; when any app-shell
 // file (or data list) changes, the cache name changes and old caches are deleted on activate.
-const VERSION = '06da1d6a9f3a';
+const VERSION = '91e1132b4071';
 const DATA_VERSION = 'f737ac5bcc52';
 const SHELL = `synoikon-shell-${VERSION}`;
 const DATA = `synoikon-data-${DATA_VERSION}`;       // stopword + background frequency lists (per language, on demand)
@@ -13,7 +13,7 @@ const LIMITS = { [PRE]: 250, [API]: 160, [PAGES]: 60, [FONTS]: 60 };
 
 const SHELL_FILES = [
   './', 'index.html', 'about.html', 'offline.html', 'manifest.webmanifest',
-  'css/style.css', 'css/page.css',
+  'css/style.css', 'css/page.css', 'css/nebula.css',
   'js/app.js', 'js/analysis.js', 'js/graph.js', 'js/languages.js', 'js/reference.js', 'js/sources.js', 'js/stopwords.js',
   'js/words.js', 'js/precomputed.js', 'js/card.js', 'js/pwa.js', 'js/analytics.js', 'js/sidebar.js', 'js/legend.js', 'js/i18n.js',
   'icons/favicon.svg', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/maskable-512.png', 'icons/apple-touch-icon.png',

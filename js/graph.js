@@ -10,10 +10,10 @@ import { t as tr } from './i18n.js';
 const TARGET_ID = '__target__';
 // map colours can be themed with CSS custom properties on :root (defaults = the standard dark theme)
 const cssVar = (n, d) => (typeof document !== 'undefined' && getComputedStyle(document.documentElement).getPropertyValue(n).trim()) || d;
-const TARGET_COLOR = cssVar('--map-target', '#ff6b4a');
-const MAP_RAMP = cssVar('--map-ramp', '#7f8fd6,#5b8def,#38c6a8,#9be15d').split(',').map((c) => c.trim());
-const LINK_T = cssVar('--map-link-target', '255,154,128'), LINK_N = cssVar('--map-link', '143,163,224');
-const LABEL = cssVar('--map-label', '#e9ecf7'), HALO = cssVar('--map-halo', 'rgba(15,18,32,0.85)'), PIN = cssVar('--map-pin', '#5b8def');
+const TARGET_COLOR = cssVar('--map-target', '#ff3df2');
+const MAP_RAMP = cssVar('--map-ramp', '#6c5cff,#3d8bff,#3df5ff,#b6ff5c').split(',').map((c) => c.trim());
+const LINK_T = cssVar('--map-link-target', '255,61,242'), LINK_N = cssVar('--map-link', '120,140,255');
+const LABEL = cssVar('--map-label', '#ffffff'), HALO = cssVar('--map-halo', 'rgba(5,3,15,0.9)'), PIN = cssVar('--map-pin', '#3df5ff');
 const MAP_FONT = cssVar('--map-font', 'Inter');
 const MAX_DPR = 2;          // sharper than this costs fill-rate without visible gain
 const LABEL_MIN_PX = 7;     // labels smaller than this on screen are skipped (level of detail)
@@ -436,7 +436,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     const f = (v) => Math.round(v * 10) / 10;
     const out = [`<svg xmlns="http://www.w3.org/2000/svg" viewBox="${f(xa)} ${f(ya)} ${f(xb - xa)} ${f(yb - ya)}" width="${Math.round(xb - xa)}" height="${Math.round(yb - ya)}">`,
       `<style>text{font-family:${fontStack.replace(/"/g, "'")};fill:#e9ecf7;paint-order:stroke;stroke:rgba(15,18,32,.85);stroke-width:3px;stroke-linejoin:round;text-anchor:middle}</style>`,
-      `<rect x="${f(xa)}" y="${f(ya)}" width="${f(xb - xa)}" height="${f(yb - ya)}" fill="#0f1220"/>`, '<g stroke-linecap="round">'];
+      `<rect x="${f(xa)}" y="${f(ya)}" width="${f(xb - xa)}" height="${f(yb - ya)}" fill="#05030f"/>`, '<g stroke-linecap="round">'];
     for (const b of buckets) {
       for (const l of b.links) out.push(`<line x1="${f(l.source.x)}" y1="${f(l.source.y)}" x2="${f(l.target.x)}" y2="${f(l.target.y)}" stroke="rgb(${b.color})" stroke-opacity="${f(b.alpha * 100) / 100}" stroke-width="${f(b.width)}"/>`);
     }

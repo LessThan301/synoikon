@@ -65,11 +65,12 @@ ${alternates}  <meta property="og:type" content="article">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="theme-color" content="#0f1220">
+  <meta name="theme-color" content="#05030f">
   <link rel="manifest" href="${rel}manifest.webmanifest">
   <link rel="icon" href="${rel}icons/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="${rel}icons/apple-touch-icon.png">
   <link rel="stylesheet" href="${rel}css/page.css">
+  <link rel="stylesheet" href="${rel}css/nebula.css">
 ${extra}</head>
 <body>
   <header class="top">
