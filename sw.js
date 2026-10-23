@@ -1,7 +1,7 @@
 // Synoikon service worker.
 // VERSION / DATA_VERSION are content hashes written by tools/stamp-sw.mjs; when any app-shell
 // file (or data list) changes, the cache name changes and old caches are deleted on activate.
-const VERSION = '6f298b356b6c';
+const VERSION = '21dd60ea88f8';
 const DATA_VERSION = 'f737ac5bcc52';
 const SHELL = `synoikon-shell-${VERSION}`;
 const DATA = `synoikon-data-${DATA_VERSION}`;       // stopword + background frequency lists (per language, on demand)
