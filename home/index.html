@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Synoikon: small tools that show context</title>
+  <meta name="description" content="Synoikon is a home for small, free tools that show context: the words around a word, the facts around a claim.">
+  <link rel="canonical" href="https://synoikon.com/">
+  <meta property="og:title" content="Synoikon">
+  <meta property="og:description" content="Small, free tools that show context.">
+  <meta property="og:url" content="https://synoikon.com/">
+  <meta property="og:image" content="https://synoikon.com/words/og.png">
+  <meta name="theme-color" content="#0f1220">
+  <link rel="icon" href="words/icons/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="words/icons/apple-touch-icon.png">
+  <script>
+    // Old links to the word app (synoikon.com/#q=…, #wotd, installed app ?source=pwa) go to /words/.
+    (function () { var h = location.hash, s = location.search;
+      if (/^#(q=|wotd)/.test(h) || /source=pwa/.test(s)) location.replace('words/' + s + h); })();
+  </script>
+  <link rel="stylesheet" href="home.css">
+</head>
+<body>
+  <main class="wrap">
+    <header class="hero">
+      <span class="logo" aria-hidden="true"></span>
+      <h1>Synoikon</h1>
+      <p class="tag" data-i18n="tag">Small, free tools that show context.</p>
+      <p class="sub" data-i18n="sub">The words around a word. The facts around a claim. From the Greek for “living together”.</p>
+    </header>
+    <section class="tiles">
+      <a class="tile" href="words/">
+        <span class="t-icon words" aria-hidden="true"></span>
+        <h2 data-i18n="wTitle">Word Network</h2>
+        <p data-i18n="wText">Type a word in any of 21 languages and see the network of words that keep it company, drawn from real text on Wikipedia.</p>
+        <span class="go" data-i18n="open">Open →</span>
+      </a>
+      <a class="tile" id="recordTile" href="RECORD_URL">
+        <span class="t-icon record" aria-hidden="true">✓</span>
+        <h2>The Record</h2>
+        <p data-i18n="rText">Popular claims about Elon Musk, SpaceX, Tesla and electric cars, checked against sources. Guess first, then flip the card.</p>
+        <span class="go" data-i18n="open">Open →</span>
+      </a>
+    </section>
+  </main>
+  <footer class="foot">
+    <span>© Synoikon</span>
+    <a id="impressum" data-i18n="imp" href="IMPRESSUM_URL">Impressum</a>
+    <a id="privacy" data-i18n="priv" href="PRIVACY_URL">Privacy</a>
+  </footer>
+  <script src="home.js"></script>
+</body>
+</html>

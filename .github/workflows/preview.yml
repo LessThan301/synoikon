@@ -30,10 +30,11 @@ jobs:
         run: |
           node tools/build-site.mjs --out _site --site https://lessthan301.github.io/synoikon-preview/ --preview
           node tests/words.test.mjs
-          node tools/stamp-sw.mjs --check --root _site
+          node tools/stamp-sw.mjs --check --root _site/words
           grep -q 'name="robots" content="noindex,nofollow"' _site/index.html
-          grep -q "token: ''" _site/js/analytics.js   # analytics off
+          grep -q "token: ''" _site/words/js/analytics.js   # analytics off
           test ! -e _site/CNAME
+          test -f _site/words/index.html && test -f _site/w/en/art/index.html   # umbrella layout + old-URL redirects
       - name: Push to LessThan301/synoikon-preview
         env:
           DEPLOY_KEY: ${{ secrets.PREVIEW_DEPLOY_KEY }}

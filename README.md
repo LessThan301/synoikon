@@ -272,6 +272,23 @@ re-stamps `sw.js` (manifest `start_url`/`scope` and the service-worker scope are
 writes `robots.txt` with `Disallow: /`, shows a "Preview" badge, names the manifest "Synoikon (preview)", uses separate
 cache names (`synoikon-preview-*`) and leaves out `CNAME`. The production build is byte-identical to the source files.
 
+### Umbrella layout (since 2026-10-23)
+
+Built sites are an **umbrella**: the root is the Synoikon home page (source in `home/`: `index.html`, `home.css`, `home.js`)
+with one tile per app, and the **word app lives under `/words/`**. The source tree is unchanged (the app files stay at the
+repo root, so `npm run serve`, tests and precompute work as before); `tools/build-site.mjs` copies them into `_site/words/`.
+- **Links on the home page** come from `home/home.config.json`: `recordUrl` (now the The Record preview; at launch set it to
+  `https://record.synoikon.com/`), `impressumUrl` and `privacyUrl` (empty = shown as "coming soon"; one Impressum and one
+  privacy page for all Synoikon apps, The Record links to the same ones).
+- **Old URLs keep working:** `/w/<lang>/<word>/` and `/w/` are redirect pages to `/words/w/…` (query and hash kept);
+  `/#q=…`, `/#wotd` and `/?source=pwa` (installed apps) are forwarded to `/words/` by the home page; `/about.html` and
+  `/offline.html` redirect. The root `manifest.webmanifest` opens `words/`. The root `sw.js` is a retiring worker: it deletes
+  the old `synoikon-*` caches and unregisters itself; the app registers its own worker with scope `/words/`.
+- `sitemap.xml` (home + all word URLs under `/words/`), `robots.txt` and `CNAME` are at the root.
+- Adding an app: add a tile to `home/index.html` (+ strings in `home/home.js`).
+- Restore the pre-umbrella layout: revert the commit "Umbrella home page" on `app` (or release from tag `app-live-2026-10-10`).
+- `tests/preview.e2e.mjs` still assumes the app at the root; pass `…/synoikon-preview/words/` to check the app.
+
 **Develop → preview (automatic).** Commit and push to `app`; `.github/workflows/preview.yml` ("Deploy preview") builds the
 preview and pushes it to `LessThan301/synoikon-preview` (`main`, served by GitHub Pages) in about a minute. Auth: a write
 deploy key on synoikon-preview whose private half is the `PREVIEW_DEPLOY_KEY` secret of this repo (rotate: create a new
@@ -294,7 +311,7 @@ keeps serving `main`), with the "Run workflow" button / `gh workflow run release
 a workflow GitHub has already registered from `app`: verified for `preview.yml`; `release.yml` is registered after its first
 tag-triggered run.) Undo a release:
 `git revert` the release commit on `main`, or run the release again from an older ref (e.g. tag `app-live-2026-10-10`).
-Before the first release: add the Impressum/privacy page (e.g. linked from the sidebar footer and `about.html`) and fix
+Before the first release: fill `impressumUrl`/`privacyUrl` in `home/home.config.json` (and link them from the app's sidebar footer and `about.html`), set `recordUrl` to `https://record.synoikon.com/` once that domain works, and fix
 the Cloudflare Web Analytics hostname (Web Analytics → Manage site → hostname `synoikon.com`, or a new token in
 `js/analytics.js`). Returning visitors get the app back by themselves: the placeholder's `/sw.js` unregisters itself and the
 app registers its own service worker.

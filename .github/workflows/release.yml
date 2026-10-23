@@ -49,11 +49,12 @@ jobs:
         run: |
           node tools/build-site.mjs --out ../_site --site https://synoikon.com/
           node tests/words.test.mjs
-          node tools/stamp-sw.mjs --check --root ../_site
+          node tools/stamp-sw.mjs --check --root ../_site/words
           grep -qx 'synoikon.com' ../_site/CNAME
           ! grep -q 'name="robots"' ../_site/index.html
-          grep -q "token: '[0-9a-f]\+'" ../_site/js/analytics.js
+          grep -q "token: '[0-9a-f]\+'" ../_site/words/js/analytics.js
           grep -q 'https://synoikon.com/' ../_site/sitemap.xml
+          test -f ../_site/words/index.html && test -f ../_site/w/en/art/index.html   # umbrella layout + old-URL redirects
       - name: Commit to main
         id: push
         run: |
