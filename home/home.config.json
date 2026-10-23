@@ -1,6 +1,7 @@
 {
-  "_comment": "Links on the Synoikon home page. At launch set recordUrl to https://record.synoikon.com/ (after the CNAME step in LessThan301/the-record LAUNCH.md). impressumUrl/privacyUrl stay empty until the details exist; empty = shown as 'coming soon'.",
+  "_comment": "Links on the Synoikon home page. At launch set recordUrl to https://record.synoikon.com/ (after the CNAME step in LessThan301/the-record LAUNCH.md). impressumUrl/privacyUrl stay empty until the details exist; empty = shown as 'coming soon'. listenUrl = the private listening room.",
   "recordUrl": "https://lessthan301.github.io/the-record/",
   "impressumUrl": "",
-  "privacyUrl": ""
+  "privacyUrl": "",
+  "listenUrl": "https://listen.synoikon.com/"
 }

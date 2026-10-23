@@ -28,3 +28,27 @@ h1 { font-size: clamp(2.2rem, 6vw, 3.4rem); letter-spacing: -0.03em; margin: 12p
 .foot { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; padding: 22px 16px 28px; color: var(--muted); font-size: .9rem; border-top: 1px solid var(--line); }
 .foot a { color: var(--muted); }
 .foot .soon { opacity: .6; text-decoration: none; cursor: default; }
+
+.topnav { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 10px max(16px, calc((100% - 980px) / 2)); background: rgba(15,18,32,.85); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: center; gap: 8px; color: var(--ink); text-decoration: none; font-weight: 800; }
+.logo.sm { width: 26px; height: 26px; }
+.menu { position: relative; }
+.menu-btn { font: inherit; font-size: .92rem; color: var(--ink); background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 8px 12px; cursor: pointer; }
+.menu-btn:hover, .menu-btn[aria-expanded="true"] { border-color: var(--accent2); }
+.menu-list { position: absolute; right: 0; top: calc(100% + 6px); min-width: 240px; margin: 0; padding: 6px; list-style: none;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 12px; box-shadow: 0 12px 30px rgba(0,0,0,.4); }
+.menu-list a { display: flex; flex-direction: column; gap: 2px; padding: 10px 12px; border-radius: 8px; color: var(--ink); text-decoration: none; }
+.menu-list a:hover, .menu-list a:focus-visible { background: #232a4a; outline: none; }
+.menu-list small { color: var(--muted); }
+.t-icon.listen { background: #232a4a; color: #f2b134; }
+.badge { display: inline-block; vertical-align: middle; font-size: .72rem; font-weight: 700; padding: 3px 8px; border-radius: 999px;
+  background: rgba(242,177,52,.15); color: #f2b134; border: 1px solid rgba(242,177,52,.4); margin-left: 6px; }
+@media (max-width: 560px) {
+  .topnav { flex-wrap: wrap; }
+  .menu { position: static; }
+  .menu-btn { font-size: .85rem; }
+  .menu-list { position: static; width: 100%; margin-top: 8px; box-shadow: none; }
+  .topnav .menu { flex: 0 0 auto; }
+  .topnav:has(.menu-list:not([hidden])) .menu { flex-basis: 100%; }
+}

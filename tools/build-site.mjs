@@ -68,7 +68,7 @@ const HOME = path.join(ROOT, 'home');
 const cfg = JSON.parse(fs.readFileSync(path.join(HOME, 'home.config.json'), 'utf8'));
 for (const f of ['home.css', 'home.js']) fs.copyFileSync(path.join(HOME, f), path.join(OUT, f));
 let home = fs.readFileSync(path.join(HOME, 'index.html'), 'utf8').split(PROD_SITE).join(SITE)
-  .replace('RECORD_URL', cfg.recordUrl).replace('IMPRESSUM_URL', cfg.impressumUrl || '').replace('PRIVACY_URL', cfg.privacyUrl || '');
+  .split('RECORD_URL').join(cfg.recordUrl).split('LISTEN_URL').join(cfg.listenUrl || 'https://listen.synoikon.com/').replace('IMPRESSUM_URL', cfg.impressumUrl || '').replace('PRIVACY_URL', cfg.privacyUrl || '');
 if (PREVIEW) home = home.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  <meta name="robots" content="noindex,nofollow">`)
   .replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
 fs.writeFileSync(path.join(OUT, 'index.html'), home);

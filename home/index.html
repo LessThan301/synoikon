@@ -21,12 +21,21 @@
   <link rel="stylesheet" href="home.css">
 </head>
 <body>
+  <nav class="topnav" aria-label="Main">
+    <a class="brand" href="./"><span class="logo sm" aria-hidden="true"></span>Synoikon</a>
+    <div class="menu">
+      <button class="menu-btn" id="menuBtn" aria-expanded="false" aria-controls="menuList"><span data-i18n="other">Other projects by Synoikon</span> <span aria-hidden="true">▾</span></button>
+      <ul class="menu-list" id="menuList" hidden>
+        <li><a href="RECORD_URL"><strong>The Record</strong><small data-i18n="rShort">Fact checks on tech claims</small></a></li>
+      </ul>
+    </div>
+  </nav>
   <main class="wrap">
     <header class="hero">
       <span class="logo" aria-hidden="true"></span>
       <h1>Synoikon</h1>
       <p class="tag" data-i18n="tag">Small, free tools that show context.</p>
-      <p class="sub" data-i18n="sub">The words around a word. The facts around a claim. From the Greek for “living together”.</p>
+      <p class="sub" data-i18n="sub">The words around a word. From the Greek for “living together”.</p>
     </header>
     <section class="tiles">
       <a class="tile" href="words/">
@@ -35,10 +44,10 @@
         <p data-i18n="wText">Type a word in any of 21 languages and see the network of words that keep it company, drawn from real text on Wikipedia.</p>
         <span class="go" data-i18n="open">Open →</span>
       </a>
-      <a class="tile" id="recordTile" href="RECORD_URL">
-        <span class="t-icon record" aria-hidden="true">✓</span>
-        <h2>The Record</h2>
-        <p data-i18n="rText">Popular claims about Elon Musk, SpaceX, Tesla and electric cars, checked against sources. Guess first, then flip the card.</p>
+      <a class="tile" href="LISTEN_URL">
+        <span class="t-icon listen" aria-hidden="true">♪</span>
+        <h2><span data-i18n="lTitle">Listen</span> <span class="badge" data-i18n="invite">Invite only</span></h2>
+        <p data-i18n="lText">Private listening rooms: play YouTube links or your own music in sync with friends. Invite only.</p>
         <span class="go" data-i18n="open">Open →</span>
       </a>
     </section>
