@@ -65,7 +65,7 @@ Typičnost
 Kolikrát častěji než v obecném textu (jen při řazení „typická“)
 Často s
 Další sousedé, se kterými je propojeno, se společnými počty
-Najeďte na kruh a uvidíte tato čísla · Ctrl/⌘+klik (dotyk: dlouhé podržení) je připne · klik nebo klepnutí zobrazí slovo
+Najeďte na kruh a uvidíte tato čísla · Ctrl/⌘+klik (dotyk: dlouhé podržení) připne až 3 k porovnání · klik nebo klepnutí zobrazí slovo
 Připnout
 Odepnout
 Nalezeno {0} výskytů · {1} oken kontextu
@@ -90,3 +90,4 @@ Obnovit živými daty
 Předpočítáno {0} s výchozím nastavením.
 Automaticky (jazyk mapy)
 Strojově přeložené rozhraní; opravy vítány.
+Max. 3 najednou, nejprve jeden odepněte

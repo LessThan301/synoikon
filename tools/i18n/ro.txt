@@ -65,7 +65,7 @@ Distinctivitate
 De câte ori mai des decât în textul general (doar la clasamentul „distinctive”)
 Adesea cu
 Alți vecini de care este legat, cu numărători comune
-Treci peste un cerc ca să vezi aceste cifre · Ctrl/⌘+clic (tactil: apăsare lungă) le fixează · clic sau atingere face harta cuvântului
+Treci peste un cerc ca să vezi aceste cifre · Ctrl/⌘+clic (tactil: apăsare lungă) fixează până la 3 pentru comparație · clic sau atingere face harta cuvântului
 Fixează
 Eliberează
 {0} apariții găsite · {1} ferestre de context
@@ -90,3 +90,4 @@ Actualizează cu date live
 Precalculat pe {0} cu setările implicite.
 Automat (limba hărții)
 Interfață tradusă automat; corecturile sunt binevenite.
+Max. 3 deodată, eliberează mai întâi unul

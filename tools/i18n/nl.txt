@@ -65,7 +65,7 @@ Kenmerkendheid
 Hoeveel vaker dan in gewone tekst (alleen bij rangorde ‘kenmerkend’)
 Vaak met
 Andere buren waarmee het verbonden is, met gedeelde aantallen
-Beweeg over een cirkel om deze cijfers te zien · Ctrl/⌘+klik (touch: lang drukken) zet ze vast · klik of tik brengt het woord in kaart
+Beweeg over een cirkel om deze cijfers te zien · Ctrl/⌘+klik (touch: lang drukken) zet er tot 3 vast om te vergelijken · klik of tik brengt het woord in kaart
 Vastzetten
 Losmaken
 {0} keer gevonden · {1} contextvensters
@@ -90,3 +90,4 @@ Vernieuwen met live gegevens
 Vooraf berekend op {0} met standaardinstellingen.
 Automatisch (kaarttaal)
 Machinaal vertaalde interface; correcties welkom.
+Max. 3 tegelijk, maak er eerst één los

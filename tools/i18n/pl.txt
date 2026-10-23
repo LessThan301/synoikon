@@ -65,7 +65,7 @@ Charakterystyczność
 Ile razy częściej niż w ogólnym tekście (tylko w rankingu „charakterystyczne”)
 Często z
 Inni sąsiedzi, z którymi jest połączone, ze wspólnymi liczbami
-Najedź na koło, aby zobaczyć te liczby · Ctrl/⌘+klik (dotyk: długie przytrzymanie) przypina je · klik lub dotknięcie mapuje słowo
+Najedź na koło, aby zobaczyć te liczby · Ctrl/⌘+klik (dotyk: długie przytrzymanie) przypina do 3 do porównania · klik lub dotknięcie mapuje słowo
 Przypnij
 Odepnij
 Znaleziono {0} wystąpień · {1} okien kontekstu
@@ -90,3 +90,4 @@ Odśwież danymi na żywo
 Obliczono wcześniej {0} z ustawieniami domyślnymi.
 Automatycznie (język mapy)
 Interfejs przetłumaczony maszynowo; poprawki mile widziane.
+Maks. 3 naraz, najpierw odepnij jedno

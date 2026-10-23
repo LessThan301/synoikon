@@ -65,7 +65,7 @@ Distinctiveness
 How much more often than in general text (only with “distinctive” ranking)
 Often with
 Other neighbours it is linked to, with shared counts
-Hover a circle to see these numbers · Ctrl/⌘+click (touch: long-press) pins them · click or tap maps the word
+Hover a circle to see these numbers · Ctrl/⌘+click (touch: long-press) pins up to 3 to compare · click or tap maps the word
 Pin
 Unpin
 {0} occurrences found · {1} context windows
@@ -90,3 +90,4 @@ Refresh with live data
 Precomputed on {0} with default settings.
 Automatic (map language)
 Machine-translated interface; corrections welcome.
+Max. 3 at once, unpin one first

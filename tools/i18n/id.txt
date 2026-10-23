@@ -65,7 +65,7 @@ Kekhasan
 Berapa kali lebih sering daripada di teks umum (hanya dengan peringkat “khas”)
 Sering bersama
 Tetangga lain yang terhubung, dengan jumlah bersama
-Arahkan ke lingkaran untuk melihat angka ini · Ctrl/⌘+klik (sentuh: tekan lama) menyematkannya · klik atau ketuk memetakan kata
+Arahkan ke lingkaran untuk melihat angka ini · Ctrl/⌘+klik (sentuh: tekan lama) menyematkan hingga 3 untuk dibandingkan · klik atau ketuk memetakan kata
 Sematkan
 Lepas
 {0} kemunculan ditemukan · {1} jendela konteks
@@ -90,3 +90,4 @@ Perbarui dengan data langsung
 Dihitung sebelumnya pada {0} dengan pengaturan bawaan.
 Otomatis (bahasa peta)
 Antarmuka diterjemahkan mesin; koreksi dipersilakan.
+Maks. 3 sekaligus, lepas satu dulu

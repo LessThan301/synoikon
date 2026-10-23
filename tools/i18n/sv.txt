@@ -65,7 +65,7 @@ Utmärkande grad
 Hur många gånger oftare än i allmän text (bara med rangordning ”utmärkande”)
 Ofta med
 Andra grannar det är länkat till, med gemensamma antal
-Hovra över en cirkel för att se siffrorna · Ctrl/⌘+klick (pekskärm: långt tryck) fäster dem · klick eller tryck kartlägger ordet
+Hovra över en cirkel för att se siffrorna · Ctrl/⌘+klick (pekskärm: långt tryck) fäster upp till 3 för jämförelse · klick eller tryck kartlägger ordet
 Fäst
 Lossa
 {0} förekomster hittade · {1} kontextfönster
@@ -90,3 +90,4 @@ Uppdatera med livedata
 Förberäknat {0} med standardinställningar.
 Automatiskt (kartans språk)
 Maskinöversatt gränssnitt; rättelser välkomnas.
+Max. 3 åt gången, lossa en först

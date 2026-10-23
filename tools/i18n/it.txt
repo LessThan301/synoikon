@@ -65,7 +65,7 @@ Distintività
 Quante volte più spesso che in un testo generale (solo con classifica «distintive»)
 Spesso con
 Altre vicine a cui è collegata, con conteggi comuni
-Passa sopra un cerchio per vedere questi numeri · Ctrl/⌘+clic (touch: pressione lunga) li fissa · clic o tocco mappa la parola
+Passa sopra un cerchio per vedere questi numeri · Ctrl/⌘+clic (touch: pressione lunga) ne fissa fino a 3 per confrontarli · clic o tocco mappa la parola
 Fissa
 Sblocca
 {0} occorrenze trovate · {1} finestre di contesto
@@ -90,3 +90,4 @@ Aggiorna con dati in tempo reale
 Precalcolato il {0} con impostazioni predefinite.
 Automatica (lingua della mappa)
 Interfaccia tradotta automaticamente; correzioni benvenute.
+Max. 3 alla volta, sbloccane prima uno

@@ -65,7 +65,7 @@ Typizität
 Wie viel häufiger als in allgemeinem Text (nur bei Rangfolge „Typisch“)
 Oft mit
 Andere Nachbarwörter, mit denen es verbunden ist, mit gemeinsamer Anzahl
-Über einen Kreis fahren zeigt diese Zahlen · Strg/⌘+Klick (Touch: lange drücken) heftet sie an · Klick oder Tippen kartiert das Wort
+Über einen Kreis fahren zeigt diese Zahlen · Strg/⌘+Klick (Touch: lange drücken) heftet bis zu 3 zum Vergleich an · Klick oder Tippen kartiert das Wort
 Anheften
 Lösen
 {0} Vorkommen gefunden · {1} Kontextfenster
@@ -90,3 +90,4 @@ Mit Live-Daten aktualisieren
 Vorberechnet am {0} mit Standardeinstellungen.
 Automatisch (Kartensprache)
 Maschinell übersetzte Oberfläche; Korrekturen willkommen.
+Max. 3 gleichzeitig, zuerst eins lösen

@@ -65,7 +65,7 @@ Jellegzetesség
 Hányszor gyakrabban, mint általános szövegben (csak „jellegzetes” rangsornál)
 Gyakran ezzel
 Más szomszédok, amelyekhez kapcsolódik, közös számokkal
-Vidd az egeret egy körre a számokhoz · Ctrl/⌘+kattintás (érintés: hosszú nyomás) rögzíti őket · kattintás vagy koppintás feltérképezi a szót
+Vidd az egeret egy körre a számokhoz · Ctrl/⌘+kattintás (érintés: hosszú nyomás) legfeljebb 3-at rögzít összehasonlításhoz · kattintás vagy koppintás feltérképezi a szót
 Rögzítés
 Feloldás
 {0} előfordulás · {1} kontextusablak
@@ -90,3 +90,4 @@ Frissítés élő adatokkal
 Előre kiszámítva: {0}, alapbeállításokkal.
 Automatikus (a térkép nyelve)
 Gépi fordítású felület; a javításokat szívesen fogadjuk.
+Egyszerre legfeljebb 3, előbb oldj fel egyet

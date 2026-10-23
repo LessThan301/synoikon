@@ -65,7 +65,7 @@ Distintividade
 Quantas vezes mais do que em texto geral (só com a classificação «distintivas»)
 Frequentemente com
 Outras vizinhas a que está ligada, com contagens em comum
-Passe sobre um círculo para ver estes números · Ctrl/⌘+clique (toque: pressão longa) fixa-os · clique ou toque mapeia a palavra
+Passe sobre um círculo para ver estes números · Ctrl/⌘+clique (toque: pressão longa) fixa até 3 para comparar · clique ou toque mapeia a palavra
 Fixar
 Soltar
 {0} ocorrências encontradas · {1} janelas de contexto
@@ -90,3 +90,4 @@ Atualizar com dados ao vivo
 Pré-calculado em {0} com as definições padrão.
 Automático (idioma do mapa)
 Interface traduzida automaticamente; correções são bem-vindas.
+Máx. 3 de cada vez, solte um primeiro

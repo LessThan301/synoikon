@@ -65,7 +65,7 @@ Caractère distinctif
 Combien de fois plus souvent que dans un texte général (classement « distinctifs » uniquement)
 Souvent avec
 Autres voisins auxquels il est relié, avec les nombres communs
-Survolez un cercle pour voir ces chiffres · Ctrl/⌘+clic (tactile : appui long) les épingle · clic ou toucher cartographie le mot
+Survolez un cercle pour voir ces chiffres · Ctrl/⌘+clic (tactile : appui long) en épingle jusqu’à 3 pour comparer · clic ou toucher cartographie le mot
 Épingler
 Détacher
 {0} occurrences trouvées · {1} fenêtres de contexte
@@ -90,3 +90,4 @@ Actualiser avec des données en direct
 Précalculé le {0} avec les réglages par défaut.
 Automatique (langue de la carte)
 Interface traduite automatiquement ; corrections bienvenues.
+3 au maximum, détachez-en un d’abord

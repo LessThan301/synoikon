@@ -23,7 +23,9 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   let labelOrder = [];       // nodes grouped by font size
   let gapMax = 200, rMax = 30;
   let t = d3.zoomIdentity;   // world -> screen
-  let hovered = null, dragging = null, pinned = null, suppressClick = false, pressTimer = 0;
+  let hovered = null, dragging = null, suppressClick = false, pressTimer = 0;
+  const MAX_PANELS = 3; let pins = []; // pinned info panels (nodes, oldest first); pinned + hover panel <= MAX_PANELS
+  const pinBox = document.createElement('div'); pinBox.className = 'pins'; pinBox.setAttribute('aria-live', 'polite'); tooltip.after(pinBox);
   let userMoved = false;     // the user zoomed/panned: don't auto-fit any more
   let frame = 0;
   let pointer = null, pointerFrame = 0;
@@ -129,7 +131,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     buckets = [...bmap.values()].sort((a, b) => a.width - b.width);
     labelOrder = [...nodes].sort((a, b) => a.font - b.font);
     hovered = hovered && byId.get(hovered.id) ? byId.get(hovered.id) : null;
-    if (!hovered && !pinned) hideTip();
+    if (!hovered) hideTip();
 
     sim.nodes(nodes)
       .force('link', d3.forceLink(links).id((d) => d.id).distance(dist)
@@ -157,6 +159,19 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     ctx.clearRect(0, 0, W, H);
     if (!nodes.length) return;
     paint(ctx, t, W, H, dpr, hovered, LABEL_MIN_PX);
+    if (pins.length) { // numbered rings on pinned circles (live canvas only)
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const byLabel = new Map(nodes.map((d) => [d.label, d]));
+      pins.forEach((p, i) => {
+        const d = byLabel.get(p.label); if (!d) return;
+        const [x, y] = t.apply([d.x, d.y]), r = d.r * t.k + 4;
+        ctx.globalAlpha = 1; ctx.lineWidth = 2.5; ctx.strokeStyle = '#5b8def';
+        ctx.beginPath(); ctx.arc(x, y, r, 0, 2 * Math.PI); ctx.stroke();
+        const bx = x + r * 0.72, by = y - r * 0.72;
+        ctx.fillStyle = '#5b8def'; ctx.beginPath(); ctx.arc(bx, by, 9, 0, 2 * Math.PI); ctx.fill();
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 11px system-ui, sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(String(i + 1), bx, by + 0.5);
+      });
+    }
   }
 
   /**
@@ -332,7 +347,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     if (d === hovered) return;
     hovered = d;
     canvas.style.cursor = d ? (d.target ? 'grab' : 'pointer') : '';
-    if (d) { if (!pinned) showTip(d); onFocus?.(d); } else if (!pinned) hideTip();
+    if (d) { if (canHover(d)) showTip(d); else hideTip(); onFocus?.(d); } else hideTip();
     requestDraw();
   }
   canvas.addEventListener('click', (e) => {
@@ -353,34 +368,51 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     const off = () => { for (const t of ['pointermove', 'pointerup', 'pointercancel']) canvas.removeEventListener(t, cancel); };
     for (const t of ['pointermove', 'pointerup', 'pointercancel']) canvas.addEventListener(t, cancel);
   });
-  canvas.addEventListener('contextmenu', (e) => { if (pinned || suppressClick) e.preventDefault(); });
-  function pin(d) {
-    pinned = d; showTip(d, true); tooltip.classList.add('pinned');
-    const x = Math.max(4, Math.min((pointer?.[0] ?? 20) + 14, W - tooltip._w - 4)), y = Math.max(4, Math.min((pointer?.[1] ?? 20) + 14, H - tooltip._h - 4));
-    tooltip.style.transform = `translate(${x}px, ${y}px)`;
+  canvas.addEventListener('contextmenu', (e) => { if (pins.length || suppressClick) e.preventDefault(); });
+  const isPinned = (d) => pins.some((p) => p.label === d.label);
+  const canHover = (d) => pins.length < MAX_PANELS && !isPinned(d);
+  function renderPins() {
+    pinBox.querySelectorAll('.tooltip').forEach((el) => el.remove());
+    pins.forEach((d, i) => { const el = document.createElement('div'); el.className = 'tooltip pinned'; el.dataset.label = d.label; el.innerHTML = pinHead(i + 1) + d.body; pinBox.appendChild(el); });
+    pinBox.classList.toggle('has', pins.length > 0);
+    if (hovered && !canHover(hovered)) hideTip();
+    requestDraw();
   }
-  function unpin() { pinned = null; tooltip.classList.remove('pinned'); if (hovered) showTip(hovered); else hideTip(); }
-  function togglePin(d) { if (pinned && pinned.label === d.label) unpin(); else pin(d); }
-  tooltip.addEventListener('click', (e) => { if (e.target.closest('[data-unpin]')) unpin(); });
-  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pinned && !e.defaultPrevented) unpin(); });
+  let noteTimer = 0;
+  function note(text) {
+    let n = pinBox.querySelector('.pin-note'); if (!n) { n = document.createElement('div'); n.className = 'pin-note'; pinBox.prepend(n); }
+    n.textContent = text; n.hidden = false; clearTimeout(noteTimer); noteTimer = setTimeout(() => { n.hidden = true; }, 2600);
+  }
+  function pin(d) {
+    if (isPinned(d)) return;
+    if (pins.length >= MAX_PANELS) { note(tr('Max. 3 at once, unpin one first')); return; }
+    pins.push({ label: d.label, body: tipHTML(d) }); renderPins();
+  }
+  function unpin(label) { pins = label == null ? [] : pins.filter((p) => p.label !== label); renderPins(); if (hovered && canHover(hovered)) showTip(hovered); }
+  function togglePin(d) { if (isPinned(d)) unpin(d.label); else pin(d); }
+  pinBox.addEventListener('click', (e) => { const x = e.target.closest('[data-unpin]'); if (x) unpin(x.closest('.tooltip').dataset.label); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && pins.length && !e.defaultPrevented) unpin(); });
 
   // ---- tooltip -----------------------------------------------------------
-  function showTip(d, isPinned = false) {
+  function showTip(d) {
+    tooltip.innerHTML = tipHTML(d);
+    tooltip.classList.remove('hidden');
+    tooltip._w = tooltip.offsetWidth; tooltip._h = tooltip.offsetHeight; // measure once per node
+  }
+  const pinHead = (num) => `<button type="button" class="tip-x" data-unpin title="${esc(tr('Unpin'))}" aria-label="${esc(tr('Unpin'))}">×</button><span class="tip-num" aria-hidden="true">${num}</span> `;
+  function tipHTML(d) {
     const nb = [...adj.get(d.id).entries()].filter(([id]) => id !== TARGET_ID)
       .sort((a, b) => b[1] - a[1]).slice(0, 6)
       .map(([id, w]) => `${esc(byId.get(id).label)} <span class="muted">×${w}</span>`).join(', ');
-    const head = isPinned ? `<button type="button" class="tip-x" data-unpin title="${esc(tr('Unpin'))}" aria-label="${esc(tr('Unpin'))}">×</button><span class="tip-pin" aria-hidden="true">📌</span> ` : '';
-    tooltip.innerHTML = head + (d.target
+    return (d.target
       ? `<b>${esc(d.label)}</b><br><span class="muted">${esc(tr('{0} occurrences found · {1} context windows', d.freq, d.cooc))}${d.capped ? ' · circle capped for display' : ''}</span>`
       : `<b>${esc(d.label)}</b> <span class="muted">#${d.rank}</span><br>${esc(tr('{0}× near {1}', d.freq, '\u0000')).replace('\u0000', `<i>${esc(target.label)}</i>`)} <span class="muted">(${esc(tr('in {0} of {1} windows', d.cooc, target.cooc))})</span>`
         + (d.lr != null ? `<br>${esc(tr('Distinctiveness'))} <b>${d.lr.toFixed(1)}</b> <span class="muted">(${esc(tr('≈{0} more often than in general text', fmtX(d.lr)))}; LL ${Math.round(d.g2)})</span>` : '')
         + (nb ? `<br><span class="muted">${esc(tr('Often with'))}:</span> ${nb}` : '')
         + (d.target ? '' : `<br><span class="muted">${esc(tr('Click to map “{0}”', d.label))}</span>`));
-    tooltip.classList.remove('hidden');
-    tooltip._w = tooltip.offsetWidth; tooltip._h = tooltip.offsetHeight; // measure once per node
   }
   function moveTip() {
-    if (!hovered || !pointer || pinned) return;
+    if (!hovered || !pointer) return;
     const x = Math.max(4, Math.min(pointer[0] + 14, W - (tooltip._w || 260) - 4));
     const y = Math.max(4, Math.min(pointer[1] + 14, H - (tooltip._h || 120) - 4));
     tooltip.style.transform = `translate(${x}px, ${y}px)`;
@@ -413,7 +445,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   }
 
   function clear() {
-    sim.stop(); nodes = []; links = []; buckets = []; labelOrder = []; hovered = null; pinned = null; tooltip.classList.remove('pinned'); hideTip(); requestDraw();
+    sim.stop(); nodes = []; links = []; buckets = []; labelOrder = []; hovered = null; pins = []; renderPins(); hideTip(); requestDraw();
   }
 
   return {
@@ -434,7 +466,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
       fontStack: () => fontStack,
       screenPos: (i) => { const d = nodes[i]; if (!d) return null; const r = canvas.getBoundingClientRect(); const [x, y] = t.apply([d.x, d.y]); return { x: r.left + x, y: r.top + y, label: d.label }; },
       hovered: () => hovered?.label ?? null,
-      pinned: () => pinned?.label ?? null,
+      pinned: () => pins.map((p) => p.label),
       settled: () => sim.alpha() < sim.alphaMin(),
       benchDraw: (n = 20) => { const t0 = performance.now(); for (let i = 0; i < n; i++) draw(); return (performance.now() - t0) / n; },
       zoomTo: (k) => sel.call(zoom.scaleTo, k),
