@@ -1,4 +1,2 @@
 User-agent: *
-Allow: /
-Disallow: /words/offline.html
-Sitemap: https://synoikon.com/sitemap.xml
+Disallow: /
