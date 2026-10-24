@@ -1,6 +1,6 @@
 // "Share map" cards: a PNG with the word, language, the current network render,
 // the shareable URL and the text attribution. Also used (headless) for Open Graph images.
-const BG = '#0f1220', PANEL = '#161a2e', TEXT = '#e9ecf7', MUTED = '#9aa3c7', ACCENT = '#ff6b4a';
+const BG = '#05030f', PANEL = '#0e0a26', TEXT = '#efeaff', MUTED = '#b3aade', ACCENT = '#ff3df2';
 export const ATTRIBUTION = 'Text: Wikipedia/Wikiquote, CC BY-SA';
 export const FORMATS = {
   og: { w: 1200, h: 630, label: 'Landscape 1200×630' },
@@ -9,8 +9,8 @@ export const FORMATS = {
 const RTL = /[\u0590-\u08FF\uFB1D-\uFDFF\uFE70-\uFEFF]/;
 
 function logo(c, x, y, s) {
-  const dots = [[0.5, 0.5, 0.22, ACCENT], [0.19, 0.22, 0.11, '#5b8def'], [0.81, 0.28, 0.14, '#38c6a8'], [0.75, 0.81, 0.09, '#f2b134']];
-  c.strokeStyle = 'rgba(143,163,224,.45)'; c.lineWidth = s * 0.03;
+  const dots = [[0.5, 0.5, 0.22, ACCENT], [0.19, 0.22, 0.11, '#3d8bff'], [0.81, 0.28, 0.14, '#3df5ff'], [0.75, 0.81, 0.09, '#b6ff5c']];
+  c.strokeStyle = 'rgba(120,140,255,.45)'; c.lineWidth = s * 0.03;
   for (const [dx, dy] of [[0.19, 0.22], [0.81, 0.28], [0.75, 0.81]]) { c.beginPath(); c.moveTo(x + s / 2, y + s / 2); c.lineTo(x + dx * s, y + dy * s); c.stroke(); }
   for (const [dx, dy, r, col] of dots) { c.fillStyle = col; c.beginPath(); c.arc(x + dx * s, y + dy * s, r * s, 0, Math.PI * 2); c.fill(); }
 }
