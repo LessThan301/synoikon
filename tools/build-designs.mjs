@@ -4,7 +4,7 @@
 import fs from 'fs';
 import path from 'path';
 const OUT = process.argv[2] || '_site';
-const CONCEPTS = { a: 'Broadsheet', b: 'Nebula', c: 'Kontrast' };
+const CONCEPTS = Object.fromEntries((process.argv[3] || 'a:Broadsheet,b:Nebula,c:Kontrast').split(',').map((x) => x.split(':')));
 const copy = (src, dst, skip = () => false) => {
   if (skip(src)) return;
   if (fs.statSync(src).isDirectory()) { fs.mkdirSync(dst, { recursive: true }); for (const f of fs.readdirSync(src)) copy(path.join(src, f), path.join(dst, f), skip); }
@@ -27,7 +27,8 @@ for (const x of Object.keys(CONCEPTS)) {
   fs.rmSync(d, { recursive: true, force: true }); fs.mkdirSync(d, { recursive: true });
   for (const f of ['index.html', 'home.css', 'home.js']) fs.copyFileSync(path.join(OUT, f), path.join(d, f));
   copy(path.join(OUT, 'words'), path.join(d, 'words'), (p) => /[/\\]words[/\\](w|sw\.js|og\.png)$/.test(p));
-  fs.copyFileSync(path.join('design', `${x}.css`), path.join(d, 'design.css'));
+  fs.writeFileSync(path.join(d, 'design.css'), fs.readFileSync(path.join('design', `${x}.css`), 'utf8').split('FONTS/').join('fonts/'));
+  if (fs.existsSync(path.join('home', 'zimmer', 'fonts'))) copy(path.join('home', 'zimmer', 'fonts'), path.join(d, 'fonts'));
   // home: legal pages and app live one level up
   let home = fs.readFileSync(path.join(d, 'index.html'), 'utf8').replace(/href="(impressum|datenschutz)\/"/g, 'href="../../$1/"');
   fs.writeFileSync(path.join(d, 'index.html'), home);

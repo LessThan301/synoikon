@@ -1,0 +1,27 @@
+/* Editorial look for The Record (mockup only; layered after the site's stylesheet). */
+@font-face { font-family: Geist; src: url(/__ed/geist-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; }
+:root { --bg:#f4f2ec !important; --fg:#111 !important; --muted:#6b6b66 !important; --line:#d9d6cf !important; --panel:#faf9f5 !important; --panel2:#efede6 !important;
+  --red:#e4002b !important; --red-ink:#e4002b !important; --mis:#111 !important; --over:#8a877f !important; --radius:0 !important;
+  --font: Geist, Inter, system-ui, sans-serif !important; color-scheme: light; }
+html, body { background: var(--bg) !important; background-image: none !important; color: var(--fg) !important; }
+body::before, body::after { display: none !important; }
+* { text-shadow: none !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+.top { background: rgba(244,242,236,.97) !important; border-bottom: 1px solid #111 !important; }
+.logo { color: #111 !important; } .logo::before { content: ""; display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #e4002b; margin-right: 8px; }
+.topnav a, .lang, .lang select { color: #111 !important; } .lang select { border-color: #111 !important; border-radius: 0 !important; background: transparent !important; }
+.lang select option { background: #fff !important; }
+.hero { border-bottom: 1px solid #111; padding-bottom: 32px !important; }
+.hero h1 { background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; color: #111 !important; font-weight: 700 !important; letter-spacing: -.05em !important; line-height: .95 !important; font-size: clamp(40px, 8vw, 96px) !important; max-width: 14ch !important; }
+.kicker { color: #e4002b !important; letter-spacing: .14em !important; }
+.lede, .muted { color: #6b6b66 !important; }
+.card, .cmp-card { background: transparent !important; border: 0 !important; border-top: 1px solid #111 !important; border-radius: 0 !important; box-shadow: none !important; }
+.grid { gap: 0 32px !important; }
+.claim { font-weight: 600 !important; letter-spacing: -.03em !important; color: #111 !important; }
+.stamp { color: #e4002b !important; border-color: #e4002b !important; border-radius: 0 !important; transform: none !important; }
+.chip, .btn, .ghost, .believe, .cmp-toggle, button { border-radius: 0 !important; color: #111 !important; border-color: #111 !important; background: transparent !important; box-shadow: none !important; }
+.chip.is-current, .chip[aria-pressed=true], .primary { background: #111 !important; color: #f4f2ec !important; }
+.v-false { background: #e4002b !important; color: #fff !important; } .v-misleading { background: #111 !important; color: #fff !important; } .v-overstated { background: #8a877f !important; color: #fff !important; }
+.topic-head { border-bottom: 1px solid #111; } .topic-head h2 { letter-spacing: -.04em; font-weight: 700; }
+.foot { border-top: 1px solid #111 !important; background: transparent !important; color: #6b6b66 !important; }
+a { text-decoration-color: #e4002b; }
+:focus-visible { outline-color: #e4002b !important; }
