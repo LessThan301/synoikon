@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Hans Zimmer films · Synoikon</title>
+  <meta name="description" content="Every feature film Hans Zimmer scored or co-scored, by decade. Tick what you have seen; ticks stay in your browser.">
+  <meta name="theme-color" content="#05030f">
+  <link rel="icon" href="../words/icons/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../home.css">
+  <link rel="stylesheet" href="../words/css/nebula.css">
+  <style>
+    .wrap { padding-top: 5vh; max-width: 820px; }
+    .hero h1 { font-size: clamp(1.8rem, 7vw, 3.4rem) !important; letter-spacing: .1em !important; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 0 0 18px; }
+    .stat, .card { padding: 16px; border-radius: 18px; }
+    .stat { background: var(--panel); border: 1px solid var(--line); text-align: center; }
+    .stat b { display: block; font-size: 1.8rem; font-weight: 300; color: #fff; text-shadow: 0 0 14px rgba(61,245,255,.6); }
+    .stat span { color: var(--muted); font-size: .85rem; }
+    .tools { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; margin-bottom: 18px; }
+    .tools input[type=search] { flex: 1 1 240px; font: inherit; padding: 10px 16px; }
+    .tools label { color: var(--muted); display: flex; gap: 8px; align-items: center; cursor: pointer; }
+    .card { margin-bottom: 16px; }
+    .card h2 { margin: 0 0 4px; font-weight: 300; letter-spacing: .08em; color: #fff; }
+    .cap { color: var(--muted); font-size: .85rem; margin: 0 0 8px; }
+    .row { display: flex; align-items: center; gap: 12px; padding: 8px 2px; border-bottom: 1px solid rgba(170,140,255,.14); cursor: pointer; flex-wrap: wrap; }
+    .row:last-child { border-bottom: 0; }
+    .row input { width: 18px; height: 18px; accent-color: #ff3df2; }
+    .yr { color: var(--accent2); font-size: .85rem; min-width: 40px; font-variant-numeric: tabular-nums; }
+    .ti { flex: 1 1 200px; }
+    .row.seen .ti { color: var(--muted); text-decoration: line-through; }
+    .co { color: var(--muted); font-size: .82rem; }
+    .credit { color: var(--muted); font-size: .85rem; text-align: center; margin-top: 24px; line-height: 1.5; }
+    .empty { color: var(--muted); text-align: center; }
+    .brand + a { color: var(--muted); font-size: .9rem; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <nav class="topnav" aria-label="Main">
+    <a class="brand" href="../"><span class="logo sm" aria-hidden="true"></span>Synoikon</a>
+    <a href="../" data-i18n="back">← Home</a>
+  </nav>
+  <main class="wrap">
+    <header class="hero">
+      <h1>Hans Zimmer</h1>
+      <p class="sub" data-i18n="sub">Every feature film Hans Zimmer scored or co-scored, by decade. Tick what you have seen; ticks stay in this browser only.</p>
+    </header>
+    <div class="stats">
+      <div class="stat"><b id="sSeen">0</b><span data-i18n="seen">Seen</span></div>
+      <div class="stat"><b id="sLeft">0</b><span data-i18n="left">Still to watch</span></div>
+      <div class="stat"><b id="sAll">0</b><span data-i18n="feat">Feature films</span></div>
+    </div>
+    <div class="tools">
+      <input type="search" id="q" data-i18n-ph="ph" placeholder="Search title, year or co-composer" aria-label="Search">
+      <label><input type="checkbox" id="unseen"> <span data-i18n="unseen">Unseen only</span></label>
+    </div>
+    <div id="list"></div>
+    <p class="credit"><span data-i18n="credit">Film list from</span> <a href="https://en.wikipedia.org/wiki/Hans_Zimmer_discography" rel="noopener">Wikipedia: Hans Zimmer discography</a>, <a href="https://creativecommons.org/licenses/by-sa/4.0/" rel="noopener">CC BY-SA 4.0</a>. <span data-i18n="state">Status: November 2026.</span></p>
+  </main>
+  <footer class="foot"><span>© Synoikon</span><a href="../impressum/">Impressum</a><a href="../datenschutz/" data-i18n="priv">Privacy</a></footer>
+  <script>
+const FILMS = [["Moonlighting",1982,"Stanley Myers"],["Success Is the Best Revenge",1984,"Stanley Myers"],["Story of O – Chapter 2",1984,"Stanley Myers"],["My Beautiful Laundrette",1985,"Stanley Myers"],["Insignificance",1985,"Stanley Myers"],["The Zero Boys",1986,"Stanley Myers"],["Separate Vacations",1986,"Stanley Myers"],["Terminal Exposure",1987,"Stanley Myers"],["Nightmare at Noon",1988,"Stanley Myers"],["The Wind",1986,"Stanley Myers"],["The Nature of the Beast",1988,"Stanley Myers"],["The Fruit Machine",1988,"Stanley Myers"],["A World Apart",1988,""],["Taffin",1988,"Stanley Myers"],["Paperhouse",1988,"Stanley Myers"],["Rain Man",1988,""],["Burning Secret",1988,""],["Twister",1989,""],["Black Rain",1989,""],["Diamond Skulls",1989,""],["Driving Miss Daisy",1989,""],["Chicago Joe and the Showgirl",1990,""],["Bird on a Wire",1990,""],["Fools of Fortune",1990,""],["Days of Thunder",1990,""],["Pacific Heights",1990,""],["Green Card",1990,""],["Backdraft",1991,""],["Thelma & Louise",1991,""],["Regarding Henry",1991,""],["Where Sleeping Dogs Lie",1992,"Mark Mancina"],["K2",1991,"Chaz Jankel"],["Radio Flyer",1992,""],["The Power of One",1992,""],["A League of Their Own",1992,""],["Toys",1992,"Trevor Horn"],["Point of No Return",1993,""],["Younger and Younger",1993,""],["Calendar Girl",1993,""],["True Romance",1993,""],["Cool Runnings",1993,""],["The House of the Spirits",1993,""],["I'll Do Anything",1994,""],["Renaissance Man",1994,""],["The Lion King",1994,""],["Drop Zone",1994,""],["Crimson Tide",1995,""],["Beyond Rangoon",1995,""],["Nine Months",1995,""],["Something to Talk About",1995,"Graham Preskett"],["Two Deaths",1995,""],["The Whole Wide World",1996,"Harry Gregson-Williams"],["Broken Arrow",1996,""],["Muppet Treasure Island",1996,""],["The Rock",1996,"Nick Glennie-Smith"],["The Fan",1996,""],["The Preacher's Wife",1996,""],["Smilla's Sense of Snow",1997,"Harry Gregson-Williams"],["The Peacemaker",1997,""],["As Good as It Gets",1997,""],["The Prince of Egypt",1998,""],["The Thin Red Line",1998,""],["Chill Factor",1999,"John Powell"],["An Everlasting Piece",2000,""],["Mission: Impossible 2",2000,""],["The Road to El Dorado",2000,"John Powell"],["Gladiator",2000,"Lisa Gerrard"],["Black Hawk Down",2001,""],["Riding in Cars with Boys",2001,""],["Pearl Harbor",2001,""],["Hannibal",2001,""],["Invincible",2001,"Klaus Badelt"],["The Pledge",2001,"Klaus Badelt"],["Spirit: Stallion of the Cimarron",2002,""],["The Country Bears",2002,""],["The Ring",2002,""],["The Last Samurai",2003,""],["Something's Gotta Give",2003,""],["Matchstick Men",2003,""],["Tears of the Sun",2003,""],["Spanglish",2004,""],["Laura's Star",2004,"Nick Glennie-Smith & Henning Lohner"],["King Arthur",2004,""],["Thunderbirds",2004,""],["Shark Tale",2004,""],["The Weather Man",2005,"James S. Levine"],["The Little Polar Bear 2: The Mysterious Island",2005,"Nick Glennie-Smith"],["Madagascar",2005,""],["Batman Begins",2005,"James Newton Howard"],["Pirates of the Caribbean: Dead Man's Chest",2006,""],["The Da Vinci Code",2006,""],["The Holiday",2006,""],["Pirates of the Caribbean: At World's End",2007,""],["The Simpsons Movie",2007,""],["Road to Fame",2008,""],["Kung Fu Panda",2008,"John Powell"],["The Dark Knight",2008,"James Newton Howard"],["Madagascar: Escape 2 Africa",2008,"will.i.am"],["The Burning Plain",2008,"Omar Rodríguez-López"],["Frost/Nixon",2008,""],["Angels & Demons",2009,""],["Sherlock Holmes",2009,""],["It's Complicated",2009,"Heitor Pereira"],["Inception",2010,""],["Megamind",2010,"Lorne Balfe"],["How Do You Know",2010,""],["Henri 4",2010,"Henry Jackman"],["Rango",2011,""],["Pirates of the Caribbean: On Stranger Tides",2011,""],["Kung Fu Panda 2",2011,"John Powell"],["The Dilemma",2011,"Lorne Balfe"],["Sherlock Holmes: A Game of Shadows",2011,""],["Madagascar 3: Europe's Most Wanted",2012,""],["The Dark Knight Rises",2012,""],["Rush",2013,""],["Man of Steel",2013,""],["The Lone Ranger",2013,""],["Mr. Morgan's Last Love",2013,""],["12 Years a Slave",2013,""],["Son of God",2014,"Lorne Balfe and Lisa Gerrard"],["The Amazing Spider-Man 2",2014,"The Magnificent Six"],["Winter's Tale",2014,"Rupert Gregson-Williams"],["Interstellar",2014,""],["Chappie",2015,""],["The Little Prince",2015,"Richard Harvey and Camille"],["Freeheld",2015,"Johnny Marr"],["Woman in Gold",2015,"Martin Phipps"],["Kung Fu Panda 3",2016,""],["Batman v Superman: Dawn of Justice",2016,"Junkie XL"],["The Last Face",2016,""],["Inferno",2016,""],["Hidden Figures",2016,"Pharrell Williams and Benjamin Wallfisch"],["The Boss Baby",2017,"Steve Mazzaro"],["Pirates of the Caribbean: Dead Men Tell No Tales",2017,"themes only, score by Geoff Zanelli"],["Dunkirk",2017,""],["Blade Runner 2049",2017,"Benjamin Wallfisch"],["Widows",2018,""],["Dark Phoenix",2019,""],["The Lion King",2019,""],["The SpongeBob Movie: Sponge on the Run",2020,"Steve Mazzaro"],["Hillbilly Elegy",2020,"David Fleming"],["Wonder Woman 1984",2020,""],["The Boss Baby: Family Business",2021,"Steve Mazzaro"],["Dune",2021,""],["The Survivor",2021,""],["No Time to Die",2021,""],["Army of Thieves",2021,"Steve Mazzaro"],["The Unforgivable",2021,"David Fleming"],["Top Gun: Maverick",2022,"Harold Faltermeyer and Lady Gaga"],["The Son",2022,""],["Are You There God? It's Me, Margaret.",2023,""],["The Creator",2023,""],["Dune: Part Two",2024,""],["Kung Fu Panda 4",2024,"Steve Mazzaro"],["Eden",2024,""],["Blitz",2024,""],["F1",2025,""],["Ella McCay",2025,""]];
+const DOCS = [["The Last Days",1998,""],["Jealous of the Birds",2011,""],["Brave Miss World",2013,""],["Rebuilding Paradise",2020,"Lorne Balfe"]];
+const UP = [["The Last Photograph",2026,"Omer Benyamin and Steven Doar"],["Ramayana: Part 1",2026,"A. R. Rahman"],["Dune: Part Three",2026,""],["Ramayana: Part 2",2027,"A. R. Rahman"]];
+(function () {
+  var T = { de: { back: '← Start', sub: 'Jeder Spielfilm, den Hans Zimmer vertont oder mitvertont hat, nach Jahrzehnt. Hake ab, was du gesehen hast; die Haken bleiben nur in diesem Browser.', seen: 'Gesehen', left: 'Noch offen', feat: 'Spielfilme', ph: 'Titel, Jahr oder Mitkomponist suchen', unseen: 'Nur ungesehene', credit: 'Filmliste aus', state: 'Stand: November 2026.', priv: 'Datenschutz', docs: 'Dokumentarfilme', docsCap: 'Nicht in der Spielfilm-Zahl enthalten', up: 'Angekündigt', upCap: 'Noch nicht erschienen (Stand November 2026)', of: ' von ', seenS: ' gesehen', with: 'mit ', none: 'Keine Treffer.' } };
+  var E = { docs: 'Documentaries', docsCap: 'Not counted in the feature film total', up: 'Upcoming', upCap: 'Announced, not yet released as of November 2026', of: ' of ', seenS: ' seen', with: 'with ', none: 'No matches.' };
+  var lang = (navigator.language || 'en').slice(0, 2), t = T[lang] || {};
+  function L(k) { return t[k] || E[k]; }
+  if (T[lang]) { document.documentElement.lang = lang;
+    document.querySelectorAll('[data-i18n]').forEach(function (el) { var v = t[el.dataset.i18n]; if (v) el.textContent = v; });
+    document.querySelectorAll('[data-i18n-ph]').forEach(function (el) { var v = t[el.dataset.i18nPh]; if (v) { el.placeholder = v; el.setAttribute('aria-label', v); } }); }
+  var KEY = 'hz-seen-v1', seen = {};
+  try { seen = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+  var id = function (f) { return f[0] + '|' + f[1]; };
+  var q = document.getElementById('q'), un = document.getElementById('unseen'), box = document.getElementById('list');
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function match(f) { var s = q.value.trim().toLowerCase();
+    return (!un.checked || !seen[id(f)]) && (!s || (f[0] + ' ' + f[2] + ' ' + f[1]).toLowerCase().indexOf(s) >= 0); }
+  function rows(fs) { return fs.filter(match).map(function (f) { var k = id(f), on = !!seen[k];
+    return '<label class="row' + (on ? ' seen' : '') + '"><input type="checkbox" data-k="' + esc(k) + '"' + (on ? ' checked' : '') + '><span class="yr">' + f[1] + '</span><span class="ti">' + esc(f[0]) + '</span>' + (f[2] ? '<span class="co">' + L('with') + esc(f[2]) + '</span>' : '') + '</label>'; }).join(''); }
+  function card(h, cap, body) { return '<section class="card"><h2>' + h + '</h2><p class="cap">' + cap + '</p>' + body + '</section>'; }
+  function render() {
+    var all = FILMS.concat(DOCS), n = all.filter(function (f) { return seen[id(f)]; }).length, html = '';
+    document.getElementById('sSeen').textContent = n; document.getElementById('sLeft').textContent = all.length - n; document.getElementById('sAll').textContent = FILMS.length;
+    [1980, 1990, 2000, 2010, 2020].forEach(function (d) {
+      var fs = FILMS.filter(function (f) { return f[1] >= d && f[1] < d + 10; }), r = rows(fs);
+      if (r) html += card(d + 's', fs.filter(function (f) { return seen[id(f)]; }).length + L('of') + fs.length + L('seenS'), r); });
+    var r = rows(DOCS); if (r) html += card(L('docs'), L('docsCap'), r);
+    if (!q.value.trim()) html += card(L('up'), L('upCap'), UP.map(function (f) { return '<div class="row" style="cursor:default"><span class="yr">' + f[1] + '</span><span class="ti">' + esc(f[0]) + '</span>' + (f[2] ? '<span class="co">' + L('with') + esc(f[2]) + '</span>' : '') + '</div>'; }).join(''));
+    box.innerHTML = html || '<p class="empty">' + L('none') + '</p>';
+  }
+  box.addEventListener('change', function (e) { var k = e.target.dataset.k; if (!k) return;
+    if (e.target.checked) seen[k] = true; else delete seen[k];
+    try { localStorage.setItem(KEY, JSON.stringify(seen)); } catch (er) {} render(); });
+  q.addEventListener('input', render); un.addEventListener('change', render);
+  render();
+})();
+  </script>
+</body>
+</html>

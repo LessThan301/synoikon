@@ -72,6 +72,10 @@ let home = fs.readFileSync(path.join(HOME, 'index.html'), 'utf8').split(PROD_SIT
 if (PREVIEW) home = home.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  <meta name="robots" content="noindex,nofollow">`)
   .replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
 fs.writeFileSync(path.join(OUT, 'index.html'), home);
+// Other projects: Hans Zimmer film tracker (self-contained, no outside requests)
+{ let pg = fs.readFileSync(path.join(HOME, 'zimmer', 'index.html'), 'utf8');
+  if (PREVIEW) pg = pg.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  <meta name="robots" content="noindex,nofollow">`).replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
+  fs.mkdirSync(path.join(OUT, 'zimmer'), { recursive: true }); fs.writeFileSync(path.join(OUT, 'zimmer', 'index.html'), pg); }
 // shared Impressum + Datenschutz (synoikon.com, The Record, Listen); noindex, DE/EN
 for (const f of ['legal.css', 'legal.js']) fs.copyFileSync(path.join(HOME, 'legal', f), path.join(OUT, f));
 for (const slug of ['impressum', 'datenschutz']) {
