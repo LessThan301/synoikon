@@ -78,6 +78,7 @@ for (const src of walk(path.join(HOME, 'zimmer'))) {   // tracker + design conce
   const dst = path.join(OUT, 'zimmer', path.relative(path.join(HOME, 'zimmer'), src)); fs.mkdirSync(path.dirname(dst), { recursive: true });
   if (!src.endsWith('.html')) { fs.copyFileSync(src, dst); continue; }
   let pg = fs.readFileSync(src, 'utf8').split('THEMEVER').join(crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'js', 'theme.js'))).digest('hex').slice(0, 10));
+  { const pv = path.join(HOME, 'zimmer', 'providers.json'); pg = pg.split('PVVER').join(fs.existsSync(pv) ? crypto.createHash('sha1').update(fs.readFileSync(pv)).digest('hex').slice(0, 10) : '0'); }
   if (PREVIEW) pg = pg.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  <meta name="robots" content="noindex,nofollow">`).replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
   fs.writeFileSync(dst, pg); }
 // shared Impressum + Datenschutz (synoikon.com, The Record, Listen); noindex, DE/EN
