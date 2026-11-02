@@ -63,6 +63,21 @@ input[type=checkbox] { accent-color: var(--acc); width: 18px; height: 18px; marg
 .credit { grid-column: 1 / -1; padding: 18px 22px; color: var(--mut); font-size: .8rem; margin: 0; } .credit a, .foot a { color: var(--ink); }
 .foot { display: flex; gap: 20px; justify-content: center; padding: 24px; font-size: .8rem; color: var(--mut); }
 @media (max-width: 760px) { .wrap { grid-template-columns: repeat(2, 1fr); } .hero { grid-column: 1 / -1; grid-row: auto; min-height: 200px; padding: 24px; } .stat, .prog { min-height: 104px; } .stat:nth-child(3) { grid-column: auto; } #list { grid-template-columns: 1fr; } .tools { top: 68px; } .co { padding-left: 64px; } }
+
+/* accordion (mirrors The Record: one open at a time, header keeps its place, flip-in animation) */
+.card.acc { display: block !important; }
+.acc-h { margin: 0 !important; font: inherit !important; letter-spacing: normal !important; }
+.acc-btn { all: unset; box-sizing: border-box; width: 100%; cursor: pointer; display: flex; align-items: baseline; gap: 14px; flex-wrap: wrap; padding: 4px 0; }
+.acc-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 4px; }
+.acc-t { font: inherit; } .acc-btn .cap { margin: 0 !important; }
+.acc-chev { margin-left: auto; font-size: 1.4rem; line-height: 1; transition: transform .25s ease; }
+.card.open .acc-chev { transform: rotate(45deg); }
+.acc-p { margin-top: 10px; animation: acc-in .35s ease; transform-origin: top; }
+.acc-p[hidden] { display: none; }
+@keyframes acc-in { from { opacity: 0; transform: perspective(1200px) rotateX(-12deg) translateY(-6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .acc-p { animation: none; } .acc-chev { transition: none; } }
+.card { scroll-margin-top: 80px; }
+.acc-t { font-size: 1.6rem; font-weight: 800; letter-spacing: -.04em; }
   </style>
 </head>
 <body>
@@ -117,18 +132,30 @@ const UP = [["The Last Photograph",2026,"Omer Benyamin and Steven Doar"],["Ramay
   function co(f) { return f[2] ? '<span class="co">' + L('with') + esc(f[2]) + '</span>' : ''; }
   function rows(fs) { return fs.filter(match).map(function (f) { var k = id(f), on = !!seen[k];
     return '<div class="row' + (on ? ' seen' : '') + '"><label><input type="checkbox" data-k="' + esc(k) + '"' + (on ? ' checked' : '') + '><span class="yr">' + f[1] + '</span><span class="ti">' + esc(f[0]) + '</span>' + co(f) + '</label><span class="lk">' + imdb(f) + music(f) + '</span></div>'; }).join(''); }
-  function card(h, cap, body) { return '<section class="card"><h2>' + h + '</h2><p class="cap">' + cap + '</p>' + body + '</section>'; }
+  var openKey = null;   // accordion: at most one section open (all open while searching)
+  function card(key, h, cap, body) { var searching = !!q.value.trim(), open = searching || openKey === key;
+    return '<section class="card acc' + (open ? ' open' : '') + '" data-key="' + key + '"><h2 class="acc-h"><button type="button" class="acc-btn" id="h-' + key + '" aria-expanded="' + open + '" aria-controls="p-' + key + '"><span class="acc-t">' + h + '</span><span class="cap">' + cap + '</span><span class="acc-chev" aria-hidden="true">+</span></button></h2>' +
+      '<div class="acc-p" id="p-' + key + '" role="region" aria-labelledby="h-' + key + '"' + (open ? '' : ' hidden') + '>' + body + '</div></section>'; }
   function render() { if (typeof closeMenu === 'function') closeMenu();
     var all = FILMS.concat(DOCS), n = all.filter(function (f) { return seen[id(f)]; }).length, html = '';
     document.getElementById('sSeen').textContent = n; document.getElementById('sLeft').textContent = all.length - n; document.getElementById('sAll').textContent = FILMS.length;
     var pc = Math.round(n / all.length * 100), pb = document.getElementById('pbar'); pb.style.width = pc + '%'; pb.parentNode.style.setProperty('--p', pc + '%'); pb.parentNode.setAttribute('data-pct', pc + '%');
     [1980, 1990, 2000, 2010, 2020].forEach(function (d) {
       var fs = FILMS.filter(function (f) { return f[1] >= d && f[1] < d + 10; }), r = rows(fs);
-      if (r) html += card(d + 's', fs.filter(function (f) { return seen[id(f)]; }).length + L('of') + fs.length + L('seenS'), r); });
-    var r = rows(DOCS); if (r) html += card(L('docs'), L('docsCap'), r);
-    if (!q.value.trim()) html += card(L('up'), L('upCap'), UP.map(function (f) { return '<div class="row" style="cursor:default"><span class="yr">' + f[1] + '</span><span class="ti">' + esc(f[0]) + '</span>' + co(f) + '<span class="lk">' + imdb(f) + music(f) + '</span></div>'; }).join(''));
+      if (r) html += card('d' + d, d + 's', fs.filter(function (f) { return seen[id(f)]; }).length + L('of') + fs.length + L('seenS'), r); });
+    var r = rows(DOCS); if (r) html += card('docs', L('docs'), L('docsCap'), r);
+    if (!q.value.trim()) html += card('up', L('up'), L('upCap'), UP.map(function (f) { return '<div class="row" style="cursor:default"><span class="yr">' + f[1] + '</span><span class="ti">' + esc(f[0]) + '</span>' + co(f) + '<span class="lk">' + imdb(f) + music(f) + '</span></div>'; }).join(''));
     box.innerHTML = html || '<p class="empty">' + L('none') + '</p>';
   }
+  box.addEventListener('click', function (e) { var b = e.target.closest('.acc-btn'); if (!b) return;
+    var sec = b.closest('.card'), key = sec.dataset.key;
+    if (q.value.trim()) { var pn = sec.querySelector('.acc-p'), o = pn.hidden; pn.hidden = !o; sec.classList.toggle('open', o); b.setAttribute('aria-expanded', String(o)); return; }
+    var before = b.getBoundingClientRect().top; openKey = openKey === key ? null : key; render();
+    var nb = document.getElementById('h-' + key), delta = nb.getBoundingClientRect().top - before;   // keep the header where it was (like The Record)
+    if (delta) window.scrollBy({ top: delta, behavior: 'instant' });
+    nb.focus({ preventScroll: true });
+    if (openKey) { var r = nb.getBoundingClientRect(); if (r.top < 70 || r.top > innerHeight * 0.6) nb.closest('.card').scrollIntoView({ block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' }); }
+  });
   box.addEventListener('change', function (e) { var k = e.target.dataset.k; if (!k) return;
     if (e.target.checked) seen[k] = true; else delete seen[k];
     try { localStorage.setItem(KEY, JSON.stringify(seen)); } catch (er) {} render(); });
