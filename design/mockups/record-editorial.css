@@ -32,3 +32,7 @@ html[data-theme="dark"] { --e-bg:#141413; --e-bg2:#1d1d1b; --e-ink:#eceae4; --e-
 .theme-seg button + button { border-left:1px solid var(--e-ink); }
 .theme-seg button[aria-pressed="true"] { background:var(--e-ink) !important; color:var(--e-bg) !important; }
 .v-misleading, .v-misleading * { color: var(--e-bg) !important; } .v-false *, .v-overstated * { color: #fff !important; }
+
+.theme-seg { margin:0 0 0 12px !important; flex:none; } header .theme-seg { margin-left:auto !important; }
+@media (max-width: 700px) { .theme-seg .lbl { display:none; } .theme-seg button { padding:8px 10px !important; } }
+@media (max-width: 700px) { .top-in { height:auto !important; flex-wrap:wrap; row-gap:8px; padding:8px 20px !important; } .top-in .theme-seg { order:1; margin-left:auto !important; } .top-in .lang { order:2; flex-basis:100%; margin-left:0 !important; } .top-in .lang select { flex:1; } }

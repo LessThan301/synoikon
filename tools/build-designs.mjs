@@ -36,9 +36,9 @@ for (const x of Object.keys(CONCEPTS)) {
   // home: legal pages and app live one level up
   let home = fs.readFileSync(path.join(d, 'index.html'), 'utf8').replace(/href="(impressum|datenschutz)\/"/g, 'href="../../$1/"');
   fs.writeFileSync(path.join(d, 'index.html'), home);
-  inject(path.join(d, 'index.html'), 'design.css', './', x, 'words/js/theme.js', '.foot');
-  inject(path.join(d, 'words', 'index.html'), '../design.css', '../', x, 'js/theme.js', '#sidebar .sb-body');
-  inject(path.join(d, 'words', 'about.html'), '../design.css', '../', x, 'js/theme.js', 'footer, .foot, body');
+  inject(path.join(d, 'index.html'), 'design.css', './', x, 'words/js/theme.js', '.topnav');
+  inject(path.join(d, 'words', 'index.html'), '../design.css', '../', x, 'js/theme.js', '.sb-head, .topbar');
+  inject(path.join(d, 'words', 'about.html'), '../design.css', '../', x, 'js/theme.js', 'header, .top, .topnav');
 }
 fs.writeFileSync(path.join(OUT, 'design', 'index.html'), `<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><title>Synoikon design concepts</title>
 <style>body{font:16px/1.5 system-ui,sans-serif;max-width:640px;margin:10vh auto;padding:0 16px}a{display:block;margin:10px 0;font-size:1.2rem}</style>

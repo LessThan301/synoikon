@@ -91,3 +91,11 @@ html[data-theme="dark"] .btn.primary, html[data-theme="dark"] #go, html[data-the
 .theme-seg button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 .theme-seg .ico { font-size:.9em; }
 .theme-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+
+/* theme switch lives in the top bar */
+.topnav .menu { margin-left:auto; } .topnav .theme-seg { margin-left:10px; }
+.sb-head { flex-wrap:nowrap; } .sb-head .theme-seg { order:1; margin-left:auto; flex:none; } .sb-head .sb-toggle { order:2; margin-left:8px; }
+.sb-head .theme-seg .lbl, .topbar .theme-seg .lbl { display:none; }
+.topbar .theme-seg { margin-left:auto; flex:none; }
+@media (max-width: 700px) { .theme-seg .lbl { display:none; } .theme-seg button { padding:8px 10px; } }
+@media (max-width: 700px) { .topnav { flex-wrap:wrap; row-gap:8px; } .topnav .theme-seg { order:1; margin-left:auto; } .topnav .menu { order:2; flex-basis:100%; margin-left:0; } .topnav .menu-btn { width:100%; text-align:left; } }

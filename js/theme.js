@@ -1,6 +1,6 @@
 // Theme switch (Light / Dark / System) shared by all Synoikon pages that use it. Self-contained, no dependencies.
 // The pre-paint part (data-theme on <html>) is inlined in each page's <head>; this file adds the control and live updates.
-// Usage: <script src=".../theme.js" data-slot="CSS selector to append the control to" defer></script>
+// Usage: <script src=".../theme.js" data-slot="CSS selector(s) to append the control to (top bar)" defer></script>
 (function () {
   var KEY = 'synoikon-theme', root = document.documentElement, mq = window.matchMedia ? matchMedia('(prefers-color-scheme: dark)') : null;
   var T = { en: ['Theme', 'Light mode', 'Dark mode', 'System setting'], de: ['Design', 'Hell', 'Dunkel', 'Systemeinstellung'],
@@ -35,6 +35,7 @@
   new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['lang'] });
   var cs = document.currentScript;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { mountWith(cs); }); else mountWith(cs);
-  function mountWith(s) { var sel = (s && s.dataset.slot) || 'footer'; build(document.querySelector(sel) || document.body); apply(); }
+  function mountWith(s) { var sel = (s && s.dataset.slot) || 'header', els = document.querySelectorAll(sel); if (!els.length) els = [document.body];
+    Array.prototype.forEach.call(els, function (el) { build(el); }); apply(); }
   window.synoikonTheme = { set: set, get: pref };
 })();
