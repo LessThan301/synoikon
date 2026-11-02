@@ -96,3 +96,4 @@ html[data-theme="dark"] .btn.primary, html[data-theme="dark"] #go, html[data-the
 .theme-anchor { display:inline-flex; vertical-align:middle; margin-left:6px; }
 .about .theme-seg .lbl { display:none; }
 @media (max-width: 700px) { .theme-seg .lbl { display:none; } .theme-seg button { padding:7px 10px; } }
+body { padding-bottom: 64px !important; }   /* room for the preview-only concept bar, so it never covers the footer / theme switch */
