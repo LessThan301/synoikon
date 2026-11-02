@@ -97,3 +97,4 @@ html[data-theme="dark"] .btn.primary, html[data-theme="dark"] #go, html[data-the
 .about .theme-seg .lbl { display:none; }
 @media (max-width: 700px) { .theme-seg .lbl { display:none; } .theme-seg button { padding:7px 10px; } }
 body { padding-bottom: 64px !important; }   /* room for the preview-only concept bar, so it never covers the footer / theme switch */
+@media (max-width: 480px) { .foot { gap:10px !important; font-size:.8rem !important; } .theme-anchor { margin-left:0; } .theme-seg button { padding:6px 8px; } }
