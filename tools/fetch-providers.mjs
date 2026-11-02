@@ -43,8 +43,41 @@ fs.mkdirSync(LOGOS, { recursive: true });
 for (const id of used) {
   const lp = out.providers[id][1], file = path.join(LOGOS, id + '.jpg');
   if (lp && !fs.existsSync(file)) { const r = await fetch('https://image.tmdb.org/t/p/w45' + lp); if (r.ok) fs.writeFileSync(file, Buffer.from(await r.arrayBuffer())); }
-  out.providers[id] = [out.providers[id][0], fs.existsSync(file) ? 1 : 0];
+  out.providers[id] = [out.providers[id][0], fs.existsSync(file) ? id : 0];
 }
+normalize(out);
 fs.writeFileSync(OUT, JSON.stringify(out));
+// Merge variants of one brand ("... with Ads", "... Amazon Channel", "Standard with Ads", "Amazon Video" = Prime Video, ...)
+// into one entry per film, listed once in its best group (Streaming > Free > Rent > Buy), with an "also" note.
+function clean(n) {
+  let c = n.trim().replace(/\s+(amazon|apple tv|roku premium|roku)\s+channel$/i, '').replace(/\s+(free\s+)?with\s+ads$/i, '')
+    .replace(/\s+(standard|basic|essential|premium plus|premium)$/i, '').replace(/\s+(store|stream)$/i, '').trim();
+  if (/^amazon( prime)? video$/i.test(c)) c = 'Amazon Prime Video';
+  if (/^apple tv\+?$/i.test(c)) c = 'Apple TV';
+  if (/^rtl\+ max$/i.test(c)) c = 'RTL+';
+  return c.replace(/ plus$/i, '+').replace(/^(disney|paramount|mgm) plus\b/i, '$1+');
+}
+function normalize(o) {
+  const key = (n) => clean(n).toLowerCase().replace(/[^a-z0-9+]/g, '').replace(/\++$/, '');
+  const brands = {}, brandOf = {};
+  for (const [id, [name, logo]] of Object.entries(o.providers)) {
+    const k = key(name), c = clean(name); const b = brands[k] || (brands[k] = { id: +id, name: c, logo: 0, exact: false });
+    if (name.trim() === c && !b.exact) { b.id = +id; b.name = c; b.exact = true; if (logo) b.logo = +id; }
+    if (!b.logo && logo) b.logo = +id; brandOf[id] = k;
+  }
+  const P = {};
+  for (const b of Object.values(brands)) P[b.id] = [b.name, b.logo];
+  for (const per of Object.values(o.films)) for (const cc of Object.keys(per)) {
+    const e = per[cc], n = {}, seen = {}, also = {};
+    for (const [g, src] of [['flatrate', e.flatrate], ['free', (e.free || []).concat(e.ads || [])], ['rent', e.rent], ['buy', e.buy]]) for (const pid of src || []) {
+      const b = brands[brandOf[pid]].id;
+      if (seen[b] === undefined) { seen[b] = g; (n[g] || (n[g] = [])).push(b); }
+      else if (seen[b] !== g && (g === 'rent' || g === 'buy')) { const a = also[b] || (also[b] = []); if (!a.includes(g)) a.push(g); }
+    }
+    if (Object.keys(also).length) n.also = Object.fromEntries(Object.entries(also).map(([b, a]) => [b, a.join(' ')]));
+    per[cc] = n;
+  }
+  o.providers = P;
+}
 const de = Object.values(out.films).filter((p) => p.DE).length, deS = Object.values(out.films).filter((p) => p.DE && (p.DE.flatrate || p.DE.free || p.DE.ads)).length;
 console.log(`films ${FILMS.length}, matched ${matched}, with providers in DE ${de} (streaming ${deS}), providers ${used.size}, regions ${Object.keys(out.regions).length}`);
