@@ -1,8 +1,9 @@
 /* Editorial (from Zimmer concept A): warm paper, black Geist type, one red accent, hairline rules. Layered on top of nebula.css. */
 @font-face { font-family: Geist; src: url(FONTS/geist-latin-wght-normal.woff2) format('woff2'); font-weight: 100 900; font-display: swap; }
 :root { --bg:#f4f2ec; --bg2:#faf9f5; --panel:#faf9f5; --panel-solid:#faf9f5; --ink:#111; --muted:#6b6b66; --line:#d9d6cf; --accent:#e4002b; --accent2:#111; --accent-btn:#111; --radius:0;
-  --map-target:#e4002b; --map-ramp:#e6e3db,#d3cfc5,#bdb8ad,#a7a297; --map-link-target:228,0,43; --map-link:17,17,17;
-  --map-label:#111111; --map-halo:rgba(244,242,236,0.94); --map-pin:#e4002b; --map-font:Geist;
+  --bar:rgba(244,242,236,.96); --hover:#e9e6dd;
+  --map-target:#e4002b; --map-ramp:#e4e0d7,#d5d0c5,#c5bfb2,#b4aea0; --map-link-target:228,0,43; --map-link:17,17,17; --map-link-boost:1.7;
+  --map-node-stroke:rgba(17,17,17,.85); --map-node-alpha:1; --map-label:#000000; --map-halo:rgba(244,242,236,0.97); --map-pin:#e4002b; --map-font:Geist;
   font-family:Geist,Inter,system-ui,var(--font-scripts,sans-serif),sans-serif; color-scheme:light; }
 html, body { background:var(--bg) !important; background-image:none !important; color:var(--ink); }
 body::before { display:none !important; }
@@ -13,7 +14,7 @@ h1, h2, .brand-name, .wotd-word { font-family:inherit; letter-spacing:-.03em; }
 html, body { background:var(--bg) !important; color:var(--ink); }
 h1, h2, .brand-name, .wotd-word { font-family:inherit; font-weight:600 !important; letter-spacing:-.01em; }
 /* home */
-.topnav { background:rgba(244,239,228,.94) !important; border-bottom:1px solid var(--ink) !important; }
+.topnav { background:var(--bar) !important; border-bottom:1px solid var(--ink) !important; }
 .logo { border-radius:0 !important; background:none !important; border:1.5px solid var(--ink); box-shadow: inset 0 0 0 6px var(--bg), inset 0 0 0 30px var(--accent); }
 .logo.sm { box-shadow: inset 0 0 0 4px var(--bg), inset 0 0 0 20px var(--accent); }
 .wrap { width:min(860px,100% - 48px) !important; padding-top:12vh !important; }
@@ -27,7 +28,7 @@ h1, h2, .brand-name, .wotd-word { font-family:inherit; font-weight:600 !importan
 .tile h2 { font-size:1.8rem !important; } .t-icon { border-radius:0 !important; background:var(--ink) !important; color:var(--bg) !important; }
 .go { color:var(--accent) !important; text-transform:uppercase; font-size:.78em; letter-spacing:.06em; }
 .menu-btn, .menu-list { background:var(--bg2) !important; border-radius:0 !important; border-color:var(--ink) !important; box-shadow:none !important; }
-.menu-list a:hover { background:#ece4d3 !important; }
+.menu-list a:hover { background:var(--hover) !important; }
 .badge { background:none !important; color:var(--accent) !important; border-color:var(--accent) !important; border-radius:0 !important; text-transform:uppercase; font-size:.78em; }
 .foot { border-top:1px solid var(--ink) !important;  }
 /* word app */
@@ -39,7 +40,7 @@ h1, h2, .brand-name, .wotd-word { font-family:inherit; font-weight:600 !importan
 .wotd-word { color:var(--accent) !important;  }
 .stage { background:var(--bg) !important; }
 .tooltip, .map-legend, .share-dlg, .card { background:var(--bg2) !important; border-radius:0 !important; border-color:var(--ink) !important; box-shadow:4px 4px 0 rgba(28,26,23,.12) !important; color:var(--ink); }
-.hint { background:rgba(251,248,241,.9) !important;  }
+.hint { background:var(--bg2) !important;  }
 a { color:var(--accent2); }
 input[type=range] { accent-color:var(--ink); }
 .graph-tools button { background:var(--bg2) !important; color:var(--ink) !important; border:1px solid var(--ink) !important; border-radius:0 !important; }
@@ -48,7 +49,7 @@ input[type=range] { accent-color:var(--ink); }
 
 /* Editorial overrides of Nebula glass */
 .topnav, .top, .sidebar, .tile, .menu-list, .share-dlg, .card, .wotd, .cform, .langs button, .menu-btn { background:var(--bg2) !important; border-color:var(--ink) !important; box-shadow:none !important; border-radius:0 !important; }
-.topnav, .top { background:rgba(244,242,236,.96) !important; border-width:0 0 1px !important; }
+.topnav, .top { background:var(--bar) !important; border-width:0 0 1px !important; }
 .hero h1 { font-style:normal !important; font-weight:700 !important; letter-spacing:-.055em !important; text-transform:none !important; background:none !important; -webkit-background-clip:initial !important; background-clip:initial !important; color:var(--ink) !important; font-size:clamp(3.4rem,13vw,8rem) !important; line-height:.9; }
 .hero h1::after { content:"."; color:var(--accent); }
 .hero { border-bottom:1px solid var(--ink) !important; } .logo, .logo.sm { border-radius:50% !important; border:0 !important; background:var(--accent) !important; box-shadow:none !important; width:14px !important; height:14px !important; }
@@ -66,7 +67,7 @@ input[type=range], input[type=checkbox] { accent-color:var(--accent); }
 .slider output { color:var(--ink) !important; }
 .graph-tools button { background:var(--bg2) !important; color:var(--ink) !important; border:1px solid var(--ink) !important; border-radius:0 !important; }
 .tooltip, .map-legend { background:var(--bg2) !important; border:1px solid var(--ink) !important; border-radius:0 !important; box-shadow:6px 6px 0 rgba(17,17,17,.08) !important; color:var(--ink) !important; }
-.hint { background:rgba(250,249,245,.95) !important; color:var(--muted) !important; }
+.hint { background:var(--bg2) !important; color:var(--muted) !important; }
 .stage { background:var(--bg) !important; }
 .wotd-word { color:var(--accent) !important; }
 .sidebar { border-width:0 1px 0 0 !important; }
@@ -75,3 +76,18 @@ a { color:var(--ink); text-decoration-color:var(--accent); }
 .foot, footer.foot { border-top:1px solid var(--ink) !important; color:var(--muted) !important; }
 .topbar { background:var(--bg) !important; background-image:none !important; }
 @media (max-width: 640px) { .tiles { grid-template-columns: 1fr !important; } .tile { padding: 22px 0 !important; } .tile + .tile { border-left: 0 !important; border-top: 1px solid var(--line) !important; padding-left: 0 !important; } }
+
+/* ---- Editorial dark: soft near-black paper, off-white type, same red ---- */
+html[data-theme="dark"] { --bg:#141413; --bg2:#1d1d1b; --panel:#1d1d1b; --panel-solid:#1d1d1b; --ink:#eceae4; --muted:#a3a097; --line:#3a3935; --accent:#ff3352; --accent2:#eceae4; --accent-btn:#eceae4;
+  --bar:rgba(20,20,19,.96); --hover:#2a2a27;
+  --map-target:#ff3352; --map-ramp:#2f2e2b,#373632,#403e3a,#4a4843; --map-link-target:255,51,82; --map-link:236,234,228; --map-link-boost:1.5;
+  --map-node-stroke:rgba(236,234,228,.75); --map-node-alpha:1; --map-label:#ffffff; --map-halo:rgba(20,20,19,0.95); --map-pin:#ff3352; color-scheme:dark; }
+html[data-theme="dark"] .btn.primary, html[data-theme="dark"] #go, html[data-theme="dark"] .seg input:checked + span { background:var(--ink) !important; color:var(--bg) !important; }
+/* theme switch (shared widget from words/js/theme.js) */
+.theme-seg { display:inline-flex; border:1px solid var(--ink); font:500 .78rem/1 Geist, Inter, system-ui, sans-serif; }
+.theme-seg button { all:unset; cursor:pointer; padding:6px 9px; color:var(--ink); display:inline-flex; gap:5px; align-items:center; white-space:nowrap; }
+.theme-seg button + button { border-left:1px solid var(--ink); }
+.theme-seg button[aria-pressed="true"] { background:var(--ink); color:var(--bg); }
+.theme-seg button:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+.theme-seg .ico { font-size:.9em; }
+.theme-row { display:flex; align-items:center; gap:10px; flex-wrap:wrap; }

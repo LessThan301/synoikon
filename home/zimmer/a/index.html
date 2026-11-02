@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <script>(function(){try{var p=localStorage.getItem('synoikon-theme');var d=p==='dark'||(p!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light')}catch(e){}})()</script>
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Hans Zimmer films · concept A (Editorial) · Synoikon</title>
   <meta name="description" content="Every feature film Hans Zimmer scored or co-scored, by decade. Tick what you have seen; ticks stay in your browser.">
@@ -26,7 +27,8 @@
 .empty { text-align: center; }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
 /* A: Swiss editorial. Warm paper, black Geist, one red accent, hairline rules, big numerals. */
-:root { --ink: #111; --mut: #6b6b66; --line: #d9d6cf; --red: #e4002b; --bg: #f4f2ec; }
+:root { --ink: #111; --mut: #6b6b66; --line: #d9d6cf; --red: #e4002b; --bg: #f4f2ec; --card: #fff; color-scheme: light; }
+html[data-theme=dark] { --ink: #eceae4; --mut: #a3a097; --line: #3a3935; --red: #ff3352; --bg: #141413; --card: #1d1d1b; color-scheme: dark; }
 body { background: var(--bg); color: var(--ink); font: 400 16px/1.45 Geist, Inter, system-ui, sans-serif; }
 .topnav { display: flex; justify-content: space-between; align-items: center; padding: 18px clamp(16px, 5vw, 64px); border-bottom: 1px solid var(--ink); font-size: .9rem; }
 .topnav a { color: var(--ink); text-decoration: none; } .brand { font-weight: 700; letter-spacing: -.01em; display: flex; gap: 8px; align-items: center; }
@@ -60,11 +62,17 @@ input[type=checkbox] { accent-color: var(--red); width: 17px; height: 17px; marg
 .imdb, .lh { font: 600 .72rem/1 Geist, sans-serif; color: var(--ink); background: transparent; border: 1px solid var(--ink); border-radius: 0; padding: 5px 8px; }
 .imdb.s { border-style: dashed; color: var(--mut); border-color: var(--mut); }
 .imdb:hover, .lh:hover, .lh[aria-expanded=true] { background: var(--ink); color: var(--bg); }
-#lm { background: #fff; border: 1px solid var(--ink); box-shadow: 8px 8px 0 rgba(0,0,0,.08); }
+#lm { background: var(--card); border: 1px solid var(--ink); box-shadow: 8px 8px 0 rgba(0,0,0,.08); }
 #lm a { color: var(--ink); } #lm a:hover, #lm a:focus-visible { background: var(--bg); outline: none; } #lm .sep { border-top: 1px solid var(--line); } #lm .dot { border-radius: 0; }
 .credit { color: var(--mut); font-size: .8rem; margin-top: 32px; max-width: 70ch; } .credit a, .foot a { color: var(--ink); }
 .foot { display: flex; gap: 20px; padding: 24px clamp(16px, 5vw, 64px); border-top: 1px solid var(--ink); font-size: .8rem; color: var(--mut); }
 @media (max-width: 700px) { .card { grid-template-columns: 1fr; } .card > .row, .card > h2, .card > .cap { grid-column: 1; } .card > .row:first-of-type { grid-row: auto; } .cap { margin-bottom: 10px; } .lk { margin-left: 50px; } .row .co { flex-basis: 100%; padding-left: 50px; } }
+.theme-seg { display:inline-flex; border:1px solid var(--ink); font:500 .78rem/1 Geist, Inter, system-ui, sans-serif; margin-left:auto; }
+.theme-seg button { all:unset; cursor:pointer; padding:6px 9px; color:var(--ink); display:inline-flex; gap:5px; align-items:center; white-space:nowrap; }
+.theme-seg button + button { border-left:1px solid var(--ink); }
+.theme-seg button[aria-pressed="true"] { background:var(--ink); color:var(--bg); }
+.theme-seg button:focus-visible { outline:2px solid var(--red); outline-offset:2px; }
+.foot { flex-wrap: wrap; align-items: center; }
   </style>
 </head>
 <body>
@@ -158,5 +166,6 @@ const UP = [["The Last Photograph",2026,"Omer Benyamin and Steven Doar"],["Ramay
   render();
 })();
   </script>
+<script src="../../words/js/theme.js" data-slot=".foot" defer></script>
 </body>
 </html>

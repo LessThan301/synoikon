@@ -10,11 +10,18 @@ import { t as tr } from './i18n.js';
 const TARGET_ID = '__target__';
 // map colours can be themed with CSS custom properties on :root (defaults = the standard dark theme)
 const cssVar = (n, d) => (typeof document !== 'undefined' && getComputedStyle(document.documentElement).getPropertyValue(n).trim()) || d;
-const TARGET_COLOR = cssVar('--map-target', '#ff3df2');
-const MAP_RAMP = cssVar('--map-ramp', '#6c5cff,#3d8bff,#3df5ff,#b6ff5c').split(',').map((c) => c.trim());
-const LINK_T = cssVar('--map-link-target', '255,61,242'), LINK_N = cssVar('--map-link', '120,140,255');
-const LABEL = cssVar('--map-label', '#ffffff'), HALO = cssVar('--map-halo', 'rgba(5,3,15,0.9)'), PIN = cssVar('--map-pin', '#3df5ff');
-const MAP_FONT = cssVar('--map-font', 'Inter');
+let TARGET_COLOR, MAP_RAMP, LINK_T, LINK_N, LABEL, HALO, PIN, MAP_FONT, NODE_STROKE, NODE_ALPHA, LINK_BOOST;
+function readMapTheme() {
+  TARGET_COLOR = cssVar('--map-target', '#ff3df2');
+  MAP_RAMP = cssVar('--map-ramp', '#6c5cff,#3d8bff,#3df5ff,#b6ff5c').split(',').map((c) => c.trim());
+  LINK_T = cssVar('--map-link-target', '255,61,242'); LINK_N = cssVar('--map-link', '120,140,255');
+  LABEL = cssVar('--map-label', '#ffffff'); HALO = cssVar('--map-halo', 'rgba(5,3,15,0.9)'); PIN = cssVar('--map-pin', '#3df5ff');
+  MAP_FONT = cssVar('--map-font', 'Inter');
+  NODE_STROKE = cssVar('--map-node-stroke', '');            // optional disc outline (themes with light paper)
+  NODE_ALPHA = parseFloat(cssVar('--map-node-alpha', '0.88')); // fill opacity of neighbour discs
+  LINK_BOOST = parseFloat(cssVar('--map-link-boost', '1'));   // multiplies line opacity
+}
+readMapTheme();
 const MAX_DPR = 2;          // sharper than this costs fill-rate without visible gain
 const LABEL_MIN_PX = 7;     // labels smaller than this on screen are skipped (level of detail)
 const SCRIPT_FONTS = '"Noto Sans SC", "Noto Sans Devanagari", "Noto Sans Bengali", "Noto Naskh Arabic", "Noto Nastaliq Urdu"';
@@ -101,7 +108,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     const tColor = d3.scaleSequential(d3.interpolateRgbBasis(MAP_RAMP)).domain([0, 1]);
     const share = new Map(links.filter((l) => l.kind === 'target').map((l) => [l.target, l]));
     for (const d of nodes) {
-      d.color = d.target ? TARGET_COLOR : tColor(share.get(d.id)?.s ?? 0);
+      d.share = share.get(d.id)?.s ?? 0; d.color = d.target ? TARGET_COLOR : tColor(d.share);
       d.font = d.target ? Math.round(Math.max(14, Math.min(22, d.r * 0.42))) : Math.round(Math.max(10, Math.min(17, d.r * 0.42)));
       d.inside = d.target || d.r >= 18;
       d.rtl = RTL_RE.test(d.label);
@@ -130,7 +137,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
       const key = `${l.kind}|${q}`;
       if (!bmap.has(key)) {
         const s = q / 12;
-        bmap.set(key, { color: l.kind === 'target' ? LINK_T : LINK_N, width: 0.5 + 5 * s ** 1.6, alpha: 0.12 + 0.6 * s, links: [] });
+        bmap.set(key, { kind: l.kind, color: l.kind === 'target' ? LINK_T : LINK_N, width: 0.5 + 5 * s ** 1.6, alpha: 0.12 + 0.6 * s, links: [] });
       }
       bmap.get(key).links.push(l);
     }
@@ -155,6 +162,15 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
   }
 
   // ---- drawing --------------------------------------------------------------
+  // live theme switch (light/dark/system): re-read the map colours and repaint
+  function recolor() {
+    readMapTheme(); fontStack = fontStack.replace(/^[^,]*,/, `${MAP_FONT},`);
+    const tColor = d3.scaleSequential(d3.interpolateRgbBasis(MAP_RAMP)).domain([0, 1]);
+    for (const d of nodes) d.color = d.target ? TARGET_COLOR : tColor(d.share ?? 0);
+    for (const b of buckets) b.color = b.kind === 'target' ? LINK_T : LINK_N;
+    requestDraw();
+  }
+  if (typeof window !== 'undefined') window.addEventListener('synoikon-theme', () => requestAnimationFrame(recolor));
   function requestDraw() {
     if (!frame) frame = requestAnimationFrame(draw);
   }
@@ -204,7 +220,7 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     for (let pass = 0; pass < (hovered ? 2 : 1); pass++) {
       for (const b of buckets) {
         ctx.lineWidth = b.width;
-        ctx.strokeStyle = `rgba(${b.color},${!hovered ? b.alpha : pass === 0 ? b.alpha * 0.15 : Math.min(1, b.alpha + 0.25)})`;
+        ctx.strokeStyle = `rgba(${b.color},${Math.min(1, (!hovered ? b.alpha : pass === 0 ? b.alpha * 0.15 : Math.min(1, b.alpha + 0.25)) * LINK_BOOST)})`;
         for (const l of b.links) {
           if (hovered && incident(l) !== (pass === 1)) continue;
           if (off(l, b.width)) continue;
@@ -221,9 +237,10 @@ export function createGraph(canvas, tooltip, { onSelect, onFocus } = {}) {
     for (const d of nodes) {
       if (!visible(d)) continue;
       const dim = hovered && d !== hovered && !nb.has(d.id);
-      ctx.globalAlpha = (dim ? 0.12 : 1) * (d.target ? 1 : 0.88);
+      ctx.globalAlpha = (dim ? 0.12 : 1) * (d.target ? 1 : NODE_ALPHA);
       ctx.fillStyle = d.color;
       ctx.beginPath(); ctx.arc(d.x, d.y, d.r, 0, 2 * Math.PI); ctx.fill();
+      if (NODE_STROKE && !d.target) { ctx.globalAlpha = dim ? 0.12 : 1; ctx.lineWidth = 1.25 / k; ctx.strokeStyle = NODE_STROKE; ctx.stroke(); }
     }
 
     // labels, with level of detail: skip tiny ones unless they matter right now

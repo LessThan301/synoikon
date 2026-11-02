@@ -14,8 +14,12 @@ const bar = (x, rel) => `<nav class="design-bar" aria-label="Design concepts" st
   + `<style>.design-bar a{color:#fff!important;font-weight:600!important;text-shadow:none!important}.design-bar a[aria-current]{color:#111!important}</style><span style="padding:0 6px;opacity:.75">Concept ${x.toUpperCase()} · ${CONCEPTS[x]}</span>`
   + Object.keys(CONCEPTS).map((k) => `<a href="${rel}../${k}/${rel.includes('..') ? 'words/' : ''}" ${k === x ? 'aria-current="page" ' : ''}style="background:${k === x ? '#fff' : 'transparent'};text-decoration:none;padding:5px 9px;border-radius:999px;text-shadow:none">${k.toUpperCase()}</a>`).join('')
   + `<a href="${rel}../../${rel.includes('..') ? 'words/' : ''}" style="color:#fff;opacity:.7;text-decoration:none;padding:5px 8px">current</a></nav>`;
-const inject = (file, css, rel, x) => {
+// Light/Dark/System theme: set data-theme before first paint (no flash); the control comes from words/js/theme.js
+export const THEME_HEAD = `<script>(function(){try{var p=localStorage.getItem('synoikon-theme');var d=p==='dark'||(p!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light')}catch(e){}})()</script>`;
+const THEMED = new Set((process.env.THEMED || 'editorial').split(','));
+const inject = (file, css, rel, x, themeJs, slot) => {
   let h = fs.readFileSync(file, 'utf8');
+  if (THEMED.has(x) && themeJs) h = h.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  ${THEME_HEAD}`).replace('</body>', `<script src="${themeJs}" data-slot="${slot}" defer></script>\n</body>`);
   h = h.replace('<head>', '<head>\n  <meta name="robots" content="noindex, nofollow">');
   h = h.replace(/(<link rel="stylesheet"[^>]*>)(?![\s\S]*<link rel="stylesheet")/, `$1\n  <link rel="stylesheet" href="${css}">`);
   h = h.replace(/<link rel="canonical"[^>]*>\s*/g, '');
@@ -32,9 +36,9 @@ for (const x of Object.keys(CONCEPTS)) {
   // home: legal pages and app live one level up
   let home = fs.readFileSync(path.join(d, 'index.html'), 'utf8').replace(/href="(impressum|datenschutz)\/"/g, 'href="../../$1/"');
   fs.writeFileSync(path.join(d, 'index.html'), home);
-  inject(path.join(d, 'index.html'), 'design.css', './', x);
-  inject(path.join(d, 'words', 'index.html'), '../design.css', '../', x);
-  inject(path.join(d, 'words', 'about.html'), '../design.css', '../', x);
+  inject(path.join(d, 'index.html'), 'design.css', './', x, 'words/js/theme.js', '.foot');
+  inject(path.join(d, 'words', 'index.html'), '../design.css', '../', x, 'js/theme.js', '#sidebar .sb-body');
+  inject(path.join(d, 'words', 'about.html'), '../design.css', '../', x, 'js/theme.js', 'footer, .foot, body');
 }
 fs.writeFileSync(path.join(OUT, 'design', 'index.html'), `<!doctype html><meta charset="utf-8"><meta name="robots" content="noindex, nofollow"><title>Synoikon design concepts</title>
 <style>body{font:16px/1.5 system-ui,sans-serif;max-width:640px;margin:10vh auto;padding:0 16px}a{display:block;margin:10px 0;font-size:1.2rem}</style>
