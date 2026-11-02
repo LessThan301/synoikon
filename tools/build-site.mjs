@@ -73,9 +73,12 @@ if (PREVIEW) home = home.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  <met
   .replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
 fs.writeFileSync(path.join(OUT, 'index.html'), home);
 // Other projects: Hans Zimmer film tracker (self-contained, no outside requests)
-{ let pg = fs.readFileSync(path.join(HOME, 'zimmer', 'index.html'), 'utf8');
+for (const src of walk(path.join(HOME, 'zimmer'))) {   // tracker + design concepts (a/b/c) + self-hosted fonts
+  const dst = path.join(OUT, 'zimmer', path.relative(path.join(HOME, 'zimmer'), src)); fs.mkdirSync(path.dirname(dst), { recursive: true });
+  if (!src.endsWith('.html')) { fs.copyFileSync(src, dst); continue; }
+  let pg = fs.readFileSync(src, 'utf8');
   if (PREVIEW) pg = pg.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  <meta name="robots" content="noindex,nofollow">`).replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
-  fs.mkdirSync(path.join(OUT, 'zimmer'), { recursive: true }); fs.writeFileSync(path.join(OUT, 'zimmer', 'index.html'), pg); }
+  fs.writeFileSync(dst, pg); }
 // shared Impressum + Datenschutz (synoikon.com, The Record, Listen); noindex, DE/EN
 for (const f of ['legal.css', 'legal.js']) fs.copyFileSync(path.join(HOME, 'legal', f), path.join(OUT, f));
 for (const slug of ['impressum', 'datenschutz']) {
