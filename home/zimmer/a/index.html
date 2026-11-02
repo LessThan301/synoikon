@@ -67,8 +67,9 @@ input[type=checkbox] { accent-color: var(--red); width: 17px; height: 17px; marg
 .credit { color: var(--mut); font-size: .8rem; margin-top: 32px; max-width: 70ch; } .credit a, .foot a { color: var(--ink); }
 .foot { display: flex; gap: 20px; padding: 24px clamp(16px, 5vw, 64px); border-top: 1px solid var(--ink); font-size: .8rem; color: var(--mut); }
 @media (max-width: 700px) { .card { grid-template-columns: 1fr; } .card > .row, .card > h2, .card > .cap { grid-column: 1; } .card > .row:first-of-type { grid-row: auto; } .cap { margin-bottom: 10px; } .lk { margin-left: 50px; } .row .co { flex-basis: 100%; padding-left: 50px; } }
-.theme-seg { display:inline-flex; border:1px solid var(--ink); font:500 .78rem/1 Geist, Inter, system-ui, sans-serif; margin-left:16px; }
-@media (max-width: 700px) { .theme-seg .lbl { display:none; } .theme-seg button { padding:8px 10px; } .topnav { gap:10px; } .topnav a[data-i18n=back] { display:none; } }
+.theme-seg { display:inline-flex; border:1px solid var(--ink); font:500 .78rem/1 Geist, Inter, system-ui, sans-serif; }
+@media (max-width: 700px) { .theme-seg .lbl { display:none; } .theme-seg button { padding:7px 10px; } }
+.theme-anchor { display:inline-flex; vertical-align:middle; }
 .theme-seg button { all:unset; cursor:pointer; padding:6px 9px; color:var(--ink); display:inline-flex; gap:5px; align-items:center; white-space:nowrap; }
 .theme-seg button + button { border-left:1px solid var(--ink); }
 .theme-seg button[aria-pressed="true"] { background:var(--ink); color:var(--bg); }
@@ -167,6 +168,6 @@ const UP = [["The Last Photograph",2026,"Omer Benyamin and Steven Doar"],["Ramay
   render();
 })();
   </script>
-<script src="../../words/js/theme.js" data-slot=".topnav" defer></script>
+<script src="../../words/js/theme.js?v=THEMEVER" defer></script>
 </body>
 </html>

@@ -2,6 +2,7 @@
 // stylesheet on top (design/<x>.css). Preview only: noindex, no service worker, precomputed /w/ pages left out.
 // usage: node tools/build-designs.mjs [_site]
 import fs from 'fs';
+import crypto from 'crypto';
 import path from 'path';
 const OUT = process.argv[2] || '_site';
 const CONCEPTS = Object.fromEntries((process.argv[3] || 'a:Broadsheet,b:Nebula,c:Kontrast').split(',').map((x) => x.split(':')));
@@ -16,12 +17,13 @@ const bar = (x, rel) => `<nav class="design-bar" aria-label="Design concepts" st
   + `<a href="${rel}../../${rel.includes('..') ? 'words/' : ''}" style="color:#fff;opacity:.7;text-decoration:none;padding:5px 8px">current</a></nav>`;
 // Light/Dark/System theme: set data-theme before first paint (no flash); the control comes from words/js/theme.js
 export const THEME_HEAD = `<script>(function(){try{var p=localStorage.getItem('synoikon-theme');var d=p==='dark'||(p!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light')}catch(e){}})()</script>`;
+const VER = crypto.createHash('sha1').update(fs.readFileSync('js/theme.js')).update(fs.readdirSync('design').filter((f) => f.endsWith('.css')).map((f) => fs.readFileSync(path.join('design', f), 'utf8')).join('')).digest('hex').slice(0, 10);   // cache-busting
 const THEMED = new Set((process.env.THEMED || 'editorial').split(','));
 const inject = (file, css, rel, x, themeJs, slot) => {
   let h = fs.readFileSync(file, 'utf8');
-  if (THEMED.has(x) && themeJs) h = h.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  ${THEME_HEAD}`).replace('</body>', `<script src="${themeJs}" data-slot="${slot}" defer></script>\n</body>`);
+  if (THEMED.has(x) && themeJs) h = h.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  ${THEME_HEAD}`).replace('</body>', `<script src="${themeJs}?v=${VER}" defer></script>\n</body>`);
   h = h.replace('<head>', '<head>\n  <meta name="robots" content="noindex, nofollow">');
-  h = h.replace(/(<link rel="stylesheet"[^>]*>)(?![\s\S]*<link rel="stylesheet")/, `$1\n  <link rel="stylesheet" href="${css}">`);
+  h = h.replace(/(<link rel="stylesheet"[^>]*>)(?![\s\S]*<link rel="stylesheet")/, `$1\n  <link rel="stylesheet" href="${css}?v=${VER}">`);
   h = h.replace(/<link rel="canonical"[^>]*>\s*/g, '');
   h = h.replace('</body>', `${bar(x, rel)}\n</body>`);
   fs.writeFileSync(file, h);

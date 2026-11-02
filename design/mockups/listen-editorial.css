@@ -31,5 +31,5 @@ html[data-theme="dark"] { --e-bg:#141413; --e-bg2:#1d1d1b; --e-ink:#eceae4; --e-
 .theme-seg button + button { border-left:1px solid var(--e-ink); }
 .theme-seg button[aria-pressed="true"] { background:var(--e-ink) !important; color:var(--e-bg) !important; }
 
-.theme-seg { margin:0 0 0 12px !important; flex:none; } header .theme-seg { margin-left:auto !important; }
+.theme-anchor { display:inline-flex; vertical-align:middle; margin-left:6px; } .theme-seg { margin:0 !important; }
 @media (max-width: 700px) { .theme-seg .lbl { display:none; } .theme-seg button { padding:8px 10px !important; } }

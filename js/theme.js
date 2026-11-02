@@ -35,7 +35,16 @@
   new MutationObserver(relabel).observe(root, { attributes: true, attributeFilter: ['lang'] });
   var cs = document.currentScript;
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', function () { mountWith(cs); }); else mountWith(cs);
-  function mountWith(s) { var sel = (s && s.dataset.slot) || 'header', els = document.querySelectorAll(sel); if (!els.length) els = [document.body];
-    Array.prototype.forEach.call(els, function (el) { build(el); }); apply(); }
+  // Placement: inline right after the Impressum / Datenschutz links (one control per page).
+  function mountWith(s) { if (document.querySelector('.theme-seg')) return apply();
+    var imp = document.querySelector('a#impressum, a[href*="impressum"]'), after = imp;
+    if (imp) { var n = imp.nextElementSibling, k = imp.nextSibling; // the privacy link usually follows (maybe after a " · " text node)
+      if (n && /datenschutz|privacy/i.test(n.getAttribute('href') || '') && (k === n || (k && k.nodeType === 3 && /^\s*[·|]?\s*$/.test(k.textContent) && k.nextSibling === n))) after = n; }
+    var holder = document.createElement('span'); holder.className = 'theme-anchor';
+    var box = build(holder);
+    if (after) { if (after.parentNode.tagName === 'P' || /·/.test((after.nextSibling && after.nextSibling.textContent) || '')) after.parentNode.insertBefore(document.createTextNode(' '), after.nextSibling);
+      after.parentNode.insertBefore(holder, after.nextSibling && after.nextSibling.nodeType === 3 && after.nextSibling.textContent === ' ' ? after.nextSibling.nextSibling : after.nextSibling); }
+    else document.body.appendChild(holder);
+    apply(); }
   window.synoikonTheme = { set: set, get: pref };
 })();

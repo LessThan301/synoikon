@@ -8,6 +8,7 @@
 // --preview additionally: analytics off, <meta name="robots" content="noindex,nofollow"> on every page,
 // robots.txt "Disallow: /", a "Preview" badge, separate cache names, no CNAME (no custom domain).
 import fs from 'fs';
+import crypto from 'crypto';
 import path from 'path';
 import { execFileSync } from 'child_process';
 import { fileURLToPath } from 'url';
@@ -76,7 +77,7 @@ fs.writeFileSync(path.join(OUT, 'index.html'), home);
 for (const src of walk(path.join(HOME, 'zimmer'))) {   // tracker + design concepts (a/b/c) + self-hosted fonts
   const dst = path.join(OUT, 'zimmer', path.relative(path.join(HOME, 'zimmer'), src)); fs.mkdirSync(path.dirname(dst), { recursive: true });
   if (!src.endsWith('.html')) { fs.copyFileSync(src, dst); continue; }
-  let pg = fs.readFileSync(src, 'utf8');
+  let pg = fs.readFileSync(src, 'utf8').split('THEMEVER').join(crypto.createHash('sha1').update(fs.readFileSync(path.join(ROOT, 'js', 'theme.js'))).digest('hex').slice(0, 10));
   if (PREVIEW) pg = pg.replace(/<meta charset="utf-8">/i, (m) => `${m}\n  <meta name="robots" content="noindex,nofollow">`).replace('</body>', `  ${BADGE}\n</body>`).replace('</head>', `  <style>${BADGE_CSS}</style>\n</head>`);
   fs.writeFileSync(dst, pg); }
 // shared Impressum + Datenschutz (synoikon.com, The Record, Listen); noindex, DE/EN
