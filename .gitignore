@@ -1,0 +1,4 @@
+_site/
+shots/
+*.png
+node_modules/
